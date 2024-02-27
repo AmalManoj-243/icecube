@@ -5,4 +5,4 @@ import { ProfileScreen } from "./Profile";
 import { MyOrdersScreen } from "./MyOrders";
 import { DashboardScreen } from "./Dashboard";
 
-export {HomeScreen, CartScreen, CategoriesScreen, ProfileScreen, MyOrdersScreen, DashboardScreen}
+export { HomeScreen, CartScreen, CategoriesScreen, ProfileScreen, MyOrdersScreen, DashboardScreen }
