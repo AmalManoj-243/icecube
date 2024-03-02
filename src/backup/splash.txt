@@ -1,15 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { View, Image, StyleSheet, Text } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
 import * as Font from 'expo-font';
 import THEME from '@constants/theme';
 
 const SplashScreen = () => {
     const navigation = useNavigation();
-    const [fontsLoaded, setFontsLoaded] = useState(false);
+    const [load, setLoaded] = useState(false);
 
-    useEffect(() => {
-        async function loadFonts() {
+    // Using useFonts hook to load fonts
+    const [fonts, fontError] = useFonts({
+        'Urbanist-Black': require('@assets/fonts/Urbanist/Urbanist-Black.ttf'),
+        'Urbanist-Bold': require('@assets/fonts/Urbanist/Urbanist-Bold.ttf'),
+        'Urbanist-ExtraBold': require('@assets/fonts/Urbanist/Urbanist-ExtraBold.ttf'),
+        'Urbanist-ExtraLight': require('@assets/fonts/Urbanist/Urbanist-ExtraLight.ttf'),
+        'Urbanist-Light': require('@assets/fonts/Urbanist/Urbanist-Light.ttf'),
+        'Urbanist-Medium': require('@assets/fonts/Urbanist/Urbanist-Medium.ttf'),
+        'Urbanist-Regular': require('@assets/fonts/Urbanist/Urbanist-Regular.ttf'),
+        'Urbanist-SemiBold': require('@assets/fonts/Urbanist/Urbanist-SemiBold.ttf'),
+        'Urbanist-Thin': require('@assets/fonts/Urbanist/Urbanist-Thin.ttf'),
+    });
+
+    const loadFontsAsync = useCallback(async () => {
+        try {
             await Font.loadAsync({
                 'Urbanist-Black': require('@assets/fonts/Urbanist/Urbanist-Black.ttf'),
                 'Urbanist-Bold': require('@assets/fonts/Urbanist/Urbanist-Bold.ttf'),
@@ -21,22 +35,33 @@ const SplashScreen = () => {
                 'Urbanist-SemiBold': require('@assets/fonts/Urbanist/Urbanist-SemiBold.ttf'),
                 'Urbanist-Thin': require('@assets/fonts/Urbanist/Urbanist-Thin.ttf'),
             });
-            setFontsLoaded(true);
+            setLoaded(true);
+        } catch (error) {
+            console.log('Error loading fonts:', error);
         }
-        loadFonts();
     }, []);
 
     useEffect(() => {
-        if (fontsLoaded) {
+        loadFontsAsync();
+    }, [loadFontsAsync]);
+
+    useEffect(() => {
+        if (load) {
             const timeout = setTimeout(() => {
                 navigation.replace('AppNavigator');
-            }, 1000);
+            }, 5000);
             return () => clearTimeout(timeout);
         }
-    }, [fontsLoaded, navigation]);
+    }, [load, navigation]);
 
-    if (!fontsLoaded) {
-        return null;
+    if (fontError) {
+        // Handle font loading error
+        console.log('Font loading error:', fontError);
+    }
+
+    if (!fonts) {
+        // Render a loading indicator while fonts are loading
+        return <Text>Loading fonts...</Text>;
     }
 
     return (
@@ -46,7 +71,7 @@ const SplashScreen = () => {
                 style={styles.image}
                 resizeMode="contain"
             />
-            <Text style={styles.versionText}>Version 1.0.0</Text>
+            <Text style={styles.versionText}>V1.0.0</Text>
         </View>
     );
 };
@@ -60,13 +85,13 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '80%',
-        height: '80%',
+        height: '80%'
     },
     versionText: {
         fontSize: 16,
         marginTop: 20,
-        color: THEME.COLORS.orange,
-        fontFamily: THEME.FONT_FAMILY.urbanistMedium,
+        color: '#333',
+        fontFamily: THEME.FONT_FAMILY.urbanistBold,
     },
 });
 

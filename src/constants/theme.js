@@ -1,16 +1,83 @@
 // theme.js
 
+// Font families
 const FONT_FAMILY = {
-    urbanist_black: 'Urbanist-Black',
-    urbanist_bold: 'Urbanist-Bold',
-    urbanist_extra_bold: 'Urbanist-ExtraBold',
-    urbanist_extra_light: 'Urbanist-ExtraLight',
-    urbanist_light: 'Urbanist-Light',
-    urbanist_medium: 'Urbanist-Medium',
-    urbanist_regular: 'Urbanist-Regular',
-    urbanist_semi_bold: 'Urbanist-SemiBold',
-    urbanist_thin: 'Urbanist-Thin',
-  };
-  
-  export default FONT_FAMILY;
-  
+  urbanistBlack: 'Urbanist-Black',
+  urbanistBold: 'Urbanist-Bold',
+  urbanistExtraBold: 'Urbanist-ExtraBold',
+  urbanistExtraLight: 'Urbanist-ExtraLight',
+  urbanistLight: 'Urbanist-Light',
+  urbanistMedium: 'Urbanist-Medium',
+  urbanistRegular: 'Urbanist-Regular',
+  urbanistSemiBold: 'Urbanist-SemiBold',
+  urbanistThin: 'Urbanist-Thin',
+};
+
+// Colors
+const COLORS = {
+  white: '#ffff',
+  black: '#000',
+  lightBlack: '#151718', // Consider renaming to maintain consistency
+  blue: '#5D5FEE',
+  appTheme: '#2e294e',
+  orange: '#F37021'
+};
+
+// sizes
+const SIZE = {
+  widthMedium: 50,
+  tabIconHeight: 32
+}
+
+// Font sizes
+const FONT_SIZE = {
+  small: 12,
+  medium: 16,
+  large: 20,
+};
+
+// Spacing
+const SPACING = {
+  paddingSmall: 8,
+  paddingMedium: 16,
+  paddingLarge: 24,
+  marginSmall: 8,
+  marginMedium: 16,
+  marginLarge: 24,
+};
+
+// Border radii
+const BORDER_RADIUS = {
+  small: 4,
+  medium: 8,
+  large: 16,
+  iconRadius: 20, // Added for consistency with other constants
+};
+
+// Icon sizes
+const ICON_SIZE = {
+  small: 25,
+  medium: 32,
+  large: 48,
+};
+
+// Button sizes
+const BUTTON_SIZE = {
+  height: 40,
+  width: 120,
+};
+
+// Default export: THEME object containing all theme-related constants
+const THEME = {
+  FONT_FAMILY,
+  COLORS,
+  FONT_SIZE,
+  SPACING,
+  BORDER_RADIUS,
+  ICON_SIZE,
+  BUTTON_SIZE,
+  SIZE
+};
+
+export default THEME;
+

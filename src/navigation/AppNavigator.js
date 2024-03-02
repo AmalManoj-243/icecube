@@ -1,11 +1,11 @@
 // navigation/TabNavigator.js
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import TabBarIcon from '@components/TabBarIcon';
+import { TabBarIcon } from '@components/TabBar';
 import { HomeScreen, CartScreen, CategoriesScreen, MyOrdersScreen, ProfileScreen } from '@screens';
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const AppNavigator = () => {
   const tabBarOptions = {
     tabBarShowLabel: false,
     tabBarHideOnKeyboard: true,
@@ -91,4 +91,4 @@ const TabNavigator = () => {
   );
 };
 
-export default TabNavigator;
+export default AppNavigator;
