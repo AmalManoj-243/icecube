@@ -1,12 +1,15 @@
 import React from 'react';
-import { View, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Image, Dimensions, TouchableOpacity} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import THEME from '@constants/theme';
 import Text from '@components/Text';
+import CarouselPagination from '@components/Home/CarouselPagination';
+
 
 const { width } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: THEME.COLORS.appTheme }}>
       <View style={{ flex: 1, backgroundColor: 'white', borderTopLeftRadius: 15, borderTopRightRadius: 15 }}>
@@ -28,6 +31,7 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         {/* Carousel */}
+        <CarouselPagination/>
       </View>
     </SafeAreaView>
   );

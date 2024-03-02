@@ -1,10 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, Text } from 'react-native';
+import { View, Image, StyleSheet, Text, LogBox } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import * as Font from 'expo-font';
 import THEME from '@constants/theme';
 
 const SplashScreen = () => {
+
+    LogBox.ignoreLogs(["new NativeEventEmitter"]);
+LogBox.ignoreAllLogs();
+
+
+  LogBox.ignoreLogs([
+    "Non-serializable values were found in the navigation state",
+  ]);
+
     const navigation = useNavigation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
 
