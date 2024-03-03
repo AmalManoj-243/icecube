@@ -1,12 +1,12 @@
 import React, { useMemo } from 'react';
-import { View, Image, Dimensions, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Image, Dimensions, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import THEME from '@constants/theme';
 import Text from '@components/Text';
 import CarouselPagination from '@components/Home/CarouselPagination';
 import BottomSheet from "@gorhom/bottom-sheet";
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 const HomeScreen = ({ navigation }) => {
 
@@ -14,7 +14,14 @@ const HomeScreen = ({ navigation }) => {
     navigation.navigate(screenName);
   };
 
-  const snapPoints = useMemo(() => ["50%", "85%"], []);
+  // Define different snap points based on screen height
+  const snapPoints = useMemo(() => {
+    if (height < 800) {
+      return ["45%", "83%"];
+    } else {
+      return ["50%", "85%"];
+    }
+  }, [height]);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: THEME.COLORS.appTheme }}>
@@ -48,6 +55,7 @@ const HomeScreen = ({ navigation }) => {
           <ImageContainer source={require('@assets/images/Home/section/services.png')} onPress={() => navigateToScreen('Services')} backgroundColor="#f37021" title="Services" />
           <ImageContainer source={require('@assets/images/Home/section/customer.png')} onPress={() => navigateToScreen('Customer')} backgroundColor="#f37021" title="Customer" />
         </View>
+        
         {/* Bottom sheet */}
           <BottomSheet snapPoints={snapPoints}>
             <View style={{
