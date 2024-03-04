@@ -71,3 +71,33 @@
   - App.js
 
   https://chat.openai.com/share/72814fe1-a70a-4b7a-a550-7f9a4799aa65
+
+
+  src/
+├── api/
+│   ├── services/
+│   │   ├── apiClient.js
+│   │   ├── endpoints.js
+│   │   └── utils.js
+│   ├── config/
+│   │   └── apiConfig.js
+│   └── utils/
+│       └── handleApiError.js
+│
+├── components/
+│   ├── ProductList/
+│   │   ├── ProductList.js
+│   │   ├── ProductListItem.js
+│   │   └── ProductList.css
+│   └── OtherComponent/
+│       ├── OtherComponent.js
+│       └── OtherComponent.css
+│
+└── utils/
+    ├── helpers/
+    │   ├── util.js
+    │   ├── formatters.js
+    │   └── validators.js
+    └── globalConstants.js
+
+    https://chat.openai.com/share/0dd0ad23-de75-4f5d-8637-c70edb1ce838

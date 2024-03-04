@@ -1,21 +1,7 @@
 // src/api/utils.js
-
 import axios from 'axios';
-import API_BASE_URL from '@api/config';
-
-// // Create an instance of axios with the API base URL
-// const apiInstance = axios.create({
-//   baseURL: API_BASE_URL,
-//   timeout: 10000, 
-// });
-
-// export default apiInstance;
-
-
-// api/utils/utils.js
-
-import axios from 'axios';
-import handleApiError from './handleApiError';
+import { API_BASE_URL } from '@api/config';
+import handleApiError from '../utils/handleApiError';
 
 export const get = async (endpoint, params = {}) => {
   try {
