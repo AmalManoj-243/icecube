@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   title: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamily: FONT_FAMILY.urbanistBold,
     color: '#909090',
     alignSelf: 'center'

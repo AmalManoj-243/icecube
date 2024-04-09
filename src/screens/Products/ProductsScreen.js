@@ -10,8 +10,7 @@ import { Loader } from '@components/Loader';
 import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/containers';
 import { debounce } from 'lodash';
 import styles from './styles';
-import { EmptyState } from '@components/common';
-
+import { EmptyState } from '@components/common/empty';
 const ProductsScreen = ({ navigation, route }) => {
 
   const categoryId = route?.params?.id

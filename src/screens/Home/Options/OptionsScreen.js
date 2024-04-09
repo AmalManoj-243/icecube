@@ -3,6 +3,8 @@ import { FlatList } from 'react-native'
 import { NavigationHeader } from '@components/Header';
 import { RoundedContainer, SafeAreaView } from '@components/containers'
 import { ListItem } from '@components/Options';
+import { formatData } from '@utils/formatters';
+import { EmptyItem } from '@components/common/empty';
 
 const OptionsScreen = ({ navigation }) => {
   const options =
@@ -14,8 +16,17 @@ const OptionsScreen = ({ navigation }) => {
       { title: 'Transaction Auditing', image: require('@assets/images/Home/options/transaction_auditing.png'), onPress: () => navigation.navigate('') },
       { title: 'Task Manager', image: require('@assets/images/Home/options/task_manager.png'), onPress: () => navigation.navigate('TaskManagerScreen') },
       { title: 'Market Study', image: require('@assets/images/Home/options/market_study.png'), onPress: () => navigation.navigate('') },
-      { title: 'Attendance', image: require('@assets/images/Home/options/attendance_1.png'), onPress: () => navigation.navigate('') }
+      { title: 'Attendance', image: require('@assets/images/Home/options/attendance.png'), onPress: () => navigation.navigate('') },
+      { title: 'Inventory Management', image: require('@assets/images/Home/options/inventory_management.png'), onPress: () => navigation.navigate('') }
     ]
+
+    const renderItem = ({ item }) => {
+      if (item.empty) {
+        return <EmptyItem />;
+      }
+      return <ListItem title={item.title} image={item.image} onPress={item.onPress} />;
+    };
+  
 
   return (
     <SafeAreaView>
@@ -25,11 +36,10 @@ const OptionsScreen = ({ navigation }) => {
       />
       <RoundedContainer>
         <FlatList
-          data={options}
-          contentContainerStyle={{ margin: 15 }}
-          renderItem={({ item }) => (
-            <ListItem title={item.title} image={item.image} onPress={item.onPress} />
-          )}
+          data={formatData(options, 2)}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ padding: 15 }}
+          renderItem={renderItem}
           numColumns={2}
           keyExtractor={(item, index) => index.toString()}
         />

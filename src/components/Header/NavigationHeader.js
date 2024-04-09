@@ -5,11 +5,10 @@ import { COLORS, FONT_FAMILY } from '@constants/theme';
 import { AntDesign } from '@expo/vector-icons';
 
 const NavigationHeader = ({ title, onBackPress }) => {
-    const screenWidth = Dimensions.get('window').width;
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={onBackPress} style={styles.goBackContainer}>
-            <AntDesign name="left" size={20} color="white" style={styles.arrowImage} />
+            <AntDesign name="left" size={20} color="white"/>
 
                 {/* <Image source={require('@assets/images/header/left_arrow.png')} style={styles.arrowImage} /> */}
             </TouchableOpacity>
@@ -30,10 +29,6 @@ const styles = StyleSheet.create({
     },
     goBackContainer: {
         marginRight: 15,
-    },
-    arrowImage: {
-        // width: Dimensions.get('window').width * 0.18,
-        tintColor: 'white',
     },
     title: {
         color: COLORS.white,

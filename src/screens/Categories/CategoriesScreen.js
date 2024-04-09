@@ -10,8 +10,7 @@ import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/con
 import { debounce } from 'lodash';
 import styles from './styles';
 import { CategoryList } from '@components/Categories';
-import { EmptyState } from '@components/common';
-
+import { EmptyState } from '@components/common/empty';
 const CategoriesScreen = ({ navigation }) => {
 
   const [categories, setCategories] = useState([]);
