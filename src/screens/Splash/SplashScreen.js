@@ -36,7 +36,7 @@ const SplashScreen = () => {
             if (storedUserData) {
                 const userData = JSON.parse(storedUserData);
                 setLoggedInUser(userData);
-                navigation.navigate('LoginScreen');
+                navigation.navigate('AppNavigator');
             } else {
                 navigation.navigate('LoginScreen');
             }

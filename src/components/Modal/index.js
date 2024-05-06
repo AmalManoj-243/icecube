@@ -1,2 +1,3 @@
 import ActionModal from "./ActionModal";
-export { ActionModal }
+import LogoutModal from "./LogoutModal";
+export { ActionModal, LogoutModal }

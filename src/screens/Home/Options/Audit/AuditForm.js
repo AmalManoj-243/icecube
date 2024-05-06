@@ -37,6 +37,7 @@ const AuditForm = ({ navigation }) => {
   const handleScan = async (data) => {
 
     const billParts = data.split('-')
+    console.log("🚀 ~ handleScan ~ billParts:", billParts)
     const billName = billParts[0]
     const billSequence = billParts.slice(1).join('-')
     setSplittedBillName(billName)
@@ -300,18 +301,19 @@ const AuditForm = ({ navigation }) => {
         case "Sales Return":
           // Handling for Sales Return 
           auditingData.register_payment_id = null,
-            auditingData.register_payment_sequence_no = null,
-            auditingData.chq_type = scannedBillDetails?.chq_type ?? null;
+          auditingData.register_payment_sequence_no = null,
+          auditingData.chq_type = scannedBillDetails?.chq_type ?? null;
           auditingData.chq_date = scannedBillDetails?.chq_date ?? null;
           auditingData.chq_no = scannedBillDetails.chq_no ?? null;
           auditingData.customer_id = scannedBillDetails?.customer?.customer_id;
           auditingData.customer_name = displayBillDetails?.displayName;
+          auditingData.un_taxed_amount = scannedBillDetails?.total_untaxed_amount
           break;
         case "Cash rec":
           auditingData.chq_no = scannedBillDetails?.chq_type ?? null,
-            auditingData.chq_date = scannedBillDetails?.chq_type ?? null,
-            auditingData.chq_type = scannedBillDetails?.chq_type ?? null,
-            auditingData.customer_id = null;
+          auditingData.chq_date = scannedBillDetails?.chq_type ?? null,
+          auditingData.chq_type = scannedBillDetails?.chq_type ?? null,
+          auditingData.customer_id = null;
           auditingData.register_payment_sequence_no = scannedBillDetails?.register_payments[0]?.sequence_no ?? null;
           auditingData.ledger_id = ledger?.ledger_id ?? null;
           auditingData.ledger_type = ledger?.ledger_type ?? null;
@@ -325,12 +327,11 @@ const AuditForm = ({ navigation }) => {
           auditingData.ledger_display_name = ledger?.ledger_display_name ?? null;
           break;
         case "Bank rec":
-          auditingData.collection_type_id = collectionType?._id ?? null;
-          auditingData.collection_type_name = collectionType?.collection_type_name ?? null;
           auditingData.ledger_id = ledger?.ledger_id ?? null;
           auditingData.ledger_type = ledger?.ledger_type ?? null;
           auditingData.ledger_name = ledger?.ledger_name ?? null;
           auditingData.ledger_display_name = ledger?.ledger_display_name ?? null;
+          auditingData.chart_of_accounts_name = scannedBillDetails?.paid_through_chart_of_account_name ?? null;
           break;
         case "Bankpay":
           auditingData.ledger_id = ledger?.ledger_id ?? null;
