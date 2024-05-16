@@ -1,43 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { FlashList } from '@shopify/flash-list';
-import { formatData } from '@utils/formatters';
-import { Loader } from '@components/Loader';
-import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/containers';
-import { EmptyItem, EmptyState } from '@components/common/empty';
+import { FAB, Portal } from 'react-native-paper';
+import { RoundedContainer, SafeAreaView } from '@components/containers';
 import { NavigationHeader } from '@components/Header';
-import { FAB, Portal, Provider } from 'react-native-paper'; // Import FAB from react-native-paper
-import { fetchInventoryBoxRequest } from '@api/services/generalApi';
-import { useDataFetching, useDebouncedSearch } from '@hooks';
-import InventoryList from './InventoryList';
-import { COLORS, FONT_FAMILY } from '@constants/theme';
-import { useIsFocused } from '@react-navigation/native';
+import { Loader } from '@components/Loader';
+import { EmptyItem, EmptyState } from '@components/common/empty';
+import { FlashList } from '@shopify/flash-list';
 import { InputModal } from '@components/Modal';
+import { useIsFocused } from '@react-navigation/native';
+import { showToastMessage } from '@components/Toast';
+import InventoryList from './InventoryList';
+import { fetchInventoryBoxRequest } from '@api/services/generalApi';
+import { fetchInventoryDetails, fetchInventoryDetailsByName } from '@api/details/detailApi';
+import { useDataFetching } from '@hooks';
+import { formatData } from '@utils/formatters';
+import { COLORS, FONT_FAMILY } from '@constants/theme';
 
 const InventoryScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
-
-  const [isVisible, setIsVisible] = useState(false);
-
-  const toggleModal = () => setIsVisible(!isVisible)
- 
+  const [isVisibleModal, setIsVisibleModal] = useState(false);
+  const [isFabOpen, setIsFabOpen] = useState(false);
   const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchInventoryBoxRequest);
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+  }, []);
 
   const handleLoadMore = () => {
     fetchMoreData();
+  };
+
+  const handleScan = async (scannedData) => {
+    const inventoryDetails = await fetchInventoryDetails(scannedData)
+    if (inventoryDetails.length>0) {
+      navigation.navigate('InventoryDetails', { inventoryDetails: inventoryDetails[0] });
+    } else {
+      showToastMessage('No inventory box found for this box no');
+    }
+  };
+
+  const handleModalInput = async (text) => {
+    const inventoryDetails = await fetchInventoryDetailsByName(text)
+    if (inventoryDetails.length > 0) {
+      navigation.navigate('InventoryDetails', { inventoryDetails: inventoryDetails[0] });
+    } else {
+      showToastMessage('No inventory box found for this box no');
+    }
   };
 
   const renderItem = ({ item }) => {
     if (item.empty) {
       return <EmptyItem />;
     }
-    return (
-      // console.log(item)
-      <InventoryList item={item} />
-    );
+    return <InventoryList item={item} />;
   };
 
   const renderEmptyState = () => (
@@ -66,55 +80,40 @@ const InventoryScreen = ({ navigation }) => {
     return renderContent();
   };
 
-  const handleScan = async (scannedData) => {
-    console.log("🚀 ~ handleScan ~ data:", scannedData)
-   navigation.navigate('InventoryDetails', {scannedData})
-  }
-
-  const [fabOpen, setFabOpen] = useState(false);
-
-  const onStateChange = ({ open }) => setFabOpen(open);
-
   return (
     <SafeAreaView>
       <NavigationHeader
         title="Inventory Management"
         onBackPress={() => navigation.goBack()}
       />
-      <RoundedContainer >
+      <RoundedContainer>
         {renderInventoryRequest()}
         {isFocused && (
           <Portal>
             <FAB.Group
-              fabStyle={{backgroundColor:COLORS.primaryThemeColor, borderRadius:30}}
+              fabStyle={{ backgroundColor: COLORS.primaryThemeColor, borderRadius: 30 }}
               color={COLORS.white}
               backdropColor='transparent'
-              open={fabOpen}
+              open={isFabOpen}
               visible={isFocused}
-              icon={fabOpen ? 'arrow-up' : 'plus'}
+              icon={isFabOpen ? 'arrow-up' : 'plus'}
               actions={[
-                { icon: 'barcode-scan', label: 'Scan',  labelStyle: { fontFamily: FONT_FAMILY.urbanistSemiBold, color: COLORS.primaryThemeColor }, onPress: () => navigation.navigate('Scanner', { onScan: handleScan })},
-                { icon: 'pencil', label: 'Box no', labelStyle: { fontFamily: FONT_FAMILY.urbanistSemiBold, color: COLORS.primaryThemeColor }, onPress: () => setIsVisible(true)},
-                { icon: 'pencil', label: 'detail', labelStyle: { fontFamily: FONT_FAMILY.urbanistSemiBold, color: COLORS.primaryThemeColor }, onPress: () =>navigation.navigate('InventoryDetails')},
-
+                { icon: 'barcode-scan', label: 'Scan', labelStyle: { fontFamily: FONT_FAMILY.urbanistSemiBold, color: COLORS.primaryThemeColor }, onPress: () => navigation.navigate('Scanner', { onScan: handleScan }) },
+                { icon: 'pencil', label: 'Box no', labelStyle: { fontFamily: FONT_FAMILY.urbanistSemiBold, color: COLORS.primaryThemeColor }, onPress: () => setIsVisibleModal(true) },
+                { icon: 'pencil', label: 'Detail', labelStyle: { fontFamily: FONT_FAMILY.urbanistSemiBold, color: COLORS.primaryThemeColor }, onPress: () => navigation.navigate('InventoryDetails') },
               ]}
-              onStateChange={onStateChange}
-              onPress={() => {
-                if (fabOpen) {
-                  // do something if the FAB group is open
-                }
-              }}
+              onStateChange={({ open }) => setIsFabOpen(open)}
             />
           </Portal>
         )}
       </RoundedContainer>
       <InputModal
-      isVisible={isVisible}
-      onClose={toggleModal}
-      onSubmit={text=>console.log(text)}
+        isVisible={isVisibleModal}
+        onClose={() => setIsVisibleModal(false)}
+        onSubmit={(text) => handleModalInput(text)}
       />
     </SafeAreaView>
   );
-}
+};
 
 export default InventoryScreen;

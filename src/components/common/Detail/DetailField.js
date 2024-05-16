@@ -13,7 +13,7 @@ const DetailField = ({
   return (
     <View style={styles.container}>
       <Text style={styles.label}>{label}</Text>
-      <View style={inputContainerStyle}>
+      <View style={styles.inputContainer}>
         <TextInput
         editable={false}
           autoCorrect={false}
@@ -28,14 +28,14 @@ const DetailField = ({
 const styles = StyleSheet.create({
   container: {
     marginBottom: 5,
-    // flexDirection: 'row',
+    flexDirection: 'row',
     justifyContent: 'space-between',
   },
   label: {
     flex: 2 / 3,
     marginVertical: 8,
-    fontSize: 14,
-    color: '#818181',
+    fontSize: 16,
+    color: COLORS.primaryThemeColor,
     fontFamily: FONT_FAMILY.urbanistSemiBold,
   },
   inputContainer: {
@@ -56,13 +56,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlignVertical: 'top',
   },
-  errorText: {
-    color: COLORS.red,
-    fontSize: 12,
-    marginTop: 5,
-    fontFamily: FONT_FAMILY.urbanistMedium
-  },
-
 });
 
 export default DetailField;

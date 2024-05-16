@@ -5,6 +5,7 @@ import Modal from 'react-native-modal';
 import { Button } from '@components/common/Button';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
+import { NavigationHeader } from '@components/Header';
 
 const InputModal = ({ isVisible, onClose, onSubmit }) => {
     const [itemName, setItemName] = useState('');
@@ -20,6 +21,7 @@ const InputModal = ({ isVisible, onClose, onSubmit }) => {
         }
         if (!hasError) {
             onSubmit(itemName);
+            onClose();
         }
     };
 
@@ -35,10 +37,12 @@ const InputModal = ({ isVisible, onClose, onSubmit }) => {
             backdropTransitionOutTiming={300}
         >
             <View style={styles.modalContainer}>
+            <NavigationHeader onBackPress={() => onClose()} title={'Enter Box no'}/>
                 <View style={styles.modalContent}>
                     <Text style={styles.label}>Box No</Text>
                     <TextInput
                         placeholder={`Enter box no`}
+                        autoCapitalize='characters'
                         value={itemName.name}
                         onChangeText={(text) => {
                             setItemName(text);
@@ -77,7 +81,9 @@ const styles = StyleSheet.create({
     modalContent: {
         backgroundColor: 'white',
         padding: 20,
-        borderRadius: 10,
+        // borderRadius: 10,
+        borderBottomRightRadius: 10, 
+        borderBottomLeftRadius: 10,
         width: '100%',
     },
     modalHeader: {

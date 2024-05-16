@@ -24,7 +24,9 @@ const COLORS = {
   button: '#F37021',
   red: '#ff3333',
   lightGrey: '	#D3D3D3',
-  grey: '#F0F0F0'
+  grey: '#F0F0F0',
+  listText: '#ffff',
+  listContainer: '#423B6F'
 };
 
 // sizes

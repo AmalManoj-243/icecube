@@ -11,13 +11,14 @@ const Scanner = ({ route }) => {
     const [scanned, setScanned] = useState(false);
     const [isFlashOn, setIsFlashOn] = useState(false);
     const [requestedPermission, setRequestedPermission] = useState(false);
-   
+
     const scaleValue = useRef(new Animated.Value(1)).current;
     const translateYValue = useRef(new Animated.Value(0)).current;
 
     // Get the onScan function from navigation params
-    const { onScan } = route?.params || {};
-    
+    const { onScan, onClose = false } = route?.params || {};
+    console.log("🚀 ~ Scanner ~ onClose:", onClose)
+
     // navigation
     const navigation = useNavigation()
 
@@ -32,7 +33,7 @@ const Scanner = ({ route }) => {
             getCameraPermissions();
             setRequestedPermission(true);
         }
-    }, [requestedPermission]); 
+    }, [requestedPermission]);
 
     useEffect(() => {
         if (hasPermission === false) {
@@ -84,7 +85,9 @@ const Scanner = ({ route }) => {
     const handleBarCodeScanned = ({ type, data }) => {
         setScanned(true);
         onScan(data)
-        navigation.goBack()
+        if (onClose) {
+            navigation.goBack()
+        }
         // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
     };
 
@@ -126,17 +129,17 @@ const Scanner = ({ route }) => {
                     <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />
                 </View>
             ) : ( */}
-                <View style={styles.bottomButtonsContainer}>
-                    <TouchableOpacity style={styles.flashButton} onPress={toggleFlash}>
-                        <Ionicons name={isFlashOn ? 'flash' : 'flash-off'} size={30} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.refreshButton} onPress={()=>setScanned(false)}>
-                        <Ionicons name={'refresh'} size={30} color="white" />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-                        <Ionicons name="close" size={30} color="white" />
-                    </TouchableOpacity>
-                </View>
+            <View style={styles.bottomButtonsContainer}>
+                <TouchableOpacity style={styles.flashButton} onPress={toggleFlash}>
+                    <Ionicons name={isFlashOn ? 'flash' : 'flash-off'} size={30} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.refreshButton} onPress={() => setScanned(false)}>
+                    <Ionicons name={'refresh'} size={30} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
+                    <Ionicons name="close" size={30} color="white" />
+                </TouchableOpacity>
+            </View>
             {/* )} */}
         </Animated.View>
     );

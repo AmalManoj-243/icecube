@@ -323,6 +323,7 @@ const AuditForm = ({ navigation }) => {
         invoice_id: scannedBillDetails?._id,
         inv_sequence_no: displayBillDetails?.documentNumber ?? null,
         register_payment_id: scannedBillDetails?.register_payments?.[0]._id ?? null,
+        register_payment_sequence_no: '',
         chq_no: scannedBillDetails?.register_payments?.[0]?.chq_no ?? null,
         chq_date: scannedBillDetails?.register_payments?.[0]?.chq_date ?? null,
         chq_type: scannedBillDetails?.register_payments?.[0]?.chq_type ?? null,
@@ -344,10 +345,12 @@ const AuditForm = ({ navigation }) => {
       switch (splittedBillName) {
         case "Invoice":
           // Handling for Invoice bill
-          auditingData.customer_id = loginUser?.company?.company_id ?? null;
+          auditingData.customer_id = scannedBillDetails?.customer?.customer_id ?? null;
           auditingData.customer_name = displayBillDetails?.displayName ?? null;
+          auditingData.register_payment_sequence_no = scannedBillDetails?.register_payments[0].sequence_no
           auditingData.supplier_id = scannedBillDetails?.supplier?.supplier_id ?? null;
           auditingData.supplier_name = scannedBillDetails?.supplier?.supplier_name ?? null;
+
           break;
         case "Vendor Bill":
           // Handling for Vendor Bill
@@ -357,9 +360,9 @@ const AuditForm = ({ navigation }) => {
         case "Sales Return":
           // Handling for Sales Return 
           auditingData.register_payment_id = null,
-            auditingData.chq_type = scannedBillDetails?.chq_type ?? null;
+          auditingData.chq_type = scannedBillDetails?.chq_type ?? null;
           auditingData.register_payment_sequence_no = null,
-            auditingData.chq_no = scannedBillDetails.chq_no ?? null;
+          auditingData.chq_no = scannedBillDetails.chq_no ?? null;
           auditingData.chq_date = scannedBillDetails?.chq_date ?? null;
           auditingData.customer_id = scannedBillDetails?.customer?.customer_id;
           auditingData.customer_name = displayBillDetails?.displayName;
@@ -368,9 +371,9 @@ const AuditForm = ({ navigation }) => {
         case "Cash rec":
           auditingData.customer_id = null;
           auditingData.chq_no = scannedBillDetails?.chq_type ?? null,
-            auditingData.chq_date = scannedBillDetails?.chq_type ?? null,
-            auditingData.chq_type = scannedBillDetails?.chq_type ?? null,
-            auditingData.register_payment_sequence_no = scannedBillDetails?.register_payments[0]?.sequence_no ?? null;
+          auditingData.chq_date = scannedBillDetails?.chq_type ?? null,
+          auditingData.chq_type = scannedBillDetails?.chq_type ?? null,
+          auditingData.register_payment_sequence_no = scannedBillDetails?.register_payments[0]?.sequence_no ?? null;
           auditingData.ledger_id = ledger?.ledger_id ?? null;
           auditingData.ledger_type = ledger?.ledger_type ?? null;
           auditingData.ledger_display_name = ledger?.ledger_display_name ?? null;
@@ -384,7 +387,7 @@ const AuditForm = ({ navigation }) => {
           break;
         case "Bank rec": //BNKPAY
           auditingData.un_taxed_amount = displayBillDetails?.totalAmount ?? 0,
-            auditingData.ledger_id = ledger?.ledger_id ?? null;
+          auditingData.ledger_id = ledger?.ledger_id ?? null;
           auditingData.ledger_type = ledger?.ledger_type ?? null;
           auditingData.ledger_name = ledger?.ledger_name ?? null;
           auditingData.ledger_display_name = ledger?.ledger_display_name ?? null;
@@ -672,7 +675,7 @@ const AuditForm = ({ navigation }) => {
           <View style={styles.rowCotainer}>
             <Text style={styles.qrCodeText}>Update from qr Code </Text>
             <View style={styles.buttonContainer}>
-              <Button backgroundColor={COLORS.primaryThemeColor} title={'Scan'} onPress={() => navigation.navigate('Scanner', { onScan: handleScan })} />
+              <Button backgroundColor={COLORS.primaryThemeColor} title={'Scan'} onPress={() => navigation.navigate('Scanner', { onScan: handleScan, onClose:true })} />
             </View>
           </View>
         </View>

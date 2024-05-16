@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
-import { truncateString } from '@utils/common';
+// import { truncateString } from '@utils/common';
 
 const InventoryList = ({ item, onPress }) => {
 
