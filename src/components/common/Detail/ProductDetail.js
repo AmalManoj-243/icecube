@@ -13,6 +13,7 @@ import { reasons } from '@constants/dropdownConst';
 import { fetchEmployeesDropdown } from '@api/dropdowns/dropdownApi';
 import { Button } from '../Button';
 import { useProductStore } from '@stores/product';
+import { useCurrencyStore } from '@stores/currency';
 
 const ProductDetail = ({ navigation, route }) => {
   const { detail = {}, fromCustomerDetails = {} } = route?.params;
@@ -20,12 +21,12 @@ const ProductDetail = ({ navigation, route }) => {
   const [details, setDetails] = useState({});
   const [loading, setLoading] = useState(false);
   const [getDetail, setGetDetail] = useState(null);
-  const [isVisibleCustomListModal, setIsVisibleCustomListModal] =
-    useState(false);
-  const [isVisibleEmployeeListModal, setIsVisibleEmployeeListModal] =
-    useState(false);
+  const [isVisibleCustomListModal, setIsVisibleCustomListModal] = useState(false);
+  const [isVisibleEmployeeListModal, setIsVisibleEmployeeListModal] = useState(false);
   const [employee, setEmployee] = useState([]);
   const currentUser = useAuthStore(state => state.user);
+  const currency = useCurrencyStore((state) => state.currency);
+
   // const warehouseId = currentUser?.warehouse?.warehouse_id || '';
   const addProduct = useProductStore((state) => state.addProduct);
 
@@ -41,6 +42,7 @@ const ProductDetail = ({ navigation, route }) => {
         tempAssigneeIds.includes(currentUser.related_profile._id))
     );
   };
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -136,7 +138,7 @@ const ProductDetail = ({ navigation, route }) => {
               <TouchableOpacity
                 key={`${index}-${idx}`}
                 style={{ marginTop: 10, borderColor: COLORS.primaryThemeColor, padding: 5, width: '40%', alignItems: 'center', borderRadius: 8, backgroundColor: COLORS.lightGrey }}
-                onPress={() => handleBoxNamePress(boxName, boxDetail?.warehouse_id ? boxDetail?.warehouse_id :'')}
+                onPress={() => handleBoxNamePress(boxName, boxDetail?.warehouse_id ? boxDetail?.warehouse_id : '')}
               >
                 <Text style={{ fontFamily: FONT_FAMILY.urbanistBold, color: COLORS.orange, fontSize: 14 }}>Box Name: {boxName}</Text>
               </TouchableOpacity>
@@ -153,7 +155,7 @@ const ProductDetail = ({ navigation, route }) => {
     }
   };
 
-  
+
   const handleAddProduct = () => {
     const newProduct = {
       id: detail._id,
@@ -224,7 +226,7 @@ const ProductDetail = ({ navigation, route }) => {
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
             <Text style={{ width: '50%', fontFamily: FONT_FAMILY.urbanistSemiBold }}>Price:</Text>
-            <Text style={{ width: '50%', fontFamily: FONT_FAMILY.urbanistSemiBold }}>{details.cost || 'N/A'} OMR</Text>
+            <Text style={{ width: '50%', fontFamily: FONT_FAMILY.urbanistSemiBold }}>{details.cost || 'N/A'}{' '}{currency || ''}</Text>
           </View>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 10 }}>
             <Text style={{ width: '50%', fontFamily: FONT_FAMILY.urbanistSemiBold }}>Minimal Sales Price:</Text>

@@ -7,16 +7,23 @@ import { COLORS, FONT_FAMILY } from '@constants/theme';
 import { useAuthStore } from '@stores/auth';
 import Constants from 'expo-constants'
 import { getConfig } from '@utils/config';
+import { useCurrencyStore } from '@stores/currency';
 
 const SplashScreen = () => {
     const navigation = useNavigation();
     const [fontsLoaded, setFontsLoaded] = useState(false);
-    const setLoggedInUser = useAuthStore(state => state.login)
+    const setLoggedInUser = useAuthStore(state => state.login);
+    const setCurrency = useCurrencyStore((state) => state.setCurrency); // Function to set currency in currency store
 
-    const appName = Constants.expoConfig.name
-    const config = getConfig(appName)
-    
     useEffect(() => {
+        // Get app name and config based on app name
+        const appName = Constants.expoConfig.name;
+        const config = getConfig(appName);
+
+        // Set currency based on package name from config
+        setCurrency(config.packageName);
+
+        // Load custom fonts
         async function loadFonts() {
             await Font.loadAsync({
                 'Urbanist-Black': require('@assets/fonts/Urbanist/Urbanist-Black.ttf'),

@@ -88,3 +88,17 @@ export const fetchCustomers = async ({ offset, limit, searchText }) => {
     throw error;
   }
 };
+
+export const fetchMarketStudy = async ({ offset, limit }) => {
+  try {
+    const queryParams = {
+      offset,
+      limit,
+    };
+    const response = await get(API_ENDPOINTS.VIEW_MARKET_STUDY, queryParams);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};

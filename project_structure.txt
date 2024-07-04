@@ -1,0 +1,327 @@
+.
+├── App.js
+├── app.json
+├── assets
+│   ├── android
+│   │   ├── icon_background.png
+│   │   ├── icon_foreground.png
+│   │   ├── icon_monochrome.png
+│   │   └── icon.png
+│   ├── animations
+│   │   ├── category_loading.json
+│   │   ├── loading.json
+│   │   └── loading_up_down.json
+│   ├── favicon.png
+│   ├── fonts
+│   │   └── Urbanist
+│   │       ├── Urbanist-Black.ttf
+│   │       ├── Urbanist-Bold.ttf
+│   │       ├── Urbanist-ExtraBold.ttf
+│   │       ├── Urbanist-ExtraLight.ttf
+│   │       ├── Urbanist-Light.ttf
+│   │       ├── Urbanist-Medium.ttf
+│   │       ├── Urbanist-Regular.ttf
+│   │       ├── Urbanist-SemiBold.ttf
+│   │       └── Urbanist-Thin.ttf
+│   ├── icon.png
+│   ├── icons
+│   │   ├── bottom_tabs
+│   │   │   ├── cart.png
+│   │   │   ├── category.png
+│   │   │   ├── home.png
+│   │   │   ├── order.png
+│   │   │   └── profile.png
+│   │   ├── common
+│   │   │   └── user_bg.png
+│   │   └── modal
+│   │       ├── camera.png
+│   │       ├── cancel.png
+│   │       ├── cancel_rectangle.png
+│   │       ├── gallery_upload.png
+│   │       └── image_upload.png
+│   ├── images
+│   │   ├── EmptyData
+│   │   │   ├── empty_cart.png
+│   │   │   ├── empty_data.png
+│   │   │   ├── empty_inventory_box.png
+│   │   │   ├── empty_items.png
+│   │   │   └── transaction_empty.png
+│   │   ├── error
+│   │   │   └── error.png
+│   │   ├── header
+│   │   │   ├── logo_header_bg_white.png
+│   │   │   ├── logo_header.png
+│   │   │   └── transparent_logo_header.png
+│   │   ├── Home
+│   │   │   ├── Banner
+│   │   │   │   ├── banner_phone_1.jpg
+│   │   │   │   ├── banner_phone_2.jpg
+│   │   │   │   ├── banner_phone_3.jpg
+│   │   │   │   ├── banner_phone_4.jpg
+│   │   │   │   ├── banner_phone_5.jpg
+│   │   │   │   └── banner_phone_6.jpg
+│   │   │   ├── Header
+│   │   │   │   ├── barcode_scanner.png
+│   │   │   │   ├── header.png
+│   │   │   │   ├── header_transparent_bg.png
+│   │   │   │   ├── notification.gif
+│   │   │   │   └── search.png
+│   │   │   ├── options
+│   │   │   │   ├── attendance.png
+│   │   │   │   ├── inventory_management_1.png
+│   │   │   │   ├── inventory_management.png
+│   │   │   │   ├── market_study_1.png
+│   │   │   │   ├── market_study.png
+│   │   │   │   ├── product_enquiry.png
+│   │   │   │   ├── product_purchase_requisition.png
+│   │   │   │   ├── scan_barcode.png
+│   │   │   │   ├── search_product.png
+│   │   │   │   ├── tasK_manager_1.png
+│   │   │   │   ├── task_manager.png
+│   │   │   │   └── transaction_auditing.png
+│   │   │   └── section
+│   │   │       ├── customer.png
+│   │   │       ├── inventory_management.png
+│   │   │       ├── pickup.png
+│   │   │       └── services.png
+│   │   ├── logo
+│   │   │   └── logo.png
+│   │   ├── Profile
+│   │   │   ├── profile_bg.png
+│   │   │   └── user.png
+│   │   ├── scanner
+│   │   │   └── scanner.png
+│   │   └── Splash
+│   │       └── splash.png
+│   └── splash.png
+├── babel.config.js
+├── eas.json
+├── generateAppJson.js
+├── jsconfig.json
+├── package.json
+├── project_structure.txt
+├── README.md
+├── src
+│   ├── api
+│   │   ├── config
+│   │   │   ├── apiConfig.js
+│   │   │   └── index.js
+│   │   ├── details
+│   │   │   ├── detailApi.js
+│   │   │   └── index.js
+│   │   ├── dropdowns
+│   │   │   └── dropdownApi.js
+│   │   ├── endpoints
+│   │   │   ├── endpoints.js
+│   │   │   └── index.js
+│   │   ├── services
+│   │   │   ├── generalApi.js
+│   │   │   └── utils.js
+│   │   ├── uploads
+│   │   │   ├── index.js
+│   │   │   └──  uploadApi.js
+│   │   └── utils
+│   │       └── handleApiError.js
+│   ├── components
+│   │   ├── Calendar
+│   │   │   ├── index.js
+│   │   │   └── VerticalScrollableCalendar.js
+│   │   ├── Categories
+│   │   │   ├── CategoryList.js
+│   │   │   └── index.js
+│   │   ├── common
+│   │   │   ├── BottomSheets
+│   │   │   │   ├── DropdownSheet.js
+│   │   │   │   └── index.js
+│   │   │   ├── Button
+│   │   │   │   ├── Button.js
+│   │   │   │   ├── FABButton.js
+│   │   │   │   └── index.js
+│   │   │   ├── CheckBox
+│   │   │   │   ├── CheckBox.js
+│   │   │   │   └── index.js
+│   │   │   ├── DatePicker
+│   │   │   │   ├── DatePicker.js
+│   │   │   │   └── index.js
+│   │   │   ├── Detail
+│   │   │   │   ├── DetailCheckBox.js
+│   │   │   │   ├── DetailField.js
+│   │   │   │   ├── index.js
+│   │   │   │   └── ProductDetail.js
+│   │   │   ├── empty
+│   │   │   │   ├── EmptyItem.js
+│   │   │   │   ├── EmptyState.js
+│   │   │   │   ├── index.js
+│   │   │   │   └── styles.js
+│   │   │   └── TextInput
+│   │   │       ├── index.js
+│   │   │       └── TextInput.js
+│   │   ├── containers
+│   │   │   ├── ButtonContainer.js
+│   │   │   ├── index.js
+│   │   │   ├── RoundedContainer.js
+│   │   │   ├── RoundedScrollContainer.js
+│   │   │   ├── SafeAreaView.js
+│   │   │   └── SearchContainer.js
+│   │   ├── Header
+│   │   │   ├── BottomSheetHeader.js
+│   │   │   ├── index.js
+│   │   │   └── NavigationHeader.js
+│   │   ├── Home
+│   │   │   ├── CarouselPagination.js
+│   │   │   ├── Header.js
+│   │   │   ├── ImageContainer.js
+│   │   │   ├── index.js
+│   │   │   ├── ListHeader.js
+│   │   │   └── NavigationBar.js
+│   │   ├── Loader
+│   │   │   ├── AnimatedLoader.js
+│   │   │   ├── index.js
+│   │   │   └── OverlayLoader.js
+│   │   ├── Modal
+│   │   │   ├── ActionModal.js
+│   │   │   ├── backupEmployeeListModal.txt
+│   │   │   ├── CustomListModal.js
+│   │   │   ├── EmployeeLIstModal.js
+│   │   │   ├── index.js
+│   │   │   ├── InputModal.js
+│   │   │   └── LogoutModal.js
+│   │   ├── Options
+│   │   │   ├── index.js
+│   │   │   └── ListItem.js
+│   │   ├── Product
+│   │   │   ├── index.js
+│   │   │   └── ProductsList.js
+│   │   ├── Scanner
+│   │   │   ├── Barcode_backup.txt
+│   │   │   ├── Barcode.js
+│   │   │   ├── index.js
+│   │   │   └── Scanner.js
+│   │   ├── SignaturePad.js
+│   │   ├── TabBar
+│   │   │   ├── index.js
+│   │   │   └── TabBarIcon.js
+│   │   ├── Text.js
+│   │   └── Toast
+│   │       ├── CustomToast.js
+│   │       ├── index.js
+│   │       └── ToastAndroid.js
+│   ├── constants
+│   │   ├── dropdownConst.js
+│   │   ├── links.js
+│   │   └── theme.js
+│   ├── hooks
+│   │   ├── index.js
+│   │   ├── useDataFetching.js
+│   │   ├── useDebouncedSearch.js
+│   │   ├── useDropdownFetching.js
+│   │   └── useLoader.js
+│   ├── navigation
+│   │   ├── AppNavigator.js
+│   │   └── StackNavigator.js
+│   ├── screens
+│   │   ├── Auth
+│   │   │   ├── index.js
+│   │   │   ├── LoginScreen.js
+│   │   │   └── PrivacyPolicy.js
+│   │   ├── Cart
+│   │   │   ├── CartScreen.js
+│   │   │   └── index.js
+│   │   ├── Categories
+│   │   │   ├── CategoriesScreen.js
+│   │   │   ├── index.js
+│   │   │   └── styles.js
+│   │   ├── Dashboard
+│   │   │   ├── DashboardScreen.js
+│   │   │   └── index.js
+│   │   ├── Home
+│   │   │   ├── HomeScreen.js
+│   │   │   ├── index.js
+│   │   │   ├── Options
+│   │   │   │   ├── Attendance
+│   │   │   │   │   ├── AttendanceScreen.js
+│   │   │   │   │   └── index.js
+│   │   │   │   ├── Audit
+│   │   │   │   │   ├── AuditForm.js
+│   │   │   │   │   ├── AuditList.js
+│   │   │   │   │   ├── AuditScreen.js
+│   │   │   │   │   └── index.js
+│   │   │   │   ├── index.js
+│   │   │   │   ├── Inventory
+│   │   │   │   │   ├── index.js
+│   │   │   │   │   ├── InventoryBoxList.js
+│   │   │   │   │   ├── InventoryDetails.js
+│   │   │   │   │   ├── InventoryForm.js
+│   │   │   │   │   ├── InventoryList.js
+│   │   │   │   │   ├── InventoryRequestItem.js
+│   │   │   │   │   ├── InventoryScreen.js
+│   │   │   │   │   └── styles.js
+│   │   │   │   ├── MarketStudy
+│   │   │   │   │   ├── index.js
+│   │   │   │   │   ├── MarketStudyForm.js
+│   │   │   │   │   ├── MarketStudyList.js
+│   │   │   │   │   └── MarketStudyScreen.js
+│   │   │   │   ├── OptionsScreen.js
+│   │   │   │   └── TaskManager
+│   │   │   │       ├── index.js
+│   │   │   │       ├── TaskManagerDetails.js
+│   │   │   │       ├── TaskManagerForm.js
+│   │   │   │       ├── TaskManagerList.js
+│   │   │   │       └── TaskManagerScreen.js
+│   │   │   └── Sections
+│   │   │       ├── Customer
+│   │   │       │   ├── backupstyles.txt
+│   │   │       │   ├── CustomerDetails.js
+│   │   │       │   ├── CustomerList.js
+│   │   │       │   ├── CustomerScreen.js
+│   │   │       │   ├── index.js
+│   │   │       │   └── styles.js
+│   │   │       ├── index.js
+│   │   │       ├── Pickup
+│   │   │       │   └── index.js
+│   │   │       └── Services
+│   │   │           └── index.js
+│   │   ├── index.js
+│   │   ├── MyOrders
+│   │   │   ├── index.js
+│   │   │   └── MyOrdersScreen.js
+│   │   ├── Products
+│   │   │   ├── index.js
+│   │   │   ├── ProductsScreen.js
+│   │   │   └── styles.js
+│   │   ├── Profile
+│   │   │   ├── index.js
+│   │   │   └── ProfileScreen.js
+│   │   └── Splash
+│   │       ├── index.js
+│   │       └── SplashScreen.js
+│   ├── stores
+│   │   ├── auth
+│   │   │   ├── index.js
+│   │   │   └── useAuthStore.js
+│   │   ├── currency
+│   │   │   ├── index.js
+│   │   │   └── useCurrencyStore.js
+│   │   └── product
+│   │       ├── index.js
+│   │       └── productStore.js
+│   └── utils
+│       ├── common
+│       │   ├── date
+│       │   │   ├── formatDate.js
+│       │   │   ├── formatDateTime.js
+│       │   │   └── index.js
+│       │   ├── index.js
+│       │   └── StringUtils.js
+│       ├── config
+│       │   ├── getConfig.js
+│       │   └── index.js
+│       ├── formatters
+│       │   ├── formatData.js
+│       │   └── index.js
+│       └── validators
+├── Structure.txt
+├── tailwind.config.js
+└── yarn.lock
+
+86 directories, 239 files

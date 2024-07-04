@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { useAuthStore } from '@stores/auth';
 import { post } from '@api/services/utils';
 import Toast from 'react-native-toast-message';
+import { useCurrencyStore } from '@stores/currency';
 
 const CustomerDetails = ({ navigation, route }) => {
   const { details } = route?.params || {};
@@ -21,6 +22,8 @@ const CustomerDetails = ({ navigation, route }) => {
   const removeProduct = useProductStore(state => state.removeProduct);
   const addProduct = useProductStore(state => state.addProduct);
   const clearProducts = useProductStore(state => state.clearProducts);
+  const currency = useCurrencyStore((state) => state.currency) || '';
+  
 
   const handleDelete = (productId) => {
     removeProduct(productId);
@@ -90,7 +93,7 @@ const CustomerDetails = ({ navigation, route }) => {
               onChangeText={(text) => handlePriceChange(item.id, text)}
               keyboardType="numeric"
             />
-            <Text style={styles.aedLabel}>OMR</Text>
+            <Text style={styles.aedLabel}>{currency}</Text>
           </View>
         </View>
         <TouchableOpacity style={styles.deleteButton} onPress={() => handleDelete(item.id)}>
@@ -182,15 +185,15 @@ const CustomerDetails = ({ navigation, route }) => {
                 <View style={styles.totalPriceContainer}>
                   <View style={styles.footerRow}>
                     <Text style={styles.footerLabel}>Untaxed Amount:</Text>
-                    <Text style={styles.footerLabel}>{untaxedAmount.toFixed(2)} OMR</Text>
+                    <Text style={styles.footerLabel}>{untaxedAmount.toFixed(2)} {currency}</Text>
                   </View>
                   <View style={styles.footerRow}>
                     <Text style={styles.footerLabel}>Taxed Amount:</Text>
-                    <Text style={styles.footerLabel}>{taxedAmount.toFixed(2)} OMR</Text>
+                    <Text style={styles.footerLabel}>{taxedAmount.toFixed(2)} {currency}</Text>
                   </View>
                   <View style={styles.footerRow}>
                     <Text style={styles.totalPriceLabel}>Total Amount:</Text>
-                    <Text style={styles.totalPriceLabel}>{totalAmount.toFixed(2)} OMR</Text>
+                    <Text style={styles.totalPriceLabel}>{totalAmount.toFixed(2)} {currency}</Text>
                   </View>
                 </View>
                 <Button backgroundColor={COLORS.primaryThemeColor} title={'Place Order'} onPress={placeOrder} />

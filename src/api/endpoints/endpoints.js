@@ -7,6 +7,7 @@ export const API_ENDPOINTS = {
     VIEW_CUSTOMERS: '/viewCustomers',
     VIEW_QUOTATION: '/viewQuotation',
     VIEW_AUDITING: '/viewAuditing',
+    VIEW_MARKET_STUDY: '/viewMarketStudy',
     VIEW_INVENTORY_BOX_REQUEST: '/viewInventoryboxrequest',
 };
 

@@ -12,6 +12,7 @@ import { Barcode, Scanner } from "@components/Scanner";
 import { InventoryDetails, InventoryForm, InventoryScreen } from "@screens/Home/Options/Inventory";
 import { ProductDetail } from "@components/common/Detail";
 import { CustomerDetails, CustomerScreen } from "@screens/Home/Sections/Customer";
+import { MarketStudyScreen } from "@screens/Home/Options/MarketStudy";
 
 const Stack = createNativeStackNavigator();
 
@@ -112,11 +113,19 @@ const StackNavigator = () => {
         component={CustomerScreen}
         options={{ headerShown: false }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="CustomerDetails"
         component={CustomerDetails}
         options={{ headerShown: false }}
       />
+
+      {/* Market Study */}
+      <Stack.Screen
+        name="MarketStudyScreen"
+        component={MarketStudyScreen}
+        options={{ headerShown: false }}
+      />
+
     </Stack.Navigator>
   );
 };
