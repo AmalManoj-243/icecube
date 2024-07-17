@@ -19,7 +19,8 @@ export const DROP_DOWN_API_ENDPOINTS = {
     STOCK_TRANSFER: '/viewStockTransfer/stock_transaction/stock_transaction_dropdown',
     SERVICE: '/viewJobRegistration/job_registration/dropdown',
     VENDOR_BILL: '/viewVendorBill/vendor_bill/vendor_bill_drop_down',
-    EMPLOYEE_DROPDOWN: '/viewEmployees/employee_list/employee_dropdown'
+    EMPLOYEE_DROPDOWN: '/viewEmployees/employee_list/employee_dropdown',
+    VIEW_COUNTRY: "/viewCountry/country_list/country_dropdown",
 };
 
 export const DETAIL_API_ENDPOINTS = {

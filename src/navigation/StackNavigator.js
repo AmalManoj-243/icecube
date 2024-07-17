@@ -14,6 +14,7 @@ import { ProductDetail } from "@components/common/Detail";
 import { CustomerDetails, CustomerScreen } from "@screens/Home/Sections/Customer";
 import { MarketStudyScreen } from "@screens/Home/Options/MarketStudy";
 import { VisitPlanForm, VisitsPlanScreen } from "@screens/Home/Options/VisitsPlan";
+import { CustomerTabView } from "@screens/Home/Sections/Customer/CustomerTabView";
 
 const Stack = createNativeStackNavigator();
 
@@ -136,6 +137,11 @@ const StackNavigator = () => {
         <Stack.Screen
         name="VisitPlanForm"
         component={VisitPlanForm}
+        options={{ headerShown: false }}
+      />
+        <Stack.Screen
+        name="CustomerTabView"
+        component={CustomerTabView}
         options={{ headerShown: false }}
       />
 

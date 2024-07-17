@@ -10,6 +10,7 @@ import { fetchCustomers } from '@api/services/generalApi';
 import { TouchableOpacity, ActivityIndicator, View, Image } from 'react-native';
 import { useDataFetching, useDebouncedSearch } from '@hooks';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
+import { Button, FABButton } from '@components/common/Button';
 
 const CustomerScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -41,7 +42,7 @@ const CustomerScreen = ({ navigation }) => {
         <View style={{ flexDirection: 'row', alignItems: 'center', margin: 5 }}>
           <Image source={require('@assets/icons/common/user_bg.png')} tintColor={COLORS.primaryThemeColor} style={{ width: 45, height: 45 }} />
           <View style={{ width: 10 }} />
-          <Text style={{ fontFamily: FONT_FAMILY.urbanistBold, fontSize: 14, flex: 1, color: COLORS.primaryThemeColor }}>{item?.name.trim() || '-'}</Text>
+          <Text style={{ fontFamily: FONT_FAMILY.urbanistBold, fontSize: 14, flex: 1, color: COLORS.primaryThemeColor }}>{item?.name?.trim() || '-'}</Text>
         </View>
       </TouchableOpacity>
 
@@ -85,6 +86,8 @@ const CustomerScreen = ({ navigation }) => {
       <SearchContainer placeholder="Search Customers" onChangeText={handleSearchTextChange} />
       <RoundedContainer>
         {renderCustomers()}
+        <FABButton onPress={() => navigation.navigate('CustomerTabView')} />
+
       </RoundedContainer>
     </SafeAreaView>
   );

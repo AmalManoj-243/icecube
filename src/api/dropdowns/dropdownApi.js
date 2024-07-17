@@ -44,3 +44,7 @@ export const fetchEmployeesDropdown = async () => {
   return fetchData(DROP_DOWN_API_ENDPOINTS.EMPLOYEE_DROPDOWN);
 };
 
+export const fetchCountryDropDown = async () => {
+  return fetchData(DROP_DOWN_API_ENDPOINTS.VIEW_COUNTRY);
+}
+
