@@ -112,24 +112,29 @@ const Address = () => {
     );
   };
 
+  
   const validate = () => {
+    Keyboard.dismiss();
+    let isValid = true;
+    let errors = {};
+
     const requiredFields = {
-      address: 'Please enter the Address',
-      country: 'Please select a country',
-      state: 'Please select a state',
-      area: 'Please select an area',
-      poBox: 'Please enter PO Box',
+      Address: 'Please enter the Address',
+      Country: 'Please select a country',
+      State: 'Please select a state',
+      Area: 'Please select a area',
+      POBox: 'Please enter PO Box'
     };
 
-    const newErrors = Object.keys(requiredFields).reduce((acc, field) => {
+    Object.keys(requiredFields).forEach(field => {
       if (!formData[field]) {
-        acc[field] = requiredFields[field];
+        errors[field] = requiredFields[field];
+        isValid = false;
       }
-      return acc;
-    }, {});
+    });
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    setErrors(errors);
+    return isValid;
   };
 
   return (
