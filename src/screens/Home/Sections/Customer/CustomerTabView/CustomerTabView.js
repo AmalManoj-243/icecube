@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useWindowDimensions, KeyboardAvoidingView, Platform } from 'react-native';
+import { useWindowDimensions, KeyboardAvoidingView, Platform, Keyboard, View } from 'react-native';
 import { TabView, TabBar } from 'react-native-tab-view';
 import { useState } from 'react';
 import Details from './Details';
@@ -9,6 +9,9 @@ import ContactPerson from './ContactPerson';
 import { SafeAreaView } from '@components/containers';
 import { NavigationHeader } from '@components/Header';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
+import { LoadingButton } from '@components/common/Button';
+import { showToast } from '@utils/common';
+import { post } from '@api/services/utils';
 
 const CustomTabBar = (props) => {
   return (
@@ -28,7 +31,9 @@ const CustomTabBar = (props) => {
 };
 
 const CustomerTabView = ({ navigation }) => {
+
   const layout = useWindowDimensions();
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [formData, setFormData] = useState({
     address: "",
@@ -52,6 +57,8 @@ const CustomerTabView = ({ navigation }) => {
     customerAttitude: "",
     language: "",
     currency: "",
+    isActive: false,
+    isSupplier: false,
   });
 
   const [errors, setErrors] = useState({});
@@ -74,13 +81,13 @@ const CustomerTabView = ({ navigation }) => {
   const renderScene = ({ route }) => {
     switch (route.key) {
       case 'first':
-        return <Details formData={formData} onFieldChange={handleFieldChange} />;
+        return <Details formData={formData} onFieldChange={handleFieldChange} errors={errors} />;
       case 'second':
-        return <OtherDetails formData={formData} onFieldChange={handleFieldChange} />;
+        return <OtherDetails formData={formData} onFieldChange={handleFieldChange} errors={errors} />;
       case 'third':
-        return <Address formData={formData} onFieldChange={handleFieldChange} />;
+        return <Address formData={formData} onFieldChange={handleFieldChange} errors={errors} />;
       case 'fourth':
-        return <ContactPerson formData={formData} onFieldChange={handleFieldChange} />;
+        return <ContactPerson formData={formData} onFieldChange={handleFieldChange} errors={errors} />;
       default:
         return null;
     }
@@ -94,6 +101,85 @@ const CustomerTabView = ({ navigation }) => {
     { key: 'fourth', title: 'Contact Person' },
   ]);
 
+  const validate = () => {
+    Keyboard.dismiss();
+    let isValid = true;
+    let errors = {};
+
+    const requiredFields = {
+      address: 'Please enter the Address',
+      country: 'Please select a country',
+      // state: 'Please select a state',
+      // area: 'Please select a area',
+      // poBox: 'Please enter PO Box',
+      // customerTypes: 'Please select Customer Type',
+      // customerName: 'Please enter Customer Name',
+      // customerTitles: 'Please select Customer Title',
+      // emailAddress: 'Please enter Email Address',
+      // salesPerson: 'Please select Sales Person',
+      // collectionAgent: 'Please enter Collection Agent',
+      // mop: 'Please select Mode Of Payment',
+      // mobileNumber: "Please enter Mobile Number",
+      // whatsappNumber: 'Please enter Whatsapp Number',
+      // landlineNumber: 'Please enter Landline Number',
+      // fax: 'Please enter Fax',
+      // trn: 'Please enter TRN Number',
+      // customerBehaviour: 'Please select Customer Behaviour',
+      // customerAttitude: 'Please select Customer Attitude',
+      // language: 'Please select Language',
+      // currency: 'Please select Currency',
+
+    };
+
+    Object.keys(requiredFields).forEach(field => {
+      if (!formData[field]) {
+        errors[field] = requiredFields[field];
+        isValid = false;
+      }
+    });
+
+    setErrors(errors);
+    return isValid;
+  };
+
+
+  const submit = async () => {
+    if (validate()) {
+      setIsSubmitting(true);
+
+      const customerData = {
+        is_active: formData.isActive,
+      };
+      console.log("🚀 ~ submit ~ customerData:", JSON.stringify(customerData, null, 2))
+      try {
+        const response = await post("/''", customerData);
+        if (response.success) {
+          showToast({
+            type: "success",
+            title: "Success",
+            message: response.message || "Customer created successfully",
+          });
+          navigation.navigate("CustomerScreen");
+        } else {
+          console.error("Customer Failed:", response.message);
+          showToast({
+            type: "error",
+            title: "ERROR",
+            message: response.message || "Customer creation failed",
+          });
+        }
+      } catch (error) {
+        console.error("Error creating Customer Failed:", error);
+        showToast({
+          type: "error",
+          title: "ERROR",
+          message: "An unexpected error occurred. Please try again later.",
+        });
+      } finally {
+        setIsSubmitting(false);
+      }
+    }
+  };
   return (
     <SafeAreaView>
       <NavigationHeader
@@ -109,6 +195,12 @@ const CustomerTabView = ({ navigation }) => {
           initialLayout={{ width: layout.width }}
         />
       </KeyboardAvoidingView>
+
+
+      <View style={{ backgroundColor: 'white', paddingHorizontal: 50 }}>
+
+        <LoadingButton onPress={submit} title={'Submit'} loading={isSubmitting} />
+      </View>
     </SafeAreaView>
   );
 };

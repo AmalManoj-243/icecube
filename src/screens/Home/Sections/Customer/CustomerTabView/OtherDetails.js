@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Keyboard } from 'react-native';
 import { RoundedScrollContainer } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
 import { DropdownSheet } from '@components/common/BottomSheets';
 import { CheckBox } from '@components/common/CheckBox';
 import { fetchCustomerBehaviourDropdown, fetchLanguageDropdown, fetchCurrencyDropdown } from '@api/dropdowns/dropdownApi';
-import { LoadingButton } from '@components/common/Button';
 
-const OtherDetails = ({ formData, onFieldChange }) => {
-  const [errors, setErrors] = useState({});
+const OtherDetails = ({ formData, onFieldChange, errors }) => {
+
   const [isVisible, setIsVisible] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isActive, setIsActive] = useState(false);
-  const [isSupplier, setIsSupplier] = useState(false);
-
   const [dropdown, setDropdown] = useState({
     customerBehaviour: [],
     customerAttitude: [],
@@ -119,39 +113,6 @@ const OtherDetails = ({ formData, onFieldChange }) => {
     );
   };
 
-  const validate = () => {
-    Keyboard.dismiss();
-    let isValid = true;
-    let errors = {};
-
-    const requiredFields = {
-      trn: 'Please enter TRN Number',
-      customerBehaviour: 'Please select Customer Behaviour',
-      customerAttitude: 'Please select Customer Attitude',
-      language: 'Please select Language',
-      currency: 'Please select Currency',
-    };
-
-    Object.keys(requiredFields).forEach(field => {
-      if (!formData[field]) {
-        errors[field] = requiredFields[field];
-        isValid = false;
-      }
-    });
-
-    setErrors(errors);
-    return isValid;
-  };
-
-  const submit = () => {
-    if (validate()) {
-      setIsSubmitting(true);
-      // Handle form submission
-      // ...
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <RoundedScrollContainer>
       <FormInput
@@ -172,8 +133,8 @@ const OtherDetails = ({ formData, onFieldChange }) => {
       />
       <CheckBox
         label="Is Active"
-        checked={isActive}
-        onPress={() => setIsActive(!isActive)}
+        checked={formData.isActive}
+        onPress={() => onFieldChange('isActive', !formData.isActive)}
       />
       <FormInput
         label={"Customer Attitude :"}
@@ -204,15 +165,10 @@ const OtherDetails = ({ formData, onFieldChange }) => {
       />
       <CheckBox
         label="Is Supplier"
-        checked={isSupplier}
-        onPress={() => setIsSupplier(!isSupplier)}
+        checked={formData.isSupplier}
+        onPress={() => onFieldChange('isSupplier', !formData.isSupplier)}
       />
       {renderBottomSheet()}
-      <LoadingButton
-          loading={isSubmitting}
-          title={'Submit'}
-          onPress={submit}
-        />
     </RoundedScrollContainer>
   )
 }

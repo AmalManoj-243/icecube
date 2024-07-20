@@ -3,15 +3,10 @@ import { RoundedScrollContainer } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
 import { fetchCountryDropdown, fetchStateDropdown, fetchAreaDropdown } from '@api/dropdowns/dropdownApi';
 import { DropdownSheet } from '@components/common/BottomSheets';
-import { LoadingButton } from '@components/common/Button';
-import { Keyboard } from 'react-native';
 
-const Address = ({ formData, onFieldChange }) => {
-  console.log("🚀 ~ Address ~ formData:", formData)
+const Address = ({ formData, onFieldChange, errors }) => {
 
-  const [errors, setErrors] = useState({});
   const [isVisible, setIsVisible] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
 
   const [dropdown, setDropdown] = useState({
@@ -117,39 +112,6 @@ const Address = ({ formData, onFieldChange }) => {
     );
   };
 
-  const validate = () => {
-    Keyboard.dismiss();
-    let isValid = true;
-    let errors = {};
-
-    const requiredFields = {
-      address: 'Please enter the Address',
-      country: 'Please select a country',
-      state: 'Please select a state',
-      area: 'Please select a area',
-      poBox: 'Please enter PO Box',
-    };
-
-    Object.keys(requiredFields).forEach(field => {
-      if (!formData[field]) {
-        errors[field] = requiredFields[field];
-        isValid = false;
-      }
-    });
-
-    setErrors(errors);
-    return isValid;
-  };
-
-  const submit = () => {
-    if (validate()) {
-      setIsSubmitting(true);
-      // Handle form submission
-      // ...
-      setIsSubmitting(false);
-    }
-  };
-
   return (
     <RoundedScrollContainer>
       <FormInput
@@ -196,11 +158,6 @@ const Address = ({ formData, onFieldChange }) => {
         onChangeText={(value) => onFieldChange('poBox', value)}
       />
       {renderBottomSheet()}
-      <LoadingButton
-          loading={isSubmitting}
-          title={'Submit'}
-          onPress={submit}
-        />
     </RoundedScrollContainer>
   );
 };

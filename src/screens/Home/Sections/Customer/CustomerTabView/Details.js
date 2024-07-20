@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Keyboard } from 'react-native';
 import { RoundedScrollContainer } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
 import { DropdownSheet } from '@components/common/BottomSheets';
 import { fetchsalesPersonDropdown, fetchmopDropdown } from '@api/dropdowns/dropdownApi';
 import { customerTypes } from '@constants/dropdownConst';
 import { customerTitles } from '@constants/dropdownConst';
-import { LoadingButton } from '@components/common/Button';
 
-const Details = ({ formData, onFieldChange }) => {
-  const [errors, setErrors] = useState({});
+const Details = ({ formData, onFieldChange, errors }) => {
+
   const [isVisible, setIsVisible] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
 
   const [dropdown, setDropdown] = useState({
@@ -96,45 +93,6 @@ const Details = ({ formData, onFieldChange }) => {
         onValueChange={(value) => onFieldChange(fieldName, value)}
       />
     );
-  };
-
-  const validate = () => {
-    Keyboard.dismiss();
-    let isValid = true;
-    let errors = {};
-
-    const requiredFields = {
-      customerTypes: 'Please select Customer Type',
-      customerName: 'Please enter Customer Name',
-      customerTitles: 'Please select Customer Title',
-      emailAddress: 'Please enter Email Address',
-      salesPerson: 'Please select Sales Person',
-      collectionAgent: 'Please enter Collection Agent',
-      mop: 'Please select Mode Of Payment',
-      mobileNumber: "Please enter Mobile Number",
-      whatsappNumber: 'Please enter Whatsapp Number',
-      landlineNumber: 'Please enter Landline Number',
-      fax: 'Please enter Fax',
-    };
-
-    Object.keys(requiredFields).forEach(field => {
-      if (!formData[field]) {
-        errors[field] = requiredFields[field];
-        isValid = false;
-      }
-    });
-
-    setErrors(errors);
-    return isValid;
-  };
-
-  const submit = () => {
-    if (validate()) {
-      setIsSubmitting(true);
-      // Handle form submission
-      // ...
-      setIsSubmitting(false);
-    }
   };
 
   return (
@@ -232,11 +190,6 @@ const Details = ({ formData, onFieldChange }) => {
         onChangeText={(value) => onFieldChange('fax', value)}
       />
       {renderBottomSheet()}
-      <LoadingButton
-        loading={isSubmitting}
-        title={'Submit'}
-        onPress={submit}
-      />
     </RoundedScrollContainer>
   );
 };
