@@ -5,7 +5,9 @@ import { fetchCountryDropdown, fetchStateDropdown, fetchAreaDropdown } from '@ap
 import { DropdownSheet } from '@components/common/BottomSheets';
 import { LoadingButton } from '@components/common/Button';
 
-const Address = ({ formData, setFormData }) => {
+const Address = ({ formData, onFieldChange, setFormData }) => {
+  console.log("🚀 ~ Address ~ formData:", formData)
+  // console.log("🚀 ~ Address ~ onFieldChange:")
   const [errors, setErrors] = useState({});
   const [isVisible, setIsVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,20 +79,6 @@ const Address = ({ formData, setFormData }) => {
       fetchAreaData();
     }
   }, [formData.state]);
-
-  const handleFieldChange = (field, value) => {
-    console.log("here")
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      [field]: value,
-    }));
-    if (errors[field]) {
-      setErrors(prevErrors => ({
-        ...prevErrors,
-        [field]: null,
-      }));
-    }
-  };
 
   const toggleBottomSheet = (type) => {
     setSelectedType(type);
@@ -168,7 +156,8 @@ const Address = ({ formData, setFormData }) => {
         placeholder={"Enter Address"}
         editable={true}
         validate={errors.address}
-        onValueChange={(value) => handleFieldChange('address', value)}
+        onValueChange={(value)=> setFormData({...formData, address: value})}
+        // onValueChange={(value) => onFieldChange('address', value)}
       />
       <FormInput
         label= "Country :"
@@ -203,7 +192,7 @@ const Address = ({ formData, setFormData }) => {
         placeholder="Enter PO Box"
         editable={true}
         validate={errors.poBox}
-        onValueChange={(value) => handleFieldChange('poBox', value)}
+        onValueChange={(value) => onFieldChange('poBox', value)}
       />
       {renderBottomSheet()}
       <LoadingButton

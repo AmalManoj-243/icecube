@@ -70,6 +70,7 @@ const CustomerTabView = ({ navigation }) => {
     }
   };
 
+  console.log("🚀 ~ CustomerTabView ~ formData:", formData)
   const renderScene = SceneMap({
     first: () => (
       <Details
