@@ -12,6 +12,7 @@ import { COLORS, FONT_FAMILY } from '@constants/theme';
 import { LoadingButton } from '@components/common/Button';
 import { showToast } from '@utils/common';
 import { post } from '@api/services/utils';
+import { formatDuration } from 'date-fns';
 
 const CustomTabBar = (props) => {
   return (
@@ -36,11 +37,6 @@ const CustomerTabView = ({ navigation }) => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const [formData, setFormData] = useState({
-    address: "",
-    country: "",
-    state: "",
-    area: "",
-    poBox: "",
     customerTypes: "",
     customerName: "",
     customerTitles: "",
@@ -59,6 +55,11 @@ const CustomerTabView = ({ navigation }) => {
     currency: "",
     isActive: false,
     isSupplier: false,
+    address: "",
+    country: "",
+    state: "",
+    area: "",
+    poBox: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -107,28 +108,27 @@ const CustomerTabView = ({ navigation }) => {
     let errors = {};
 
     const requiredFields = {
+      customerTypes: 'Please select Customer Type',
+      customerName: 'Please enter Customer Name',
+      customerTitles: 'Please select Customer Title',
+      emailAddress: 'Please enter Email Address',
+      salesPerson: 'Please select Sales Person',
+      collectionAgent: 'Please enter Collection Agent',
+      // mop: 'Please select Mode Of Payment',
+      mobileNumber: "Please enter Mobile Number",
+      whatsappNumber: 'Please enter Whatsapp Number',
+      landlineNumber: 'Please enter Landline Number',
+      fax: 'Please enter Fax',
+      trn: 'Please enter TRN Number',
+      // customerBehaviour: 'Please select Customer Behaviour',
+      // customerAttitude: 'Please select Customer Attitude',
+      language: 'Please select Language',
+      currency: 'Please select Currency',
       address: 'Please enter the Address',
       country: 'Please select a country',
       // state: 'Please select a state',
       // area: 'Please select a area',
-      // poBox: 'Please enter PO Box',
-      // customerTypes: 'Please select Customer Type',
-      // customerName: 'Please enter Customer Name',
-      // customerTitles: 'Please select Customer Title',
-      // emailAddress: 'Please enter Email Address',
-      // salesPerson: 'Please select Sales Person',
-      // collectionAgent: 'Please enter Collection Agent',
-      // mop: 'Please select Mode Of Payment',
-      // mobileNumber: "Please enter Mobile Number",
-      // whatsappNumber: 'Please enter Whatsapp Number',
-      // landlineNumber: 'Please enter Landline Number',
-      // fax: 'Please enter Fax',
-      // trn: 'Please enter TRN Number',
-      // customerBehaviour: 'Please select Customer Behaviour',
-      // customerAttitude: 'Please select Customer Attitude',
-      // language: 'Please select Language',
-      // currency: 'Please select Currency',
-
+      poBox: 'Please enter PO Box',
     };
 
     Object.keys(requiredFields).forEach(field => {
@@ -148,38 +148,61 @@ const CustomerTabView = ({ navigation }) => {
       setIsSubmitting(true);
 
       const customerData = {
+        customer_type: formData.customerTypes.label,
+        name: formData.customerName,
+        customer_title: formData.customerTitles, 
+        customer_email: formData.emailAddress,
+        sales_person_id: formData.salesPerson,
+        collection_agent_id: formData.collectionAgent,
+        mode_of_payment: formData.mop,
+        customer_mobile: formData.mobileNumber,
+        whatsapp_no: formData.whatsappNumber,
+        land_phone_no: formData.landlineNumber,
+        fax: formData.fax,  
         is_active: formData.isActive,
-      };
-      console.log("🚀 ~ submit ~ customerData:", JSON.stringify(customerData, null, 2))
-      try {
-        const response = await post("/''", customerData);
-        if (response.success) {
-          showToast({
-            type: "success",
-            title: "Success",
-            message: response.message || "Customer created successfully",
-          });
-          navigation.navigate("CustomerScreen");
-        } else {
-          console.error("Customer Failed:", response.message);
-          showToast({
-            type: "error",
-            title: "ERROR",
-            message: response.message || "Customer creation failed",
-          });
-        }
-      } catch (error) {
-        console.error("Error creating Customer Failed:", error);
+        is_supplier: formData.isSupplier,  
+        trn_no: formData.trn, 
+        customer_behaviour: formData.customerBehaviour,
+        customer_atitude: formData.customerAttitude,
+        language_id: formData.language, 
+        currency_id: formData.currency,
+        address: formData.address,  
+        country_id: formData.country, 
+        state_id: formData.state,
+        area_id: formData.area,  
+        po_box: formData.poBox,
+      }
+    };
+
+    console.log("🚀 ~ submit ~ customerData:", JSON.stringify(customerData, null, 2))
+    try {
+      const response = await post("/createCustomer", customerData);
+      if (response.success) {
+        showToast({
+          type: "success",
+          title: "Success",
+          message: response.message || "Customer created successfully",
+        });
+        navigation.navigate("CustomerScreen");
+      } else {
+        console.error("Customer Failed:", response.message);
         showToast({
           type: "error",
           title: "ERROR",
-          message: "An unexpected error occurred. Please try again later.",
+          message: response.message || "Customer creation failed",
         });
-      } finally {
-        setIsSubmitting(false);
       }
+    } catch (error) {
+      console.error("Error creating Customer Failed:", error);
+      showToast({
+        type: "error",
+        title: "ERROR",
+        message: "An unexpected error occurred. Please try again later.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }
   return (
     <SafeAreaView>
       <NavigationHeader
@@ -195,10 +218,8 @@ const CustomerTabView = ({ navigation }) => {
           initialLayout={{ width: layout.width }}
         />
       </KeyboardAvoidingView>
-
-
+  
       <View style={{ backgroundColor: 'white', paddingHorizontal: 50 }}>
-
         <LoadingButton onPress={submit} title={'Submit'} loading={isSubmitting} />
       </View>
     </SafeAreaView>
