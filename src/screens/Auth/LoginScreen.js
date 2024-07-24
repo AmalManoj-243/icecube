@@ -10,7 +10,7 @@ import { COLORS, FONT_FAMILY } from "@constants/theme";
 import { LogBox } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Button } from "@components/common/Button";
-import { AnimatedLoader, OverlayLoader } from "@components/Loader";
+import {  OverlayLoader } from "@components/Loader";
 import { post } from "@api/services/utils";
 import { useNavigation } from "@react-navigation/native";
 import Text from "@components/Text";

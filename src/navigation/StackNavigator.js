@@ -18,8 +18,7 @@ import { EditVisit, VisitDetails, VisitForm, VisitScreen } from "@screens/Home/O
 import { CustomerTabView } from "@screens/Home/Sections/Customer/CustomerTabView";
 import { MapViewScreen } from "@components/MapViewScreen";
 import { CRMScreen } from "@screens/Home/Options/CRM";
-import { EnquiryRegisterScreen } from "@screens/Home/Options/CRM/EnquiryRegister";
-import EnquiryRegisterView from '@screens/Home/Options/CRM/EnquiryRegister/EnquiryRegisterForm';
+import { EnquiryRegisterForm, EnquiryRegisterScreen } from "@screens/Home/Options/CRM/EnquiryRegister";
 
 const Stack = createNativeStackNavigator();
 
@@ -189,8 +188,8 @@ const StackNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="EnquiryRegisterView"
-        component={EnquiryRegisterView}
+        name="EnquiryRegisterForm"
+        component={EnquiryRegisterForm}
         options={{ headerShown: false }}
       />
 

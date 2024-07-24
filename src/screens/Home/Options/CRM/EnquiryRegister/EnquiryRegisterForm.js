@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useWindowDimensions, KeyboardAvoidingView, Platform, Keyboard, View } from 'react-native';
+import { useWindowDimensions, Keyboard, View } from 'react-native';
 import { SafeAreaView } from '@components/containers';
 import { NavigationHeader } from '@components/Header';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
@@ -12,15 +12,19 @@ import { DropdownSheet } from '@components/common/BottomSheets';
 import { fetchSourceDropdown } from '@api/dropdowns/dropdownApi';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import moment from 'moment';
+import { useAuthStore } from '@stores/auth';
+import { formatDateTime } from '@utils/common/date';
 
-const EnquiryRegisterView = ({ navigation }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [selectedType, setSelectedType] = useState(null);
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-  const [datePickerMode, setDatePickerMode] = useState('date');
+const EnquiryRegisterForm = ({ navigation }) => {
+
+  const currentUserId = useAuthStore((state) => state.user?.related_profile?._id || '');
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedDropdownType, setSelectedDropdownType] = useState(null);
+  const [isDropdownSheetVisible, setIsDropdownSheetVisible] = useState(false);
 
   const [formData, setFormData] = useState({
-    dateTime: '',
+    dateTime: new Date(),
     source: '',
     name: '',
     companyName: '',
@@ -31,20 +35,17 @@ const EnquiryRegisterView = ({ navigation }) => {
   });
 
   const [errors, setErrors] = useState({});
-
-  const [dropdown, setDropdown] = useState({
-    source: [],
-  });
+  const [dropdownOptions, setDropdownOptions] = useState({ source: [] });
 
   useEffect(() => {
     const fetchDropdownData = async () => {
       try {
         const sourceData = await fetchSourceDropdown();
-        setDropdown(prevDropdown => ({
+        setDropdownOptions((prevDropdown) => ({
           ...prevDropdown,
           source: sourceData.map(data => ({
             id: data._id,
-            label: data.name,
+            label: data.source_name,
           })),
         }));
       } catch (error) {
@@ -55,38 +56,30 @@ const EnquiryRegisterView = ({ navigation }) => {
     fetchDropdownData();
   }, []);
 
-  const toggleBottomSheet = (type) => {
-    setSelectedType(type);
-    setIsVisible(!isVisible);
+  const toggleDropdownSheet = (type) => {
+    setSelectedDropdownType(type);
+    setIsDropdownSheetVisible(!isDropdownSheetVisible);
   };
 
   const handleDateConfirm = (date) => {
     const formattedDate = moment(date).format('DD-MM-YYYY');
     handleFieldChange('dateTime', formattedDate);
-    setDatePickerVisibility(false);
+    setIsDatePickerVisible(false);
   };
 
-  const renderBottomSheet = () => {
-    let items = [];
-    let fieldName = '';
-
-    switch (selectedType) {
-      case 'Source':
-        items = dropdown.source;
-        fieldName = 'source';
-        break;
-      default:
-        return null;
+  const renderDropdownSheet = () => {
+    if (selectedDropdownType === 'Source') {
+      return (
+        <DropdownSheet
+          isVisible={isDropdownSheetVisible}
+          items={dropdownOptions.source}
+          title={selectedDropdownType}
+          onClose={() => setIsDropdownSheetVisible(false)}
+          onValueChange={(value) => handleFieldChange('source', value)}
+        />
+      );
     }
-    return (
-      <DropdownSheet
-        isVisible={isVisible}
-        items={items}
-        title={selectedType}
-        onClose={() => setIsVisible(false)}
-        onValueChange={(value) => handleFieldChange(fieldName, value)}
-      />
-    );
+    return null;
   };
 
   const handleFieldChange = (field, value) => {
@@ -102,52 +95,54 @@ const EnquiryRegisterView = ({ navigation }) => {
     }
   };
 
-  const validate = () => {
+  const validateForm = () => {
     Keyboard.dismiss();
     let isValid = true;
-    let errors = {};
+    const newErrors = {};
 
     const requiredFields = {
       name: 'Please enter the Name',
-      phoneNumber: 'Please enter Phone Number'
+      phoneNumber: 'Please enter Phone Number',
     };
 
     Object.keys(requiredFields).forEach(field => {
       if (!formData[field]) {
-        errors[field] = requiredFields[field];
+        newErrors[field] = requiredFields[field];
         isValid = false;
       }
     });
 
     if (formData.emailAddress && !/\S+@\S+\.\S+/.test(formData.emailAddress)) {
-      errors.emailAddress = 'Please enter a valid email address';
+      newErrors.emailAddress = 'Please enter a valid email address';
       isValid = false;
     }
 
     if (formData.phoneNumber && !/^\d{10}$/.test(formData.phoneNumber)) {
-      errors.phoneNumber = 'Please enter a valid phone number';
+      newErrors.phoneNumber = 'Please enter a valid phone number';
       isValid = false;
     }
 
-    setErrors(errors);
+    setErrors(newErrors);
     return isValid;
   };
 
-  const submit = async () => {
-    if (validate()) {
+  const handleSubmit = async () => {
+    if (validateForm()) {
+      setIsSubmitting(true);
       const enquiryData = {
         image_url: null,
-        date : formData?.dateTime || null,
-        source_id: formData?.source?.id,
+        date: formData?.dateTime || null,
+        source_id: formData?.source?.id ?? null,
         name: formData?.name || null,
+        status: "new",
         company_name: formData?.companyName || null,
         mobile_no: formData?.phoneNumber || null,
         email: formData?.emailAddress || null,
         address: formData?.address || null,
+        created_by: currentUserId || null,
         enquiry_details: formData?.enquiryDetails || null,
       };
 
-      console.log("🚀 ~ submit ~ enquiryData:", JSON.stringify(enquiryData, null, 2))
       try {
         const response = await post("/createEnquiryRegister", enquiryData);
         if (response.success) {
@@ -158,7 +153,6 @@ const EnquiryRegisterView = ({ navigation }) => {
           });
           navigation.navigate("EnquiryRegisterScreen");
         } else {
-          console.error("Enquiry Register Failed:", response.message);
           showToast({
             type: "error",
             title: "ERROR",
@@ -166,12 +160,13 @@ const EnquiryRegisterView = ({ navigation }) => {
           });
         }
       } catch (error) {
-        console.error("Error creating Enquiry Register Failed:", error);
         showToast({
           type: "error",
           title: "ERROR",
           message: "An unexpected error occurred. Please try again later.",
         });
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -182,88 +177,79 @@ const EnquiryRegisterView = ({ navigation }) => {
         title="Add Enquiry Register"
         onBackPress={() => navigation.goBack()}
       />
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : null} style={{ flex: 1 }}>
-        <RoundedScrollContainer>
-          <FormInput
-            label={"Date Time"}
-            dropIcon={"calendar"}
-            editable={false}
-            value={formData.dateTime}
-            onPress={() => {
-              setDatePickerMode('date');
-              setDatePickerVisibility(true);
-            }}
-          />
-          <FormInput
-            label={"Source"}
-            placeholder={"Select Source"}
-            dropIcon={"menu-down"}
-            editable={false}
-            validate={errors.source}
-            value={formData.source?.label}
-            onPress={() => toggleBottomSheet('Source')}
-          />
-          <FormInput
-            label={"Name"}
-            placeholder={"Enter Name"}
-            editable={true}
-            validate={errors.name}
-            onChangeText={(value) => handleFieldChange('name', value)}
-          />
-          <FormInput
-            label={"Company Name"}
-            placeholder={"Enter Company Name"}
-            editable={true}
-            onChangeText={(value) => handleFieldChange('companyName', value)}
-          />
-          <FormInput
-            label={"Phone"}
-            placeholder={"Enter Phone Number"}
-            editable={true}
-            keyboardType="numeric"
-            validate={errors.phoneNumber}
-            onChangeText={(value) => handleFieldChange('phoneNumber', value)}
-          />
-          <FormInput
-            label={"Email"}
-            placeholder={"Enter Email"}
-            editable={true}
-            validate={errors.emailAddress}
-            onChangeText={(value) => handleFieldChange('emailAddress', value)}
-          />
-          <FormInput
-            label={"Address"}
-            placeholder={"Enter Address"}
-            editable={true}
-            validate={errors.address}
-            onChangeText={(value) => handleFieldChange('address', value)}
-          />
-          <FormInput
-            label={"Enquiry Details"}
-            placeholder={"Enter Enquiry Details"}
-            editable={true}
-            multiline={true}
-            numberOfLines={5}
-            textAlignVertical="top"
-            onChangeText={(value) => handleFieldChange('enquiryDetails', value)}
-          />
-          {renderBottomSheet()}
-          <View style={{ backgroundColor: 'white', paddingHorizontal: 50 }}>
-            <LoadingButton
-              title={"Save"}
-              onPress={submit}
-            />
-          </View>
-          <DateTimePickerModal
-            isVisible={isDatePickerVisible}
-            mode={datePickerMode}
-            onConfirm={handleDateConfirm}
-            onCancel={() => setDatePickerVisibility(false)}
-          />
-        </RoundedScrollContainer>
-      </KeyboardAvoidingView>
+      <RoundedScrollContainer>
+        <FormInput
+          label="Date Time"
+          dropIcon="calendar"
+          editable={false}
+          value={formatDateTime(formData.dateTime)}
+          onPress={() => setIsDatePickerVisible(true)}
+        />
+        <FormInput
+          label="Source"
+          placeholder="Select Source"
+          dropIcon="menu-down"
+          editable={false}
+          validate={errors.source}
+          value={formData.source?.label}
+          onPress={() => toggleDropdownSheet('Source')}
+        />
+        <FormInput
+          label="Name"
+          placeholder="Enter Name"
+          editable={true}
+          validate={errors.name}
+          onChangeText={(value) => handleFieldChange('name', value)}
+        />
+        <FormInput
+          label="Company Name"
+          placeholder="Enter Company Name"
+          editable={true}
+          onChangeText={(value) => handleFieldChange('companyName', value)}
+        />
+        <FormInput
+          label="Phone"
+          placeholder="Enter Phone Number"
+          editable={true}
+          keyboardType="numeric"
+          validate={errors.phoneNumber}
+          onChangeText={(value) => handleFieldChange('phoneNumber', value)}
+        />
+        <FormInput
+          label="Email"
+          placeholder="Enter Email"
+          editable={true}
+          validate={errors.emailAddress}
+          onChangeText={(value) => handleFieldChange('emailAddress', value)}
+        />
+        <FormInput
+          label="Address"
+          placeholder="Enter Address"
+          editable={true}
+          validate={errors.address}
+          onChangeText={(value) => handleFieldChange('address', value)}
+        />
+        <FormInput
+          label="Enquiry Details"
+          placeholder="Enter Enquiry Details"
+          editable={true}
+          multiline={true}
+          numberOfLines={5}
+          textAlignVertical="top"
+          marginTop={10}
+          onChangeText={(value) => handleFieldChange('enquiryDetails', value)}
+        />
+        {renderDropdownSheet()}
+        <LoadingButton title="SAVE" onPress={handleSubmit} loading={isSubmitting} marginTop={10} />
+        <DateTimePickerModal
+          isVisible={isDatePickerVisible}
+          mode="date"
+          onConfirm={handleDateConfirm}
+          onCancel={() => setIsDatePickerVisible(false)}
+        />
+      </RoundedScrollContainer>
     </SafeAreaView>
   );
 };
 
-export default EnquiryRegisterView;
+export default EnquiryRegisterForm;

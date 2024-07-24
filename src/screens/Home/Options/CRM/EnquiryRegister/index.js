@@ -1,2 +1,3 @@
 import EnquiryRegisterScreen from "./EnquiryRegisterScreen";
-export { EnquiryRegisterScreen }
+import EnquiryRegisterForm from "./EnquiryRegisterForm";
+export { EnquiryRegisterScreen, EnquiryRegisterForm }

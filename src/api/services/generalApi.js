@@ -121,11 +121,12 @@ export const fetchCustomerVisitList = async ({ offset, limit, fromDate, toDate, 
   }
 };
 
-export const fetchEnquiryRegister = async ({ offset, limit }) => {
+export const fetchEnquiryRegister = async ({ offset, limit, loginEmployeeId }) => {
   try {
     const queryParams = {
       offset,
       limit,
+      ...(loginEmployeeId !== undefined && { login_employee_id: loginEmployeeId }),
     };
     const response = await get(API_ENDPOINTS.VIEW_ENQUIRY_REGISTER, queryParams);
     return response.data;
