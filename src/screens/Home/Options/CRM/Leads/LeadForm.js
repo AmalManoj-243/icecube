@@ -9,14 +9,16 @@ import { post } from '@api/services/utils';
 import { RoundedScrollContainer } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
 import { DropdownSheet } from '@components/common/BottomSheets';
-import { fetchSourceDropdown } from '@api/dropdowns/dropdownApi';
+import { fetchEmployeesDropdown, fetchSourceDropdown } from '@api/dropdowns/dropdownApi';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useAuthStore } from '@stores/auth';
-import { formatDateTime } from '@utils/common/date';
+import { formatDate, formatDateTime } from '@utils/common/date';
+import { priority } from '@constants/dropdownConst';
+import { validateFields } from '@utils/validation';
 
 const LeadForm = ({ navigation }) => {
 
-  const currentUserId = useAuthStore((state) => state.user?.related_profile?._id || '');
+  const currentUser = useAuthStore((state) => state.user);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedDropdownType, setSelectedDropdownType] = useState(null);
@@ -32,24 +34,29 @@ const LeadForm = ({ navigation }) => {
     jobPosition: '',
     phoneNumber: '',
     watsappNumber: '',
-    emailAdress: '',
+    emailAddress: '',
     address: '',
     remarks: '',
     expectedClosingDate: '',
   });
 
   const [errors, setErrors] = useState({});
-  const [dropdownOptions, setDropdownOptions] = useState({ source: [] });
+  const [dropdowns, setDropdowns] = useState({ source: [], salesPerson: [] });
 
   useEffect(() => {
     const fetchDropdownData = async () => {
       try {
-        const sourceData = await fetchSourceDropdown();
-        setDropdownOptions((prevDropdown) => ({
+        const sourceDropdown = await fetchSourceDropdown();
+        const salesPersonDropdown = await fetchEmployeesDropdown()
+        setDropdowns((prevDropdown) => ({
           ...prevDropdown,
-          source: sourceData.map(data => ({
+          source: sourceDropdown.map(data => ({
             id: data._id,
             label: data.source_name,
+          })),
+          salesPerson: salesPersonDropdown.map(data => ({
+            id: data._id,
+            label: data.name,
           })),
         }));
       } catch (error) {
@@ -70,20 +77,39 @@ const LeadForm = ({ navigation }) => {
     setIsDatePickerVisible(false);
   };
 
-  const renderDropdownSheet = () => {
-    if (selectedDropdownType === 'Source') {
-      return (
-        <DropdownSheet
-          isVisible={isDropdownSheetVisible}
-          items={dropdownOptions.source}
-          title={selectedDropdownType}
-          onClose={() => setIsDropdownSheetVisible(false)}
-          onValueChange={(value) => handleFieldChange('source', value)}
-        />
-      );
+  const renderBottomSheet = () => {
+    let items = [];
+    let fieldName = '';
+
+    switch (selectedDropdownType) {
+      case 'Source':
+        items = dropdowns.source;
+        fieldName = 'source';
+        break;
+      case 'Sales Person':
+        items = dropdowns.salesPerson;
+        fieldName = 'salesPerson';
+        break;
+      case 'Priority':
+        items = priority;
+        fieldName = 'priority';
+        break;
+      default:
+        return null;
     }
-    return null;
+    return (
+      <DropdownSheet
+        isVisible={isDropdownSheetVisible}
+        items={items}
+        title={selectedDropdownType}
+        onClose={() => setIsDropdownSheetVisible(false)}
+        onValueChange={(value) => handleFieldChange(fieldName, value)}
+      />
+    );
   };
+
+
+
 
   const handleFieldChange = (field, value) => {
     setFormData((prevFormData) => ({
@@ -98,60 +124,58 @@ const LeadForm = ({ navigation }) => {
     }
   };
 
-  const validateForm = () => {
+  const validateForm = (fieldsToValidate) => {
     Keyboard.dismiss();
-    let isValid = true;
-    const newErrors = {};
-
-    const requiredFields = {
-      name: 'Please enter the Name',
-      phoneNumber: 'Please enter Phone Number',
-    };
-
-    Object.keys(requiredFields).forEach(field => {
-      if (!formData[field]) {
-        newErrors[field] = requiredFields[field];
-        isValid = false;
-      }
-    });
-
-
-
-    setErrors(newErrors);
+    const { isValid, errors } = validateFields(formData, fieldsToValidate);
+    setErrors(errors);
     return isValid;
   };
 
-  const handleSubmit = async () => {
-    if (validateForm()) {
-      setIsSubmitting(true);
-      const enquiryData = {
-        image_url: null,
-        date: formData?.dateTime || null,
-        source_id: formData?.source?.id ?? null,
-        name: formData?.name || null,
-        status: "new",
-        company_name: formData?.companyName || null,
-        mobile_no: formData?.phoneNumber || null,
-        email: formData?.emailAddress || null,
-        address: formData?.address || null,
-        created_by: currentUserId || null,
-        enquiry_details: formData?.enquiryDetails || null,
-      };
 
+  const handleSubmit = async () => {
+    const fieldsToValidate = ['contactName', 'phoneNumber', 'salesPerson', 'source', 'priority']
+    if (validateForm(fieldsToValidate)) {
+      setIsSubmitting(true);
+      const date = new Date().toISOString();
+      console.log("🚀 ~ handleSubmit ~ date:", date)
+      const leadData = {
+        date: formatDate(formData.date, 'yyyy-MM-dd'),
+        contact_name: formData.contactName,
+        company_name: formData.companyName,
+        address: formData.address,
+        job_position: formData.jobPosition,
+        email: formData.emailAddress,
+        phone_no: formData.phoneNumber,
+        whatsapp_no: formData.watsappNumber,
+        status: 'new',
+        sales_person_id: formData?.salesPerson?.id || null,
+        audio_url: null,
+        customer_id: null,
+        source_id: formData?.source?.id ?? null,
+        remarks: formData.remarks,
+        priority:formData.priority?.value,
+        // enquiry_register_id: enquiryDetails?._id || null,
+        expected_closing_date: formData.expectedClosingDate || null,
+        created_by_id: currentUser?.related_profile?._id || null,
+        created_by_name: currentUser?.related_profile?.name || null
+      };
+      console.log("🚀 ~ handleSubmit ~ leadData:", leadData)
+      
       try {
-        const response = await post("/createEnquiryRegister", enquiryData);
+        // console.log("🚀 ~ handleSubmit ~ leadData:", JSON.stringify(leadData, null, 2))
+        // const response = await post("/createLead", leadData);
         if (response.success) {
           showToast({
             type: "success",
             title: "Success",
-            message: response.message || "Enquiry Register created successfully",
+            message: response.message || "Leads created successfully",
           });
-          navigation.navigate("EnquiryRegisterScreen");
+          navigation.navigate("LeadScreen");
         } else {
           showToast({
             type: "error",
             title: "ERROR",
-            message: response.message || "Enquiry Registration failed",
+            message: response.message || "Create Leads failed",
           });
         }
       } catch (error) {
@@ -177,11 +201,11 @@ const LeadForm = ({ navigation }) => {
           label="Date"
           dropIcon="calendar"
           editable={false}
-          value={formatDateTime(formData.dateTime)}
-          onPress={() => setIsDatePickerVisible(true)}
+          value={formatDate(formData.date)}
         />
         <FormInput
           label="Source"
+          required
           placeholder="Select Source"
           dropIcon="menu-down"
           editable={false}
@@ -191,68 +215,64 @@ const LeadForm = ({ navigation }) => {
         />
         <FormInput
           label="Sales Person"
+          required
           placeholder="Select Sales person"
           dropIcon="menu-down"
           editable={false}
-          validate={errors.source}
-          value={formData.source?.label}
-          onPress={() => toggleDropdownSheet('Source')}
+          validate={errors.salesPerson}
+          value={formData.salesPerson?.label}
+          onPress={() => toggleDropdownSheet('Sales Person')}
         />
         <FormInput
           label="Priority"
+          required
           placeholder="Select Priority"
           dropIcon="menu-down"
           editable={false}
-          validate={errors.source}
-          value={formData.source?.label}
-          onPress={() => toggleDropdownSheet('Source')}
+          validate={errors.priority}
+          value={formData.priority?.label}
+          onPress={() => toggleDropdownSheet('Priority')}
         />
         <FormInput
           label="Contact Name"
+          required
           placeholder="Enter Name"
-          editable={true}
-          validate={errors.name}
-          onChangeText={(value) => handleFieldChange('name', value)}
+          validate={errors.contactName}
+          onChangeText={(value) => handleFieldChange('contactName', value)}
         />
         <FormInput
           label="Company Name"
           placeholder="Enter Company Name"
-          editable={true}
           onChangeText={(value) => handleFieldChange('companyName', value)}
         />
         <FormInput
           label="Job Position"
-          placeholder="Enter JobPosition"
-          editable={true}
-          onChangeText={(value) => handleFieldChange('companyName', value)}
+          placeholder="Enter Job Position"
+          onChangeText={(value) => handleFieldChange('jobPosition', value)}
         />
         <FormInput
           label="Phone no."
-          placeholder="Enter Phone Number"
-          editable={true}
+          required
+          placeholder="Enter Phone no."
           keyboardType="numeric"
           validate={errors.phoneNumber}
           onChangeText={(value) => handleFieldChange('phoneNumber', value)}
         />
         <FormInput
           label="Watsapp no."
-          placeholder="Enter Phone Number"
-          editable={true}
+          placeholder="Enter watsapp no."
           keyboardType="numeric"
-          validate={errors.phoneNumber}
-          onChangeText={(value) => handleFieldChange('phoneNumber', value)}
+          onChangeText={(value) => handleFieldChange('watsappNumber', value)}
         />
         <FormInput
           label="Email"
           placeholder="Enter Email"
-          editable={true}
           validate={errors.emailAddress}
           onChangeText={(value) => handleFieldChange('emailAddress', value)}
         />
         <FormInput
           label="Address"
           placeholder="Enter Address"
-          editable={true}
           validate={errors.address}
           onChangeText={(value) => handleFieldChange('address', value)}
         />
@@ -266,21 +286,21 @@ const LeadForm = ({ navigation }) => {
         <FormInput
           label="Remarks"
           placeholder="Remarks"
-          editable={true}
           multiline={true}
           numberOfLines={5}
           textAlignVertical="top"
           marginTop={10}
-          onChangeText={(value) => handleFieldChange('enquiryDetails', value)}
+          onChangeText={(value) => handleFieldChange('remarks', value)}
         />
-        {renderDropdownSheet()}
-        <LoadingButton title="SAVE" onPress={handleSubmit} loading={isSubmitting} marginTop={10} />
+        {renderBottomSheet()}
+        <LoadingButton title="SAVE" onPress={handleSubmit}  marginTop={10} />
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
           mode="date"
           onConfirm={handleDateConfirm}
           onCancel={() => setIsDatePickerVisible(false)}
         />
+        <View style={{marginBottom:10}}/>
       </RoundedScrollContainer>
     </SafeAreaView>
   );

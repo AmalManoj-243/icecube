@@ -47,4 +47,10 @@ export const customerAttitude = [
   { label:'Option 1', value: 'Option 1' },
   { label:'Option 2', value: 'Option 2' },
 ];
-                      
+            
+export const priority = [
+  { label: "High", value: "HIGH" },
+  { label: "Medium", value: "MEDIUM" },
+  { label: "Low", value: "LOW" },
+  { label: "Critical", value: "CRITICAL" }
+];
