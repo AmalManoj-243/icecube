@@ -21,6 +21,7 @@ import { EnquiryRegisterForm, EnquiryRegisterScreen } from "@screens/Home/Option
 import { CustomerFormTabs } from "@screens/Home/Sections/Customer/CustomerFormTabs";
 import { LeadForm, LeadScreen } from "@screens/Home/Options/CRM/Leads";
 import { EnquiryDetailTabs } from "@screens/Home/Options/CRM/EnquiryRegister/EnquiryDetailTabs";
+import { LeadDetailTabs } from "@screens/Home/Options/CRM/Leads/LeadDetailTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -211,7 +212,11 @@ const StackNavigator = () => {
         component={LeadForm}
         options={{ headerShown: false }}
       />
-
+      <Stack.Screen
+        name="LeadDetailTabs"
+        component={LeadDetailTabs}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };

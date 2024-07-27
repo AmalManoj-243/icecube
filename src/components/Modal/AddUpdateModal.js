@@ -7,9 +7,15 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
 import { NavigationHeader } from '@components/Header';
 
-const AddUpdateModal = ({ isVisible, onClose, onSubmit, title }) => {
+const AddUpdateModal = ({ isVisible, onClose, onSubmit, title, header = '', placeholder = 'Enter updates' }) => {
     const [updateText, setUpdateText] = useState('');
     const [errorText, setErrorText] = useState('');
+
+
+    const resetUpdateText = () => {
+        setUpdateText('');
+        setErrorText('');
+    };
 
     const handleSave = () => {
         let hasError = false;
@@ -23,6 +29,7 @@ const AddUpdateModal = ({ isVisible, onClose, onSubmit, title }) => {
 
         if (!hasError) {
             onSubmit(updateText);
+            resetUpdateText()
             onClose();
         }
     };
@@ -30,7 +37,7 @@ const AddUpdateModal = ({ isVisible, onClose, onSubmit, title }) => {
     return (
         <Modal
             isVisible={isVisible}
-            animationIn="bounceIn"
+            animationIn="slideInDown"
             animationOut="slideOutDown"
             backdropOpacity={0.7}
             animationInTiming={400}
@@ -39,12 +46,11 @@ const AddUpdateModal = ({ isVisible, onClose, onSubmit, title }) => {
             backdropTransitionOutTiming={300}
         >
             <View style={styles.modalContainer}>
-                <NavigationHeader onBackPress={onClose} title={title} />
+                <NavigationHeader onBackPress={onClose} title={header} />
                 <View style={styles.modalContent}>
                     <Text style={styles.label}>{title}</Text>
                     <TextInput
-                        placeholder="Enter updates"
-                        autoCapitalize="characters"
+                        placeholder={placeholder}
                         value={updateText}
                         onChangeText={(text) => {
                             setUpdateText(text);

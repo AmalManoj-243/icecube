@@ -41,7 +41,7 @@ const LeadScreen = ({ navigation }) => {
     if (item.empty) {
       return <EmptyItem />;
     }
-    return <LeadList item={item} />;
+    return <LeadList item={item} onPress={()=> navigation.navigate('LeadDetailTabs', {id : item._id})} />;
   };
 
   const renderEmptyState = () => (

@@ -273,8 +273,9 @@ const LeadForm = ({ navigation }) => {
         <FormInput
           label="Expected Closing Date"
           dropIcon="calendar"
+          placeholder="mm-dd-yyyy"
           editable={false}
-          value={formatDateTime(formData.dateTime)}
+          value={formatDateTime(formData.expectedClosingDate)}
           onPress={() => setIsDatePickerVisible(true)}
         />
         <FormInput

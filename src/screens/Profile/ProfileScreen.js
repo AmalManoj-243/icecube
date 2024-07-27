@@ -55,7 +55,7 @@ const ProfileScreen = ({navigation}) => {
           {userDetails?.related_profile?.name || userDetails?.user_name || 'N/A'}
         </Text>
         <Text style={{ color: COLORS.black, fontSize: 20, fontFamily: FONT_FAMILY.urbanistSemiBold }}>
-          {userDetails?.company?.name.toUpperCase() || 'N/A'}
+          {userDetails?.company?.name?.toUpperCase() || 'N/A'}
         </Text>
 
         <View style={{ flexDirection: "row", marginVertical: 6, alignItems: "center" }}>
