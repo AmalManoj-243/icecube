@@ -27,7 +27,7 @@ const LeadForm = ({ navigation }) => {
   const [formData, setFormData] = useState({
     date: new Date(),
     source: '',
-    salesPerson: '',
+    salesPerson: { id: currentUser?.related_profile?._id || null, label: currentUser?.related_profile?.name || '' },
     priority: '',
     contactName: '',
     companyName: '',
@@ -73,7 +73,7 @@ const LeadForm = ({ navigation }) => {
   };
 
   const handleDateConfirm = (date) => {
-   const formatDate = formatDate(date, 'yyyy-MM-dd')
+    const formatDate = formatDate(date, 'yyyy-MM-dd')
     handleFieldChange('expectedClosingDate', formatDate);
     setIsDatePickerVisible(false);
   };
@@ -288,7 +288,7 @@ const LeadForm = ({ navigation }) => {
           onChangeText={(value) => handleFieldChange('remarks', value)}
         />
         {renderBottomSheet()}
-        <LoadingButton title="SAVE" onPress={handleSubmit} marginTop={10} />
+        <LoadingButton title="SAVE" onPress={handleSubmit} marginTop={10} loading={isSubmitting} />
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
           mode="date"
