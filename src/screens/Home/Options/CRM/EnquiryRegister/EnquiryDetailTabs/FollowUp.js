@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { RoundedScrollContainer } from '@components/containers';
 import { useFocusEffect } from '@react-navigation/native';
 import { showToastMessage } from '@components/Toast';
-import { fetchLeadDetails } from '@api/details/detailApi';
+import { fetchEnquiryRegisterDetails } from '@api/details/detailApi';
 import { OverlayLoader } from '@components/Loader';
 import { post } from '@api/services/utils';
 import { AddUpdateModal } from '@components/Modal';
@@ -36,21 +36,20 @@ const FollowUp = ({ enquiryId }) => {
     useFocusEffect(
         useCallback(() => {
             fetchDetails();
-        }, [leadId])
+        }, [enquiryId])
     );
 
 
     const saveUpdates = async (updateText) => {
         try {
             const formattedDate = formatDateTime(new Date(), "Pp");
-            const EnquiryHistoryData = {
+            const enquiryHistoryData = {
                 date: formattedDate,
                 remarks: updateText || null,
                 employee_id: currentUser._id,
-                enquiry_id: enquiryId
+                enquiry_register_id: enquiryId
             };
-            const response = await post('/createEnquireHistory', EnquiryHistoryData);
-
+            const response = await post('/createEnquiryHistory', enquiryHistoryData);
             if (response.success === 'true') {
                 showToastMessage('Enquiry history created successfully');
             } else {
@@ -64,7 +63,7 @@ const FollowUp = ({ enquiryId }) => {
     };
 
     return (
-        <RoundedScrollContainer>
+        <RoundedScrollContainer paddingHorizontal={0}>
             <FlatList
                 data={followUpHistory}
                 keyExtractor={(item) => item._id}

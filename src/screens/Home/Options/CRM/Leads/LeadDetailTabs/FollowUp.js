@@ -64,7 +64,7 @@ const FollowUp = ({ leadId }) => {
     };
 
     return (
-        <RoundedScrollContainer>
+        <RoundedScrollContainer paddingHorizontal={0}>
             <FlatList
                 data={followUpHistory}
                 keyExtractor={(item) => item._id}
