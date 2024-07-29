@@ -1,14 +1,30 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, Dimensions } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import Text from '@components/Text';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
 import { AntDesign, Feather } from '@expo/vector-icons';
 
-const NavigationHeader = ({ title, onBackPress, color = COLORS.white, backgroundColor = COLORS.primaryThemeColor, logo = true, icon = false, iconPress = () => { }, iconName = '', refreshPress = () => { }, refreshIcon = false, checkIcon = false, checkPress = () => { } }) => {
+const NavigationHeader = ({
+    title,
+    onBackPress,
+    color = COLORS.white,
+    backgroundColor = COLORS.primaryThemeColor,
+    logo = true,
+    iconOneName,
+    iconOnePress,
+    iconTwoName,
+    iconTwoPress,
+    iconThreeName,
+    iconThreePress,
+    refreshIcon = false,
+    refreshPress = () => { },
+    checkIcon = false,
+    checkPress = () => { }
+}) => {
 
-    const isPrimaryTheme = backgroundColor === COLORS.primaryThemeColor;
-
-    const logoSource = isPrimaryTheme ? require('@assets/images/header/transparent_logo_header.png') : require('@assets/images/header/logo_header_bg_white.png');
+    const logoSource = backgroundColor === COLORS.primaryThemeColor
+        ? require('@assets/images/header/transparent_logo_header.png')
+        : require('@assets/images/header/logo_header_bg_white.png');
 
     return (
         <View style={[styles.container, { backgroundColor }]}>
@@ -16,28 +32,34 @@ const NavigationHeader = ({ title, onBackPress, color = COLORS.white, background
                 <AntDesign name="left" size={20} color={color} />
             </TouchableOpacity>
             <Text style={[styles.title, { color }]}>{title}</Text>
-            {logo &&
-                <Image source={logoSource} style={styles.logoImage} />
+            {logo && <Image source={logoSource} style={styles.logoImage} />}
+            {iconOneName &&
+                <TouchableOpacity activeOpacity={0.8} onPress={iconOnePress}>
+                    <AntDesign name={iconOneName} size={25} color={color} />
+                </TouchableOpacity>
             }
-            {icon &&
-                <TouchableOpacity activeOpacity={0.8} onPress={iconPress}>
-                    <AntDesign name={iconName} size={25} color={color} />
+            <View style={{ width: 5 }} />
+            {iconTwoName &&
+                <TouchableOpacity activeOpacity={0.8} onPress={iconTwoPress}>
+                    <AntDesign name={iconTwoName} size={25} color={color} />
+                </TouchableOpacity>
+            }
+            <View style={{ width: 5 }} />
+
+            {iconThreeName &&
+                <TouchableOpacity activeOpacity={0.8} onPress={iconThreePress}>
+                    <AntDesign name={iconThreeName} size={25} color={color} />
                 </TouchableOpacity>
             }
             {checkIcon &&
-                <>
-                    <TouchableOpacity activeOpacity={0.8} onPress={checkPress}>
-                        <Feather name="check-circle" size={30} color={COLORS.orange} />
-                    </TouchableOpacity>
-                </>
+                <TouchableOpacity activeOpacity={0.8} onPress={checkPress}>
+                    <Feather name="check-circle" size={30} color={COLORS.orange} />
+                </TouchableOpacity>
             }
             {refreshIcon &&
-                <>
-                    <View style={{ width: 10 }} />
-                    <TouchableOpacity activeOpacity={0.8} onPress={refreshPress}>
-                        <Image source={require('@assets/images/header/refresh_button.png')} style={styles.refreshImage} />
-                    </TouchableOpacity>
-                </>
+                <TouchableOpacity activeOpacity={0.8} onPress={refreshPress}>
+                    <Image source={require('@assets/images/header/refresh_button.png')} style={styles.refreshImage} />
+                </TouchableOpacity>
             }
         </View>
     );
@@ -68,9 +90,8 @@ const styles = StyleSheet.create({
         width: 30,
         height: 30,
         resizeMode: 'contain',
-        tintColor: COLORS.white
+        tintColor: COLORS.white,
     },
-
 });
 
 export default NavigationHeader;
