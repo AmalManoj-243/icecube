@@ -67,7 +67,7 @@ const MeetingsScheduleModal = ({ isVisible, onClose, onSave, title, header = '',
             backdropTransitionOutTiming={300}
         >
             <View style={styles.modalContainer}>
-                <NavigationHeader onBackPress={onClose} title={header} />
+                <NavigationHeader onBackPress={onClose} title={title} />
                 <View style={styles.modalContent}>
                     <Text style={styles.label}>{title}</Text>
                     <TextInput
@@ -128,7 +128,7 @@ const MeetingsScheduleModal = ({ isVisible, onClose, onSave, title, header = '',
                         onCancel={() => setTimePickerVisible(false)}
                     />
                     <View style={styles.checkboxContainer}>
-                        <CheckBox value={isReminder} onValueChange={setReminder} />
+                        <CheckBox value={isReminder} onPressonValueChange={setReminder} />
                         <Text style={styles.checkboxLabel}>Set Reminder</Text>
                     </View>
                     {isReminder && (

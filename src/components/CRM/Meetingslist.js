@@ -4,14 +4,14 @@ import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
 import { format } from 'date-fns';
 
-const MeetingsList = ({ item }) => {
+const MeetingsList = ({ item  }) => {
     return (
         <TouchableOpacity activeOpacity={0.8} style={styles.itemContainer}>
             <View style={styles.leftColumn}>
-                <Text style={styles.title}>{item?.title || '-'}</Text>
+                <Text style={styles.titles}>{item?.title || '-'}</Text>
                 <View style={styles.detailsContainer}>
                     <Text style={styles.detailText}>
-                        {item?.start ? format(new Date(item.start), "dd-MM-yyyy") : '-'} {item?.time ? `at ${format(new Date(item.time), "HH:mm:ss")}` : ''}
+                        {item?.start? format(new Date(item.start), "dd-MM-yyyy") : '-'} {item?.time ? `at ${format(new Date(item.time), "HH:mm:ss")}` : ''}
                     </Text>
                     <Text style={styles.reminderText}>
                         {item?.is_Remainder ? `Reminder in ${item?.minutes || 0} minutes` : 'No Reminder'}
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
     },
-    title: {
+    titles: {
         fontFamily: FONT_FAMILY.urbanistBold,
         fontSize: 17,
         marginBottom: 5,

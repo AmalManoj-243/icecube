@@ -5,26 +5,29 @@ import { showToastMessage } from '@components/Toast';
 import { fetchMeetingsDetails } from '@api/details/detailApi';
 import { OverlayLoader } from '@components/Loader';
 import { post } from '@api/services/utils';
-import MeetingsScheduleModal from '@components/Modal/MeetingsScheduleModal';
+import { MeetingsScheduleModal } from '@components/Modal';
 import { FABButton } from '@components/common/Button';
 import { useAuthStore } from '@stores/auth';
 import { formatDateTime } from '@utils/common/date';
 import { FlatList } from 'react-native';
-import { FollowUpList } from '@components/CRM';
+import { MeetingsList } from '@components/CRM';
 
 const Meetings = ({ pipelineId }) => {
-    const [details, setDetails] = useState({});
+
     const currentUser = useAuthStore((state) => state.user);
     const [isLoading, setIsLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [meetingsHistory, setMeetingsHistory] = useState([]);
+    console.log(meetingsHistory, "meets")
+    console.log(setMeetingsHistory, "meeting")
 
-    const fetchDetails = async (pipelineId) => {
+    const fetchDetails = async () => { 
         setIsLoading(true);
         try {
             const updatedDetails = await fetchMeetingsDetails(pipelineId);
-            console.log("Fetched details:", updatedDetails);
-            setDetails(updatedDetails[0]);
+            const history = updatedDetails[0]?.customer_schedules
+            setMeetingsHistory(history)
+            
         } catch (error) {
             console.error('Error fetching meetings details:', error);
             showToastMessage('Failed to fetch meetings details. Please try again.');
@@ -35,55 +38,51 @@ const Meetings = ({ pipelineId }) => {
 
     useFocusEffect(
         useCallback(() => {
-            if (pipelineId) {
-                fetchDetails(pipelineId);
-            }
+            fetchDetails();
         }, [pipelineId])
     );
 
-    const saveUpdates = async (updateData) => {
+
+    const saveUpdates = async (updateText) => {
         try {
             const formattedDate = formatDateTime(new Date(), "Pp");
-            const meetingsHistoryData = {
-                title: updateData.title || null,
+            const pipelineHistoryData = {
                 date: formattedDate,
+                remarks: updateText || null,
                 employee_id: currentUser._id,
                 pipeline_id: pipelineId,
             };
-            console.log("Body:", meetingsHistoryData);
-            const response = await post('/createCustomerSchedule', meetingsHistoryData);
-            console.log("API Response:", response);
+            console.log(pipelineHistoryData, "Output");
+            const response = await post('/createCustomerSchedule', pipelineHistoryData);
+
             if (response.success === 'true') {
-                showToastMessage('Meeting history created successfully');
+                showToastMessage('Meetings created successfully');
             } else {
-                showToastMessage('Meeting history creation failed');
+                showToastMessage('Meetings creation failed');
             }
         } catch (error) {
             console.log("API Error:", error);
         } finally {
-            if (pipelineId) {
-                fetchDetails(pipelineId);
-            }
+            fetchDetails();
         }
     };
 
     return (
         <RoundedScrollContainer paddingHorizontal={0}>
             <FlatList
-                data={details}
+                data={meetingsHistory}
                 keyExtractor={(item) => item._id}
                 renderItem={({ item }) => (
-                    <FollowUpList
+                    <MeetingsList
                         item={item}
                     />
                 )}
-                showsVerticalScrollIndicator={false} // Custom component to display when the list is empty
+                showsVerticalScrollIndicator={false}
             />
             <MeetingsScheduleModal
                 isVisible={isModalVisible}
-                header='Schedule Meeting'
-                title={'Add Meeting'}
-                placeholder='Enter meeting'
+                title={'Schedule Meeting'}
+                placeholder='Enter Meeting'
                 onClose={() => setIsModalVisible(!isModalVisible)}
                 onSave={saveUpdates}
             />
@@ -92,6 +91,5 @@ const Meetings = ({ pipelineId }) => {
         </RoundedScrollContainer>
     );
 };
-
 
 export default Meetings;
