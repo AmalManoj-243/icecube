@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { RoundedScrollContainer } from '@components/containers';
+import { RoundedContainer } from '@components/containers';
 import { useFocusEffect } from '@react-navigation/native';
 import { showToastMessage } from '@components/Toast';
 import { fetchPipelineDetails } from '@api/details/detailApi';
@@ -19,7 +19,7 @@ const FollowUp = ({ pipelineId }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [followUpHistory, setFollowUpHistory] = useState([]);
 
-    const fetchDetails = async () => {  // copy
+    const fetchDetails = async () => {  
         setIsLoading(true);
         try {
             const updatedDetails = await fetchPipelineDetails(pipelineId);
@@ -64,10 +64,11 @@ const FollowUp = ({ pipelineId }) => {
     };
 
     return (
-        <RoundedScrollContainer paddingHorizontal={0}>
+        <RoundedContainer>
             <FlatList
-                data={followUpHistory}
-                keyExtractor={(item) => item._id}
+                  data={followUpHistory}
+                  keyExtractor={(item) => item._id}
+                  contentContainerStyle={{ padding: 10, paddingBottom: 50 }}
                 renderItem={({ item }) => (
                     <FollowUpList
                         item={item}
@@ -85,7 +86,7 @@ const FollowUp = ({ pipelineId }) => {
             />
             <OverlayLoader visible={isLoading} />
             <FABButton onPress={() => setIsModalVisible(!isModalVisible)} />
-        </RoundedScrollContainer>
+        </RoundedContainer>
     );
 };
 

@@ -15,7 +15,8 @@ const TextInput = ({
     dropIcon,
     login,
     validate,
-    required = false, 
+    column = true,
+    required = false,
     onFocus = () => { },
     ...props
 }) => {
@@ -36,8 +37,8 @@ const TextInput = ({
     };
 
     return (
-        <View style={styles.container}>
-              <View style={styles.labelContainer}>
+        <View style={[styles.container, { flexDirection: column ? 'column' : 'row' }]}>
+            <View style={styles.labelContainer}>
                 <Text style={[styles.label, { color: labelColor }]}>
                     {label}
                     {required && <Text style={styles.requiredAsterisk}>*</Text>} {/* Asterisk for mandatory fields */}
@@ -104,7 +105,6 @@ const styles = StyleSheet.create({
         marginBottom: 3,
         flexDirection: 'row',
         justifyContent: 'space-between',
-        flexDirection: 'column'
     },
     label: {
         flex: 2 / 3,
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontFamily: FONT_FAMILY.urbanistMedium,
         // marginTop: 10,
-        marginVertical:5,
+        marginVertical: 5,
         // textAlignVertical: 'center',
         // fontSize:16
     },

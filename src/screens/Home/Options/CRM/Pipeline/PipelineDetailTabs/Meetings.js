@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { RoundedScrollContainer } from '@components/containers';
+import { RoundedContainer } from '@components/containers';
 import { useFocusEffect } from '@react-navigation/native';
 import { showToastMessage } from '@components/Toast';
 import { fetchPipelineDetails } from '@api/details/detailApi';
@@ -38,7 +38,6 @@ const Meetings = ({ pipelineId }) => {
         }, [pipelineId])
     );
 
-
     const saveUpdates = async (updateText) => {
         try {
             const formattedDate = formatDateTime(updateText.start, "Pp");
@@ -65,7 +64,7 @@ const Meetings = ({ pipelineId }) => {
     };
 
     return (
-        <RoundedScrollContainer>
+        <RoundedContainer>
             <FlatList
                 data={meetingsHistory}
                 keyExtractor={(item) => item._id}
@@ -74,9 +73,9 @@ const Meetings = ({ pipelineId }) => {
                         item={item}
                     />
                 )}
+                contentContainerStyle={{ padding: 10, paddingBottom: 50 }}
                 showsVerticalScrollIndicator={false}
             />
-            <FABButton onPress={() => setIsModalVisible(!isModalVisible)} />
             <MeetingsScheduleModal
                 isVisible={isModalVisible}
                 title={'Schedule Meeting'}
@@ -84,8 +83,9 @@ const Meetings = ({ pipelineId }) => {
                 onClose={() => setIsModalVisible(!isModalVisible)}
                 onSave={saveUpdates}
             />
+            <FABButton onPress={() => setIsModalVisible(!isModalVisible)} />
             <OverlayLoader visible={isLoading} />
-        </RoundedScrollContainer>
+        </RoundedContainer>
     );
 };
 

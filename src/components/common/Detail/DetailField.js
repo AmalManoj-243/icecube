@@ -3,6 +3,8 @@ import { View, TextInput, StyleSheet } from 'react-native';
 import Text from '@components/Text';
 import { COLORS } from '@constants/theme';
 import { FONT_FAMILY } from '@constants/theme';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 const DetailField = ({
   label,
@@ -21,6 +23,13 @@ const DetailField = ({
           style={styles.input}
           {...props}
         />
+        {iconName && (
+          <Icon
+            name={iconName}
+            size={30}
+            style={{ color: COLORS.icon, marginRight: 0 }}
+          />
+        )}
       </View>
     </View>
   );
@@ -54,10 +63,10 @@ const styles = StyleSheet.create({
     color: COLORS.black,
     flex: 1,
     fontFamily: FONT_FAMILY.urbanistMedium,
-    marginVertical:5,
+    marginVertical: 5,
     // marginTop: 10,
     // textAlignVertical: 'top',
-   
+
   },
 });
 

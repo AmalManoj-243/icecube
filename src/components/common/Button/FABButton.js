@@ -24,6 +24,7 @@ const styles = {
         borderRadius: 30,
         width: 60,
         height: 60,
+        
     },
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { RoundedScrollContainer } from '@components/containers';
+import { RoundedContainer } from '@components/containers';
 import { useFocusEffect } from '@react-navigation/native';
 import { showToastMessage } from '@components/Toast';
 import { fetchLeadDetails } from '@api/details/detailApi';
@@ -64,7 +64,7 @@ const FollowUp = ({ leadId }) => {
     };
 
     return (
-        <RoundedScrollContainer paddingHorizontal={0}>
+        <RoundedContainer paddingHorizontal={0}>
             <FlatList
                 data={followUpHistory}
                 keyExtractor={(item) => item._id}
@@ -85,7 +85,7 @@ const FollowUp = ({ leadId }) => {
             />
             <OverlayLoader visible={isLoading} />
             <FABButton onPress={() => setIsModalVisible(!isModalVisible)} />
-        </RoundedScrollContainer>
+        </RoundedContainer>
     );
 };
 
