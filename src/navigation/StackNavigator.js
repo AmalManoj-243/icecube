@@ -25,6 +25,7 @@ import { LeadDetailTabs } from "@screens/Home/Options/CRM/Leads/LeadDetailTabs";
 import { EditPipeline, PipelineForm, PipelineScreen } from "@screens/Home/Options/CRM/Pipeline";
 import { PipelineDetailTabs } from "@screens/Home/Options/CRM/Pipeline/PipelineDetailTabs";
 import { PickupScreen } from "@screens/Home/Options/Pickup";
+import { AddInspectionItems, BoxInspectionForm, BoxInspectionScreen } from "@screens/Home/Options/BoxInspection";
 
 const Stack = createNativeStackNavigator();
 
@@ -257,10 +258,28 @@ const StackNavigator = () => {
         component={EditPipeline}
         options={{ headerShown: false }}
       />
+
       {/* pickup */}
       <Stack.Screen
         name="Pickup"
         component={PickupScreen}
+        options={{ headerShown: false }}
+      />
+
+      {/* BoxInspection */}
+      <Stack.Screen
+        name="BoxInspection"
+        component={BoxInspectionScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="BoxInspectionForm"
+        component={BoxInspectionForm}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddInspectionItems"
+        component={AddInspectionItems}
         options={{ headerShown: false }}
       />
 

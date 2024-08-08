@@ -41,6 +41,9 @@ export const DROP_DOWN_API_ENDPOINTS = {
     SOURCE: "/viewSource/source_list/source_dropdown",
     OPPORTUNITY: "/viewOppertunityType/oppertunity_list/oppertunity_dropdown",
     ENQUIRY_TYPE: "/viewEnquiryType/enquiry_list/enquiry_dropdown",
+    NON_INSPECTED: "/viewNonInspectedBoxListing",
+    PRODUCT_NAME: "/viewProducts/product_list/product_dropdown",
+    UOM_NAME: "viewUnitOfMeasure/quality_list/quality_dropdown",
 };
 
 export const DETAIL_API_ENDPOINTS = {
