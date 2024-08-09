@@ -2,44 +2,48 @@ import React, { useEffect, useCallback } from 'react';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { formatData } from '@utils/formatters';
-import { RoundedContainer, SafeAreaView } from '@components/containers';
+import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/containers';
 import { EmptyItem, EmptyState } from '@components/common/empty';
 import { NavigationHeader } from '@components/Header';
 import { FABButton } from '@components/common/Button';
-import { fetchAuditing } from '@api/services/generalApi';
-import BoxInspectionList from './BoxInspectionList';
+import { fetchBoxInspection } from '@api/services/generalApi';
 import { useDataFetching } from '@hooks';
-import AnimatedLoader from '@components/Loader/AnimatedLoader';
+import { useAuthStore } from '@stores/auth';
+import { OverlayLoader } from '@components/Loader';
+import BoxInspectionList from './BoxInspectionList';
 
 const BoxInspectionScreen = ({ navigation }) => {
+
   const isFocused = useIsFocused();
-  const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchAuditing);
+  const currentUser = useAuthStore((state) => state.user);
+  const currentUserId = currentUser?.related_profile?._id || '';
+  const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchBoxInspection);
 
   useFocusEffect(
     useCallback(() => {
-      fetchData();
-    }, [])
+      fetchData({ loginEmployeeId: currentUserId });
+    }, [currentUserId])
   );
 
   useEffect(() => {
     if (isFocused) {
-      fetchData();
+      fetchData({ loginEmployeeId: currentUserId });
     }
   }, [isFocused]);
 
   const handleLoadMore = () => {
-    fetchMoreData();
+    fetchMoreData({ loginEmployeeId: currentUserId });
   };
 
   const renderItem = ({ item }) => {
     if (item.empty) {
       return <EmptyItem />;
     }
-    return <BoxInspectionList item={item} />;
+    return <BoxInspectionList item={item} onPress={() => navigation.navigate('EnquiryDetailTabs', { id: item._id })} />;
   };
 
   const renderEmptyState = () => (
-    <EmptyState imageSource={require('@assets/images/EmptyData/transaction_empty.png')} message={'No Box Inspected'} />
+    <EmptyState imageSource={require('@assets/images/EmptyData/empty.png')} message={'No Enquiries Found'} />
   );
 
   const renderContent = () => (
@@ -52,19 +56,11 @@ const BoxInspectionScreen = ({ navigation }) => {
       onEndReached={handleLoadMore}
       showsVerticalScrollIndicator={false}
       onEndReachedThreshold={0.2}
-      ListFooterComponent={
-        loading && (
-          <AnimatedLoader
-            visible={loading}
-            animationSource={require('@assets/animations/loading.json')}
-          />
-        )
-      }
       estimatedItemSize={100}
     />
   );
 
-  const renderBoxInspection = () => {
+  const renderEnquiryRegister = () => {
     if (data.length === 0 && !loading) {
       return renderEmptyState();
     }
@@ -77,11 +73,12 @@ const BoxInspectionScreen = ({ navigation }) => {
         title="Box Inspection"
         onBackPress={() => navigation.goBack()}
       />
-      {/* <SearchContainer placeholder="Search Products" onChangeText={handleSearchTextChange} /> */}
+      <SearchContainer placeholder="Search Box'es.." onChangeText={''} />
       <RoundedContainer>
-        {renderBoxInspection()}
+        {renderEnquiryRegister()}
         <FABButton onPress={() => navigation.navigate('BoxInspectionForm')} />
       </RoundedContainer>
+      <OverlayLoader visible={loading} />
     </SafeAreaView>
   );
 };
