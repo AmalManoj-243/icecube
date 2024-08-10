@@ -1,7 +1,6 @@
 import { get } from "../services/utils";
 import handleApiError from "@api/utils/handleApiError";
 import { API_ENDPOINTS, DETAIL_API_ENDPOINTS } from "@api/endpoints";
-import { useAuthStore } from '@stores/auth';
 
 const {
   GET_INVOICE_DETAILS,

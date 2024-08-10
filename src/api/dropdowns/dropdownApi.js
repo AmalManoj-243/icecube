@@ -1,7 +1,6 @@
 import { DROP_DOWN_API_ENDPOINTS } from "@api/endpoints";
 import { get } from "@api/services/utils";
 import handleApiError from "@api/utils/handleApiError";
-import { DropdownSheet } from "@components/common/BottomSheets";
 
 const fetchData = async (endpoint) => {
   try {
