@@ -131,26 +131,17 @@ const BoxInspectionForm = ({ navigation, route }) => {
     warehouse_id: formData.warehouse?.id,
   });
 
-  const submitData = async (url, data, apiname, successMessage, errorMessage) => {
+  const submitData = async (url, data, successMessage, errorMessage) => {
     try {
       const response = await post(url, data);
-      if (response.success && apiname === 'inventory') {
-        showToast({
-          type: 'success',
-          title: 'Success',
-          message: response.message || successMessage,
-        });
-        navigation.navigate('InventoryScreen');
-
-      } else if (response.success && apiname === 'inspection') {
+      if (response.success) {
         showToast({
           type: 'success',
           title: 'Success',
           message: response.message || successMessage,
         });
         navigation.navigate('BoxInspection');
-      }
-      else {
+      } else {
         showToast({
           type: 'error',
           title: 'Error',
@@ -176,8 +167,8 @@ const BoxInspectionForm = ({ navigation, route }) => {
       const boxInspectionData = prepareBoxInspectionData();
       const inventoryRequestData = prepareInventoryRequestData();
 
-      await submitData('/createInventoryBoxRequest', inventoryRequestData, 'inventory', 'Inventory Box Request created successfully', 'Inventory Box Request creation failed');
-      await submitData('/createBoxInspection', boxInspectionData, 'inspection', 'Box Inspection created successfully', 'Box Inspection failed');
+      await submitData('/createInventoryBoxRequest', inventoryRequestData, 'Inventory Box Request created successfully', 'Inventory Box Request creation failed');
+      await submitData('/createBoxInspection', boxInspectionData, 'Box Inspection created successfully', 'Box Inspection failed');
     }
   };
 

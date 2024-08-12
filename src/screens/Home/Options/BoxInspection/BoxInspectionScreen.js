@@ -1,74 +1,85 @@
-import React, { useEffect, useCallback } from 'react';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
+import React, { useEffect, useCallback, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { formatData } from '@utils/formatters';
 import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/containers';
 import { EmptyItem, EmptyState } from '@components/common/empty';
 import { NavigationHeader } from '@components/Header';
 import { FABButton } from '@components/common/Button';
-import { fetchBoxInspectionReport } from '@api/services/generalApi';
-import { useDataFetching } from '@hooks';
 import { useAuthStore } from '@stores/auth';
 import { OverlayLoader } from '@components/Loader';
 import BoxInspectionList from './BoxInspectionList';
+import { fetchNonInspectedBoxDropdown } from '@api/dropdowns/dropdownApi';
 
 const BoxInspectionScreen = ({ navigation }) => {
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const currentUser = useAuthStore(state => state.user);
+  const warehouseId = currentUser?.warehouse?.warehouse_id || '';
 
-  const isFocused = useIsFocused();
-  const currentUser = useAuthStore((state) => state.user);
-  const currentUserId = currentUser?.related_profile?._id || '';
-  const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchBoxInspectionReport);
+  const fetchNonInspectedBoxList = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetchNonInspectedBoxDropdown(warehouseId);
+      const formattedData = response.map(({ box_id, box_name }) => ({
+        boxId: box_id,
+        boxName: box_name,
+      }));
+      setData(formattedData);
+    } catch (error) {
+      console.error('Failed to fetch non-inspected box list:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [warehouseId]);
 
   useFocusEffect(
     useCallback(() => {
-      fetchData({ loginEmployeeId: currentUserId });
-    }, [currentUserId])
+      fetchNonInspectedBoxList();
+    }, [fetchNonInspectedBoxList])
   );
 
-  useEffect(() => {
-    if (isFocused) {
-      fetchData({ loginEmployeeId: currentUserId });
-    }
-  }, [isFocused]);
-
-  const handleLoadMore = () => {
-    fetchMoreData({ loginEmployeeId: currentUserId });
-  };
-
-  const renderItem = ({ item }) => {
-    if (item.empty) {
-      return <EmptyItem />;
-    }
-    return <BoxInspectionList item={item} />;
-  };
-
-  const renderEmptyState = () => (
-    <EmptyState
-      imageSource={require("@assets/images/EmptyData/empty_inventory_box.png")}
-    // message={"Inspected boxes are empty."}
-    />
+  const handleNavigateToForm = useCallback(
+    item => {
+      navigation.navigate('BoxInspectionForm', { item });
+    },
+    [navigation]
   );
 
-  const renderContent = () => (
-    <FlashList
-      data={formatData(data, 1)}
-      numColumns={1}
-      renderItem={renderItem}
-      keyExtractor={(item, index) => index.toString()}
-      contentContainerStyle={{ padding: 10, paddingBottom: 50 }}
-      onEndReached={handleLoadMore}
-      showsVerticalScrollIndicator={false}
-      onEndReachedThreshold={0.2}
-      estimatedItemSize={100}
-    />
+  const renderItem = useCallback(
+    ({ item }) => (item.empty ? <EmptyItem /> : <BoxInspectionList item={item} onPress={() => handleNavigateToForm(item)} />),
+    [handleNavigateToForm]
   );
 
-  const renderEnquiryRegister = () => {
+  const renderEmptyState = useCallback(
+    () => (
+      <EmptyState imageSource={require('@assets/images/EmptyData/empty_inventory_box.png')} />
+    ),
+    []
+  );
+
+  const renderContent = useCallback(
+    () => (
+      <FlashList
+        data={formatData(data, 4)}
+        numColumns={4}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
+        contentContainerStyle={{ paddingBottom: 50, padding: 10 }}
+        showsVerticalScrollIndicator={false}
+        onEndReachedThreshold={0.2}
+        estimatedItemSize={100}
+      />
+    ),
+    [data, renderItem]
+  );
+
+  const renderBoxInspection = useCallback(() => {
     if (data.length === 0 && !loading) {
       return renderEmptyState();
     }
     return renderContent();
-  };
+  }, [data, loading, renderContent, renderEmptyState]);
 
   return (
     <SafeAreaView>
@@ -76,9 +87,9 @@ const BoxInspectionScreen = ({ navigation }) => {
         title="Box Inspection"
         onBackPress={() => navigation.goBack()}
       />
-      <SearchContainer placeholder="Search Box'es.." onChangeText={''} />
+      <SearchContainer placeholder="Search Boxes..." onChangeText={() => {}} />
       <RoundedContainer>
-        {renderEnquiryRegister()}
+        {renderBoxInspection()}
         <FABButton onPress={() => navigation.navigate('BoxInspectionForm')} />
       </RoundedContainer>
       <OverlayLoader visible={loading} />

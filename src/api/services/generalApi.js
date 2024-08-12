@@ -201,3 +201,19 @@ export const fetchBoxInspectionReport = async ({ offset, limit }) => {
   }
 };
 
+
+// export const fetchNonInspectionBox = async ({ offset, limit, warehouseId }) => {
+//   try {
+//     const queryParams = {
+//       offset,
+//       limit,
+//       warehouse_id: warehouseId
+//     };
+//     const response = await get(API_ENDPOINTS.VIEW_NON_INSPECTED_BOX, queryParams);
+//     return response.data;
+//   } catch (error) {
+//     handleApiError(error);
+//     throw error;
+//   }
+// };
+

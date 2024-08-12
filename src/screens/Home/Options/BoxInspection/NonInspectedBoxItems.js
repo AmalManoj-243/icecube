@@ -10,7 +10,7 @@ const NonInspectedBoxItems = ({ item, onPress, onQuantityChange }) => {
             <View style={styles.itemContainer}>
                 <Text style={styles.title}>{item.product_name}</Text>
                 <View style={styles.itemRow}>
-                    <Text style={styles.label}>Quantity{' '}({item?.quantity || '-'})</Text>
+                    <Text style={styles.label}>Actual Quanity{' '}({item?.quantity || '0'})</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <View style={{ backgroundColor: '#f3f3f3', padding: 8, borderRadius: 10, flexDirection: 'row', alignItems: 'center' }}>
                             <TouchableOpacity onPress={() => onQuantityChange(item._id, Math.max(0, item.inspectedQuantity - 1))}>

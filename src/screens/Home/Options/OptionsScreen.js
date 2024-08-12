@@ -70,10 +70,11 @@ const OptionsScreen = ({ navigation }) => {
         <FlatList
           data={formatData(options, 2)}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ padding: 15 }}
+          contentContainerStyle={{ padding: 15, paddingBottom: 100 }}
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={(item, index) => index.toString()}
+          
         />
         <OverlayLoader visible={loading} />
       </RoundedContainer>

@@ -11,6 +11,16 @@ const fetchData = async (endpoint) => {
     throw error;
   }
 };
+const fetchDataUsingWarehouse = async (endpoint, id) => {
+  try {
+    const response = await get(`${endpoint}?warehouse_id=${id}`);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};
+
 
 export const fetchInvoiceDropdown = async () => {
   return fetchData(DROP_DOWN_API_ENDPOINTS.INVOICE);
@@ -108,8 +118,8 @@ export const fetchenquiryTypeDropdown = async () => {
   return fetchData(DROP_DOWN_API_ENDPOINTS.ENQUIRY_TYPE);
 }
 
-export const fetchNonInspectedBox = async () => {
-  return fetchData(DROP_DOWN_API_ENDPOINTS.NON_INSPECTED);
+export const fetchNonInspectedBoxDropdown = async (id) => {
+  return fetchDataUsingWarehouse(DROP_DOWN_API_ENDPOINTS.NON_INSPECTED, id);
 }
 
 export const fetchProductsDropdown = async () => {

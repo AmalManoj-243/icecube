@@ -72,6 +72,7 @@ const FollowUp = ({ enquiryId }) => {
                         item={item}
                     />
                 )}
+                contentContainerStyle={{ padding: 10, paddingBottom: 50 }}
                 showsVerticalScrollIndicator={false}
             />
             <AddUpdateModal

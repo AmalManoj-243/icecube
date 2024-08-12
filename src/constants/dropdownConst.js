@@ -9,6 +9,7 @@ export const reasons = [
   { label: 'Purchase Return', id: 'purchasereturn' },
   { label: 'Stock Transfer Recieve', id: 'stocktransferreceive' },
   { label: 'Stock Transfer Send', id: 'stocktransfersend' },
+  // { label: 'Inspection', id: 'inspection' }
 ];
 
 export const filterCalendar = [

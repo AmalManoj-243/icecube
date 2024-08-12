@@ -15,7 +15,8 @@ export const API_ENDPOINTS = {
     VIEW_PIPELINE: '/viewPipeline',
     VIEW_MEETINGS: '/viewCustomerSchedule',
     VIEW_VISIT_PLAN: '/viewVisitPlan',
-    VIEW_BOX_INSPECTION_REPORT: '/viewBoxInspectionReport'
+    VIEW_BOX_INSPECTION_REPORT: '/viewBoxInspectionReport',
+    VIEW_NON_INSPECTED_BOX: "/viewNonInspectedBoxListing",
 };
 
 export const DROP_DOWN_API_ENDPOINTS = {
