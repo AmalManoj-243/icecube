@@ -52,7 +52,7 @@ const OptionsScreen = ({ navigation }) => {
       { title: 'Market Study', image: require('@assets/images/Home/options/market_study_1.png'), onPress: () => navigation.navigate('MarketStudyScreen') },
       { title: 'Attendance', image: require('@assets/images/Home/options/attendance.png'), onPress: () => navigation.navigate('') },
       { title: 'Inventory Management', image: require('@assets/images/Home/options/inventory_management_1.png'), onPress: () => navigation.navigate('InventoryScreen') },
-      { title: 'Box Inspection', image: require('@assets/images/Home/options/box_inspection.png'), onPress: () => setIsConfirmationModalVisible(!isConfirmationModalVisible)},
+      { title: 'Box Inspection', image: require('@assets/images/Home/options/box_inspection.png'), onPress: () => setIsConfirmationModalVisible(!isConfirmationModalVisible) },
     ]
 
   const renderItem = ({ item }) => {
@@ -85,9 +85,9 @@ const OptionsScreen = ({ navigation }) => {
       </RoundedContainer>
 
       <ConfirmationModal
-      onCancel={()=> setIsConfirmationModalVisible(!isConfirmationModalVisible)}
+        onCancel={() => setIsConfirmationModalVisible(!isConfirmationModalVisible)}
         isVisible={isConfirmationModalVisible}
-        onConfirm={()=> navigation.navigate('BoxInspectionScreen')}
+        onConfirm={() => { navigation.navigate('BoxInspectionScreen'), setIsConfirmationModalVisible(!isConfirmationModalVisible) }}
         headerMessage='Are you sure want to Start Box Inspection ?. '
       />
     </SafeAreaView>
