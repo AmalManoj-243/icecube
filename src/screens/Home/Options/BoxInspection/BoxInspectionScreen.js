@@ -13,12 +13,14 @@ import { showToast } from '@utils/common';
 import { fetchNonInspectedBoxDropdown } from '@api/dropdowns/dropdownApi';
 import { fetchInventoryDetails } from '@api/details/detailApi';
 import { formatData } from '@utils/formatters';
+import { ConfirmationModal } from '@components/Modal';
 
 const BoxInspectionScreen = ({ navigation }) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const currentUser = useAuthStore(state => state.user);
   const warehouseId = currentUser?.warehouse?.warehouse_id || '';
+  const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
 
   const fetchNonInspectedBoxList = useCallback(async () => {
     setLoading(true);
@@ -107,14 +109,31 @@ const BoxInspectionScreen = ({ navigation }) => {
     [data, renderItem]
   );
 
+  const handleBackPress = () => {
+    setIsConfirmationModalVisible(true);
+  };
+
   return (
     <SafeAreaView>
-      <NavigationHeader title="Box Inspection" onBackPress={() => navigation.goBack()} />
+      <NavigationHeader
+        title="Box Inspection"
+        onBackPress={handleBackPress}  // Fixed syntax here
+      />
       <SearchContainer placeholder="Search Boxes..." onChangeText={() => { }} />
       <RoundedContainer>
         {data.length === 0 && !loading ? renderEmptyState() : renderContent()}
         {/* <FABButton onPress={() => navigation.navigate('BoxInspectionForm')} /> */}
       </RoundedContainer>
+
+      <ConfirmationModal
+        isVisible={isConfirmationModalVisible}
+        onCancel={() => setIsConfirmationModalVisible(false)}
+        onConfirm={() => {
+          navigation.goBack();
+          setIsConfirmationModalVisible(false);
+        }}
+        headerMessage="Are you sure that you completed the box inspection?"
+      />
       <OverlayLoader visible={loading} />
     </SafeAreaView>
   );
