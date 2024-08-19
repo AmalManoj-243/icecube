@@ -107,15 +107,10 @@ const BoxInspectionScreen = ({ navigation, route }) => {
       };
       const response = await put('/updateBoxInspectionGrouping', requestPayload);
       if (response.success) {
-        showToast({ type: 'success', title: 'Success', message: 'Box inspection grouping updated successfully.' });
         navigation.goBack();
-      } else {
-        showToast({ type: 'error', title: 'Error', message: 'Failed to update box inspection grouping.' });
       }
     } catch (error) {
-      console.error('Failed to update box inspection grouping:', error);
-      showToast({ type: 'error', title: 'Error', message: 'An error occurred while updating box inspection grouping.' });
-    }
+      console.error('Failed to update box inspection grouping:', error);}
   };
 
   const renderItem = useCallback(
