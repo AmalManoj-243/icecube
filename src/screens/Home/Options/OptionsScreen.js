@@ -72,14 +72,10 @@ const OptionsScreen = ({ navigation }) => {
       };
       const response = await post('/createBoxInspectionGrouping', boxInspectionGroupingData);
       if (response.success) {
-        showToastMessage('Box Inspection Grouping created successfully');
         navigation.navigate('BoxInspectionScreen', { groupId: response?.data?._id })
-      } else {
-        showToastMessage('Box Inspection Grouping creation failed');
       }
     } catch (error) {
       console.log('API Error:', error);
-      showToastMessage(`Error creating Box Inspection Grouping: ${error.message}`);
     } finally {
       setIsLoading(false);
     }
