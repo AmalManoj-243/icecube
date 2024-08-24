@@ -216,19 +216,18 @@ export const fetchBoxInspectionReport = async ({ offset, limit }) => {
   }
 };
 
-
-// export const fetchNonInspectionBox = async ({ offset, limit, warehouseId }) => {
-//   try {
-//     const queryParams = {
-//       offset,
-//       limit,
-//       warehouse_id: warehouseId
-//     };
-//     const response = await get(API_ENDPOINTS.VIEW_NON_INSPECTED_BOX, queryParams);
-//     return response.data;
-//   } catch (error) {
-//     handleApiError(error);
-//     throw error;
-//   }
-// };
-
+export const fetchAttendance = async ({ userId, date }) => {
+  console.log("🚀 ~ file: generalApi.js:220 ~ fetchAttendance ~ date:", date)
+  console.log("🚀 ~ file: generalApi.js:220 ~ fetchAttendance ~ userId:", userId)
+  try {
+    const queryParams = {
+      user_id: userId,
+      date,
+    };
+    const response = await get(API_ENDPOINTS.VIEW_ATTENDANCE, queryParams);
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};

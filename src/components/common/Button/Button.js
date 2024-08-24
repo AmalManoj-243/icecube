@@ -18,6 +18,7 @@ const Button = ({
       disabled={disabled}
       style={{
         height: 45,
+        opacity: disabled ? 0.8 : 1,
         width: '100%',
         backgroundColor: backgroundColor,
         justifyContent: 'center',

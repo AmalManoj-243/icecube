@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
     VIEW_BOX_INSPECTION_REPORT: '/viewBoxInspectionReport',
     VIEW_NON_INSPECTED_BOX: '/viewNonInspectedBoxListing',
     VIEW_SERVICE: '/viewJobRegistration',
+    VIEW_ATTENDANCE: '/viewAttendance'
 };
 
 export const DROP_DOWN_API_ENDPOINTS = {
