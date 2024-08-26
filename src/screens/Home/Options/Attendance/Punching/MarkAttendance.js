@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { RoundedScrollContainer, SafeAreaView } from '@components/containers';
 import { NavigationHeader } from '@components/Header';
-import { MapViewComponent } from '@components/MapViewScreen';
-import * as Location from 'expo-location';
 import { TextInput as FormInput } from '@components/common/TextInput';
-import Text from '@components/Text';
-import { FONT_FAMILY } from '@constants/theme';
 import { formatDate } from '@utils/common/date';
 import { Button } from '@components/common/Button';
-import { View } from 'react-native';
 import { post, put } from '@api/services/utils'; // Adjusted to include PUT
 import { useAuthStore } from '@stores/auth';
 import { fetchAttendance } from '@api/services/generalApi';
-import { OverlayLoader } from '@components/Loader';
 
 const MarkAttendanceScreen = ({ navigation, route }) => {
     const { date } = route?.params || {};
     const formattedDate = formatDate(date, 'yyyy-MM-dd');
     const currentUser = useAuthStore((state) => state.user);
-    const [locationData, setLocationData] = useState({
-        latitude: null,
-        longitude: null,
-    });
-    const [loading, setLoading] = useState(true);
     const [buttonTitle, setButtonTitle] = useState('Forenoon Check In');
     const [attendanceStatus, setAttendanceStatus] = useState('');
     const [attendanceId, setAttendanceId] = useState({})
@@ -117,20 +106,6 @@ const MarkAttendanceScreen = ({ navigation, route }) => {
             <RoundedScrollContainer>
                 <FormInput label={'Date & Time'} editable={false} value={formatDate(date, 'yyyy-MM-dd')} />
                 <Button title={buttonTitle} onPress={handleMarkAttendance} disabled={isButtonDisabled} width={'80%'} alignSelf={'center'} />
-                {/* <View style={{ marginBottom: 100 }} />
-                {loading ? (
-                    <OverlayLoader visible={loading} />
-                ) : (
-                    locationData.latitude && locationData.longitude && (
-                        <>
-                        <Text style={{ fontFamily: FONT_FAMILY.urbanistSemiBold }}>You should be inside your shop</Text>
-                        <MapViewComponent
-                            longitude={locationData.longitude}
-                            latitude={locationData.latitude}
-                        />
-                        </>
-                    )
-                )} */}
             </RoundedScrollContainer>
         </SafeAreaView>
     );
