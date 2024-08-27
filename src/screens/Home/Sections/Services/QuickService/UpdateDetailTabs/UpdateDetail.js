@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { RoundedScrollContainer } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
@@ -10,30 +10,77 @@ import { showToastMessage } from '@components/Toast';
 import { fetchServiceDetails } from '@api/details/detailApi';
 import { OverlayLoader } from '@components/Loader';
 import { COLORS, FONT_FAMILY } from "@constants/theme";
+import { fetchProductsDropdown, fetchUnitOfMeasureDropdown } from '@api/dropdowns/dropdownApi';
 
 const UpdateDetail = ({ serviceId }) => {
     const [details, setDetails] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [showForm, setShowForm] = useState(false);
-
     const [spareName, setSpareName] = useState(null);
     const [description, setDescription] = useState('');
     const [quantity, setQuantity] = useState('');
-    const [uom, setUom] = useState(null);
     const [unitPrice, setUnitPrice] = useState('');
-
+    const [uom, setUom] = useState(null);
     const [savedItems, setSavedItems] = useState([]);
 
+    const [formData, setFormData] = useState({
+        warehouse: "",
+        device: "",
+        brand: "",
+        consumerModel: "",
+        serialNumber: "",
+        imeiNumber: "",
+        assignedTo: "",
+        preCondition: "",
+        estimation: "",
+        remarks: "",
+        accessories: [],
+        complaints: "",
+        subComplaints: "",
+      });
+
     const [dropdown, setDropdown] = useState({
-        spareName: [
-            { id: '1', label: 'Part A' },
-            { id: '2', label: 'Part B' },
-        ],
-        uom: [
-            { id: '1', label: 'kg' },
-            { id: '2', label: 'piece' },
-        ],
+        products: [],
+        unitofmeasure: [],
     });
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const ProductsData = await fetchProductsDropdown();
+                setDropdown(prevDropdown => ({
+                    ...prevDropdown,
+                    products: ProductsData.map(data => ({
+                        id: data._id,
+                        label: data.product_name,
+                    })),
+                }));
+            } catch (error) {
+                console.error('Error fetching Products dropdown data:', error);
+            }
+        };
+
+        fetchProducts();
+    }, []);
+
+    useEffect(() => {
+        const fetchUnitOfMeasure = async () => {
+            try {
+                const UnitOfMeasureData = await fetchUnitOfMeasureDropdown();
+                setDropdown(prevDropdown => ({
+                    ...prevDropdown,
+                    unitofmeasure: UnitOfMeasureData.map(data => ({
+                        id: data._id,
+                        label: data.uom_name,
+                    })),
+                }));
+            } catch (error) {
+                console.error('Error fetching Unit Of Measure dropdown data:', error);
+            }
+        };
+
+        fetchUnitOfMeasure();
+    }, []);
 
     const [selectedType, setSelectedType] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
@@ -72,12 +119,41 @@ const UpdateDetail = ({ serviceId }) => {
             return;
         }
         const newItem = {
-            spareName: spareName.label,
-            description,
-            quantity,
-            uom: uom.label,
-            unitPrice,
-        };
+            // {
+            //     job_registration_id: "66cc681fbf21f17a3e23c6ba",
+            //     date: "2024-08-26T11:33:53.718Z",
+            //     status: "waiting for parts",
+            //     created_by: null,
+            //     created_by_name: "",
+            //     assignee_id: formData?.assignedTo.id ?? null,
+            //     assignee_name: formData.assignedTo?.label ?? null,
+            //     warehouse_id: formData?.warehouse.id ?? null,
+            //     warehouse_name: formData.warehouse?.label ?? null,
+            //     sales_person_id: formData?.assignedTo.id ?? null,
+            //     sales_person_name: formData.assignedTo?.label ?? null,
+            
+                // product_id: "656f2cb002e1b1b31fafc6c6",
+                // product_name: " DESKTOP POWER SUPPLY LENOVO PCG010 12V15A",
+                // description: null,
+                // uom_id: "66b5d3fbca5b01a2366b0b8e",
+                // uom: "GRAMS",
+                // quantity: 1,
+                // unit_price: 160,
+                // unit_cost: 100,
+                // tax_type_id: "648d9b54ef9cd868dfbfa37b",
+                // tax_type_name: "vat 5%",
+                // job_diagnosis_id: "66cc6838bf21f17a3e23c6e2",
+                // status: "out_of_stock",
+                // "id": "66cc6838bf21f17a3e23c6e6",
+                // "_v": 0
+              }
+            //   }
+        //     spareName: spareName.label,
+        //     description,
+        //     quantity,
+        //     uom: uom.label,
+        //     unitPrice,
+        // };
         setSavedItems([...savedItems, newItem]);
         setSpareName(null);
         setDescription('');
@@ -93,11 +169,11 @@ const UpdateDetail = ({ serviceId }) => {
 
         switch (selectedType) {
             case 'SpareName':
-                items = dropdown.spareName;
+                items = dropdown.products;
                 fieldName = 'spareName';
                 break;
             case 'UOM':
-                items = dropdown.uom;
+                items = dropdown.unitofmeasure;
                 fieldName = 'uom';
                 break;
             default:
@@ -151,7 +227,7 @@ const UpdateDetail = ({ serviceId }) => {
                         placeholder="Select Product Name"
                         dropIcon="menu-down"
                         editable={false}
-                        items={dropdown.spareName}
+                        items={dropdown.products}
                         value={spareName?.label}
                         onPress={() => toggleBottomSheet('SpareName')}
                     />
@@ -175,7 +251,7 @@ const UpdateDetail = ({ serviceId }) => {
                         placeholder="Select Unit Of Measure"
                         dropIcon="menu-down"
                         editable={false}
-                        items={dropdown.uom}
+                        items={dropdown.unitofmeasure}
                         value={uom?.label}
                         onPress={() => toggleBottomSheet('UOM')}
                     />
@@ -228,7 +304,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     saveButton: {
-        color: COLORS.tabIndicator,
+        backgroundColor: '#2e2a4f',
         paddingVertical: 12,
         paddingHorizontal: 25,
         borderRadius: 10,
@@ -244,20 +320,19 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    savedItemsList: {
-        marginTop: 20,
-        paddingHorizontal: 10,
-    },
     savedItem: {
-        marginBottom: 15,
+        backgroundColor: '#f5f5f5',
         padding: 10,
         borderRadius: 5,
-        borderWidth: 1,
-        borderColor: '#ddd',
+        marginBottom: 10,
     },
     savedItemText: {
+        fontFamily: FONT_FAMILY.urbanistRegular,
         fontSize: 14,
         marginBottom: 5,
+    },
+    savedItemsList: {
+        marginTop: 20,
     },
 });
 

@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const ServiceForm = () => {
+const QuickServiceForm = () => {
   return (
     <View>
       <Text>ServiceForm</Text>
@@ -9,4 +9,4 @@ const ServiceForm = () => {
   )
 }
 
-export default ServiceForm
+export default QuickServiceForm

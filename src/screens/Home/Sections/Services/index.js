@@ -1,3 +1,3 @@
 import ServiceScreen from "./ServiceScreen";
 
-export {  ServiceScreen}
+export {ServiceScreen}

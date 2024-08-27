@@ -4,7 +4,7 @@ import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
 import { formatDate, formatDateTime } from '@utils/common/date';
 
-const ServiceList = ({ item, onPress }) => {
+const QuickServiceList = ({ item, onPress }) => {
   // const visitPurpose = item?.purpose_of_visit?.map(purpose => purpose?.name).join(', ')
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.itemContainer}>
@@ -70,4 +70,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ServiceList;
+export default QuickServiceList;

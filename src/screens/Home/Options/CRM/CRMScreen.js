@@ -9,7 +9,6 @@ import { COLORS } from '@constants/theme';
 
 const CRMScreen = ({ navigation }) => {
 
-
     const options =
         [
             { title: 'Enquiry Register', image: require('@assets/images/Home/options/crm/enquiry_register.png'), onPress: () => navigation.navigate('EnquiryRegisterScreen') },

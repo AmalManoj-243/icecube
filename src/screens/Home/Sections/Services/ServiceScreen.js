@@ -1,86 +1,48 @@
-import React, { useEffect, useCallback } from 'react';
-import { useIsFocused, useFocusEffect } from '@react-navigation/native';
-import { FlashList } from '@shopify/flash-list';
-import { formatData } from '@utils/formatters';
-import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/containers';
-import { EmptyItem, EmptyState } from '@components/common/empty';
+import React from 'react'
+import { FlatList } from 'react-native'
 import { NavigationHeader } from '@components/Header';
-import { FABButton } from '@components/common/Button';
-import { fetchService } from '@api/services/generalApi';
-import { useDataFetching } from '@hooks';
-import ServiceList from './ServiceList';
-import { useAuthStore } from '@stores/auth';
-import { OverlayLoader } from '@components/Loader';
+import { RoundedContainer, SafeAreaView } from '@components/containers'
+import { ListItem } from '@components/Options';
+import { formatData } from '@utils/formatters';
+import { EmptyItem } from '@components/common/empty';
+import { COLORS } from '@constants/theme';
 
 const ServiceScreen = ({ navigation }) => {
 
-  const isFocused = useIsFocused();
-  const currentUser = useAuthStore((state) => state.user);
-  const currentUserId = currentUser?.related_profile?._id || '';
-  const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchService);
+    const options =
+        [
+            { title: 'Quick Service', image: require('@assets/images/Home/options/crm/enquiry_register.png'), onPress: () => navigation.navigate('QuickServiceScreen') },
+            { title: 'Spare Parts Request', image: require('@assets/images/Home/options/crm/enquiry_register.png'), onPress: () => navigation.navigate('SparePartsRequestScreen') },
+        ]
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchData({ loginEmployeeId: currentUserId });
-    }, [currentUserId])
-  );
+    const renderItem = ({ item }) => {
+        if (item.empty) {
+            return <EmptyItem />;
+        }
+        return <ListItem title={item.title} image={item.image} onPress={item.onPress} />;
+    };
 
-  useEffect(() => {
-    if (isFocused) {
-      fetchData({ loginEmployeeId: currentUserId });
-    }
-  }, [isFocused]);
 
-  const handleLoadMore = () => {
-    fetchMoreData({ loginEmployeeId: currentUserId });
-  };
+    return (
+        <SafeAreaView backgroundColor={COLORS.white}>
+            <NavigationHeader
+                title="Services"
+                color={COLORS.black}
+                backgroundColor={COLORS.white}
+                onBackPress={() => navigation.goBack()}
+            />
+            <RoundedContainer backgroundColor={COLORS.primaryThemeColor}>
+                <FlatList
+                    data={formatData(options, 2)}
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ padding: 15 }}
+                    renderItem={renderItem}
+                    numColumns={2}
+                    keyExtractor={(item, index) => index.toString()}
+                />
+            </RoundedContainer>
+        </SafeAreaView>
+    )
+}
 
-  const renderItem = ({ item }) => {
-    if (item.empty) {
-      return <EmptyItem />;
-    }
-    return <ServiceList item={item} onPress={() => navigation.navigate('ServiceDetailTabs', { id: item._id })} />;
-  };
-
-  const renderEmptyState = () => (
-    <EmptyState imageSource={require('@assets/images/EmptyData/empty.png')} message={'No Quick Service Found'} />
-  );
-
-  const renderContent = () => (
-    <FlashList
-      data={formatData(data, 1)}
-      numColumns={1}
-      renderItem={renderItem}
-      keyExtractor={(item, index) => index.toString()}
-      contentContainerStyle={{ padding: 10, paddingBottom: 50 }}
-      onEndReached={handleLoadMore}
-      showsVerticalScrollIndicator={false}
-      onEndReachedThreshold={0.2}
-      estimatedItemSize={100}
-    />
-  );
-
-  const renderService = () => {
-    if (data.length === 0 && !loading) {
-      return renderEmptyState();
-    }
-    return renderContent();
-  };
-
-  return (
-    <SafeAreaView>
-      <NavigationHeader
-        title="Quick Job Service"
-        onBackPress={() => navigation.goBack()}
-      />
-      {/* <SearchContainer placeholder="Search Quick Service.." onChangeText={''} /> */}
-      <RoundedContainer>
-        {renderService()}
-        <FABButton onPress={() => navigation.navigate('ServiceFormTabs')} />
-      </RoundedContainer>
-      <OverlayLoader visible={loading} />
-    </SafeAreaView>
-  );
-};
-
-export default ServiceScreen;
+export default ServiceScreen
