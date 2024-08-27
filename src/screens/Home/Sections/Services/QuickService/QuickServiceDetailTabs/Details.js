@@ -134,29 +134,29 @@ const Details = ({ serviceId }) => {
             <DetailField label="Estimation" value={details?.estimation?.toString() || '-'} />
             <DetailField label="Accessories" value={accessoriesString} />
 
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginVertical: 20 }}>
+            <View style={{ flexDirection: 'row',  marginVertical: 20 }}>
                 <LoadingButton
-                    width={'45%'}
+                    width={'50%'}
                     backgroundColor={COLORS.primaryThemeColor}
                     title="CLOSE JOB"
                     onPress={() => {
                         setActionToPerform('close');
                         setIsConfirmationModalVisible(true);
                     }}
-                    loading={isSubmitting}
+                    // loading={isSubmitting}
                 />
+                <View style={{width: 5}}/>
                 <LoadingButton
-                    width={'45%'}
+                    width={'50%'}
                     backgroundColor={COLORS.primaryThemeColor}
                     title="UPDATE"
                     onPress={() => {
                         setActionToPerform('update');
                         setIsUpdateModalVisible(true);
                     }}
-                    loading={isSubmitting}
+                    // loading={isSubmitting}
                 />
             </View>
-
             <ConfirmationModal
                 isVisible={isConfirmationModalVisible}
                 onCancel={() => setIsConfirmationModalVisible(false)}
@@ -175,7 +175,7 @@ const Details = ({ serviceId }) => {
                 headerMessage='Are you sure you want to update this service job?'
             />
 
-            <OverlayLoader visible={isLoading} />
+            <OverlayLoader visible={isLoading || isSubmitting} />
         </RoundedScrollContainer>
     );
 };

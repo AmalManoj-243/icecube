@@ -11,6 +11,9 @@ import { fetchServiceDetails } from '@api/details/detailApi';
 import { OverlayLoader } from '@components/Loader';
 import { COLORS, FONT_FAMILY } from "@constants/theme";
 import { fetchProductsDropdown, fetchUnitOfMeasureDropdown } from '@api/dropdowns/dropdownApi';
+import SparePartsList from './SparePartsList'
+import { Button } from '@components/common/Button';
+
 
 const UpdateDetail = ({ serviceId }) => {
     const [details, setDetails] = useState({});
@@ -24,6 +27,7 @@ const UpdateDetail = ({ serviceId }) => {
     const [tax, setTax] = useState('');
     const [subTotal, setSubTotal] = useState('');
     const [savedItems, setSavedItems] = useState([]);
+    console.log("🚀 ~ file: UpdateDetail.js:30 ~ UpdateDetail ~ savedItems:", savedItems)
 
     const [dropdown, setDropdown] = useState({
         products: [],
@@ -38,7 +42,7 @@ const UpdateDetail = ({ serviceId }) => {
                     ...prevDropdown,
                     products: ProductsData.map(data => ({
                         id: data._id,
-                        label: data.product_name,
+                        label: data.product_name?.trim(),
                         unit_price: data.sale_price,
                     })),
                 }));
@@ -174,18 +178,6 @@ const UpdateDetail = ({ serviceId }) => {
         );
     };
 
-    const renderSavedItem = ({ item }) => (
-        <View style={styles.savedItem}>
-            <Text style={styles.savedItemText}>Spare Name: {item.spareName}</Text>
-            <Text style={styles.savedItemText}>Description: {item.description}</Text>
-            <Text style={styles.savedItemText}>Quantity: {item.quantity}</Text>
-            <Text style={styles.savedItemText}>UOM: {item.uom}</Text>
-            <Text style={styles.savedItemText}>Unit Price: {item.unitPrice}</Text>
-            <Text style={styles.savedItemText}>Taxes: {item.tax}</Text>
-            <Text style={styles.savedItemText}>Sub Total: {item.subTotal}</Text>
-        </View>
-    );
-
     return (
         <RoundedScrollContainer>
             <DetailField label="Customer" value={details?.customer_name || '-'} multiline numberOfLines={3} textAlignVertical={'top'} />
@@ -197,20 +189,17 @@ const UpdateDetail = ({ serviceId }) => {
             <DetailField label="Brand Name" value={details?.brand_name || '-'} />
             <DetailField label="Device Name" value={details?.device_name || '-'} />
             <DetailField label="Consumer Model" value={details?.consumer_model_name || '-'} />
-
-            <TouchableOpacity style={styles.addButton} onPress={() => setShowForm(!showForm)}>
-                <Text style={styles.addButtonText}>Add Item</Text>
-            </TouchableOpacity>
-
+            <Button onPress={() => setShowForm(!showForm)} title={'Add Item'} backgroundColor={COLORS.primaryThemeColor} width={'50%'} alignSelf={'center'} />
             {showForm && (
-                <View style={styles.formContainer}>
+                <>
                     <FormInput
                         label="Spare Name"
                         placeholder="Select Product Name"
                         dropIcon="menu-down"
+                        multiline
                         editable={false}
                         items={dropdown.products}
-                        value={spareName?.label}
+                        value={spareName?.label?.trim()}
                         onPress={() => toggleBottomSheet('SpareName')}
                     />
                     <FormInput
@@ -261,17 +250,17 @@ const UpdateDetail = ({ serviceId }) => {
                         value={subTotal}
                         onChangeText={setSubTotal}
                     />
-                    <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                        <Text style={styles.saveButtonText}>Save</Text>
-                    </TouchableOpacity>
-                </View>
+                  <Button title={'Save'} onPress={handleSave} backgroundColor={COLORS.primaryThemeColor}/>
+                </>
             )}
 
             <FlatList
                 data={savedItems}
-                renderItem={renderSavedItem}
+                renderItem={({ item }) => (
+                    <SparePartsList item={item} />
+                )}
                 keyExtractor={(item, index) => index.toString()}
-                ListHeaderComponent={() => savedItems.length > 0 && <Text style={styles.savedItemTitle}>Saved Items</Text>}
+                ListHeaderComponent={() => savedItems.length > 0 && <Text style={styles.label}>Spare Parts</Text>}
             />
 
             {renderBottomSheet()}
@@ -282,49 +271,12 @@ const UpdateDetail = ({ serviceId }) => {
 };
 
 const styles = StyleSheet.create({
-    addButton: {
-        backgroundColor: '#2e2a4f',
-        padding: 10,
-        marginVertical: 10,
-        borderRadius: 5,
-    },
-    addButtonText: {
-        color: COLORS.white,
-        fontFamily: FONT_FAMILY.urbanistBold,
-        textAlign: 'center',
-    },
-    formContainer: {
-        backgroundColor: COLORS.white,
-        padding: 10,
-        borderRadius: 5,
-        marginBottom: 10,
-    },
-    saveButton: {
-        backgroundColor: '#2e2a4f',
-        padding: 10,
-        borderRadius: 5,
-        marginTop: 10,
-    },
-    saveButtonText: {
-        fontFamily: FONT_FAMILY.urbanistBold,
-        color: COLORS.white,
-        textAlign: 'center',
-    },
-    savedItem: {
-        backgroundColor: COLORS.lightGrey,
-        padding: 10,
+    label: {
         marginVertical: 5,
-        borderRadius: 5,
-    },
-    savedItemText: {
-        fontFamily: FONT_FAMILY.urbanistRegular,
-        color: COLORS.darkGrey,
-    },
-    savedItemTitle: {
-        fontFamily: FONT_FAMILY.urbanistRegular,
-        color: COLORS.primary,
-        marginBottom: 5,
-    },
+        fontSize: 16,
+        color: COLORS.primaryThemeColor,
+        fontFamily: FONT_FAMILY.urbanistSemiBold,
+      },
 });
 
 export default UpdateDetail;
