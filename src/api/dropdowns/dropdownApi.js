@@ -166,3 +166,7 @@ export const fetchComplaintsDropdown = async () => {
 export const fetchSubComplaintsDropdown = async (complaintsId) => {
   return fetchData(`${DROP_DOWN_API_ENDPOINTS.SUB_COMPLAINTS}?master_problem_id=${complaintsId}`);
 } 
+
+export const fetchUnitOfMeasureDropdown = async () => {
+  return fetchData(DROP_DOWN_API_ENDPOINTS.UNIT_OF_MEASURE);
+}

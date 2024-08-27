@@ -15,7 +15,7 @@ import Assignee from './Assignee';
 import Accessories from './Accessories';
 import Complaints from './Complaints';
 
-const ServiceFormTabs = ({ navigation }) => {
+const QuickServiceFormTabs = ({ navigation }) => {
 
   const layout = useWindowDimensions();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -156,7 +156,7 @@ const ServiceFormTabs = ({ navigation }) => {
             message: response.message || "Quick Service created successfully",
           });
 
-          navigation.navigate("ServiceScreen");
+          navigation.navigate("QuickServiceScreen");
         } else {
           console.error("Quick Service Failed:", response.message);
           showToast({
@@ -202,4 +202,4 @@ const ServiceFormTabs = ({ navigation }) => {
   );
 };
 
-export default ServiceFormTabs;
+export default QuickServiceFormTabs;

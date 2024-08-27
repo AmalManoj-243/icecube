@@ -8,7 +8,7 @@ import { SafeAreaView } from '@components/containers';
 import NavigationHeader from '@components/Header/NavigationHeader';
 import { CustomTabBar } from '@components/TabBar';
 
-const ServiceDetailTabs = ({ navigation, route }) => {
+const QuickServiceDetailTabs = ({ navigation, route }) => {
   const { id } = route?.params || {};
   const layout = useWindowDimensions();
   const [index, setIndex] = useState(0);
@@ -35,7 +35,7 @@ const ServiceDetailTabs = ({ navigation, route }) => {
         onBackPress={() => navigation.goBack()}
         logo={false}
         iconTwoName="plus"
-        iconTwoPress={() => { navigation.navigate('ServiceFormTabs', { serviceId: id }) }}
+        iconTwoPress={() => { navigation.navigate('QuickServiceFormTabs', { serviceId: id }) }}
       />
       <TabView
         navigationState={{ index, routes }}
@@ -48,4 +48,4 @@ const ServiceDetailTabs = ({ navigation, route }) => {
   );
 };
 
-export default ServiceDetailTabs;
+export default QuickServiceDetailTabs;

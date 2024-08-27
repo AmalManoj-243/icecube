@@ -18,7 +18,8 @@ export const API_ENDPOINTS = {
     VIEW_BOX_INSPECTION_REPORT: '/viewBoxInspectionReport',
     VIEW_NON_INSPECTED_BOX: '/viewNonInspectedBoxListing',
     VIEW_SERVICE: '/viewJobRegistration',
-    VIEW_ATTENDANCE: '/viewAttendance'
+    VIEW_ATTENDANCE: '/viewAttendance',
+    VIEW_SPARE_PARTS: '/viewSparePartsRequest',
 };
 
 export const DROP_DOWN_API_ENDPOINTS = {
@@ -57,6 +58,7 @@ export const DROP_DOWN_API_ENDPOINTS = {
     ACCESSORIES: "/viewJobAccessory/accessory_list/accessory_dropdown",
     COMPLAINTS: "/viewServiceRegisterSubProblem/service_register_sub_problem_list/service_register_sub_problem_dropdown",
     SUB_COMPLAINTS: "/viewServiceRegisterSubProblem/service_register_sub_problem_list/service_register_sub_problem_dropdown",
+    UNIT_OF_MEASURE: "/viewUnitOfMeasure/quality_list/quality_dropdown",
 };
 
 export const DETAIL_API_ENDPOINTS = {
