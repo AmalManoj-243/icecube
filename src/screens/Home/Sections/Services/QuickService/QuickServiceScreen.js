@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { useIsFocused, useFocusEffect } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { formatData } from '@utils/formatters';
-import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/containers';
+import { RoundedContainer, SafeAreaView } from '@components/containers';
 import { EmptyItem, EmptyState } from '@components/common/empty';
 import { NavigationHeader } from '@components/Header';
 import { FABButton } from '@components/common/Button';
@@ -70,10 +70,9 @@ const QuickServiceScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       <NavigationHeader
-        title="Quick Job Service"
+        title="Quick Service"
         onBackPress={() => navigation.goBack()}
       />
-      {/* <SearchContainer placeholder="Search Quick Service.." onChangeText={''} /> */}
       <RoundedContainer>
         {renderService()}
         <FABButton onPress={() => navigation.navigate('QuickServiceFormTabs')} />

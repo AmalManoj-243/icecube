@@ -23,7 +23,7 @@ const Complaints = ({ formData, onFieldChange, errors }) => {
           complaints: complaintsData.map(data => ({
             id: data._id,
             masterProblemId: data.master_problem_id,
-            label: data.name,
+            label: data.master_problem_name,
           })),
         }));
       } catch (error) {
