@@ -145,7 +145,7 @@ const ServiceDetails = ({ navigation, route }) => {
                 <View style={{ flexDirection: 'row', marginVertical: 20 }}>
                     <LoadingButton
                         width={'50%'}
-                        backgroundColor={COLORS.primaryThemeColor}
+                        backgroundColor="#FF0000"
                         title="CLOSE JOB"
                         onPress={() => {
                             setActionToPerform('close');
@@ -155,7 +155,7 @@ const ServiceDetails = ({ navigation, route }) => {
                     <View style={{ width: 5 }} />
                     <LoadingButton
                         width={'50%'}
-                        backgroundColor={COLORS.primaryThemeColor}
+                        backgroundColor="#008000"
                         title="UPDATE"
                         onPress={() => {
                             setActionToPerform('update');

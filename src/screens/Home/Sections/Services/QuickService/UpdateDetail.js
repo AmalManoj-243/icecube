@@ -72,7 +72,7 @@ const UpdateDetails = () => {
                 <DetailField label="Device Name" value={details?.device_name || '-'} />
                 <DetailField label="Consumer Model" value={details?.consumer_model_name || '-'} />
                 <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginVertical: 10 }}>
-                    <Text style={styles.label}>Add spare parts</Text>
+                    <Text style={styles.label}>Add an Item</Text>
                     <TouchableOpacity activeOpacity={0.7} onPress={() => navigation.navigate('AddSpareParts')}>
                         <AntDesign name="pluscircle" size={26} color={COLORS.orange} />
                     </TouchableOpacity>

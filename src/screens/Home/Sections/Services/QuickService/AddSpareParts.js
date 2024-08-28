@@ -260,7 +260,7 @@ const AddSpareParts = ({ navigation }) => {
                 />
                 {renderBottomSheet()}
                 <Button
-                    title={'SAVE'}
+                    title={'ADD ITEM'}
                     width={'50%'}
                     alignSelf={'center'}
                     backgroundColor={COLORS.primaryThemeColor}
