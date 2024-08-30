@@ -184,17 +184,17 @@ const AuditForm = ({ navigation }) => {
           }
           break;
 
-          case "Stock rec":
-            response = await fetchBills.stockTransferDetails(billSequence);
-            billDetails = response[0];
-            console.log("Bill data Stock  Transfer", JSON.stringify(billDetails, null, 2));
-            break;
-            
-          case "Fund rec":
-            response = await fetchBills.fundTransferDetails(billSequence);
-            billDetails = response[0];
-            console.log("Bill data fund  Transfer", JSON.stringify(billDetails, null, 2));
-            break;
+        case "Stock rec":
+          response = await fetchBills.stockTransferDetails(billSequence);
+          billDetails = response[0];
+          console.log("Bill data Stock  Transfer", JSON.stringify(billDetails, null, 2));
+          break;
+
+        case "Fund rec":
+          response = await fetchBills.fundTransferDetails(billSequence);
+          billDetails = response[0];
+          console.log("Bill data fund  Transfer", JSON.stringify(billDetails, null, 2));
+          break;
 
         default:
           console.log("Unknown bill type");
@@ -208,9 +208,11 @@ const AuditForm = ({ navigation }) => {
             billDetails?.expense_chart_of_account_name ||
             billDetails?.chart_of_account_name ||
             billDetails?.chart_of_accounts_name ||
-            billDetails?.sales_person?.sales_person_name || '',
+            billDetails?.sales_person?.sales_person_name ||
+            billDetails?.created_by?.created_by_name || '',
           documentNumber: billDetails.sequence_no || '',
-          totalAmount: billDetails.total_amount || billDetails.amount || billDetails?.spare_parts_line?.[0]?.totalCount?.[0]?.total_calculated_amounts || billDetails?.debit || '',
+          totalAmount: billDetails.total_amount || billDetails.amount || billDetails?.spare_parts_line?.[0]?.totalCount?.[0]?.total_calculated_amounts || billDetails?.debit ||
+            billDetails?.total_purchase_cost || '',
           businessType: billDetails.bussiness_type_id || '',
           paymentMethod: billDetails?.payment_method_id ||
             billDetails?.register_payments?.[0]?.payment_method_id ||
@@ -311,6 +313,8 @@ const AuditForm = ({ navigation }) => {
         remarks: remarks || "",
         warehouse_id: loginUser?.warehouse_id ?? null,
         warehouse_name: loginUser?.warehouse?.warehouse_name ?? null,
+        to_warehouse_id: null,
+        to_warehouse_name: '',
         sales_person_id: loginUser?.related_profile?._id ?? null,
         sales_person_name: loginUser?.related_profile?.name ?? null,
         company_id: loginUser?.company.company_id ?? null,
@@ -572,8 +576,8 @@ const AuditForm = ({ navigation }) => {
           auditingData.employee_ledger_name = scannedBillDetails?.employee_ledger ?? null;
           break;
         case "Spare Issue":
-          auditingData.un_taxed_amount = displayBillDetails?.totalAmount ?? 0;
-          auditingData.supplier_id = null;
+          auditingData.amount = displayBillDetails?.total_purchase_cost ?? 0;
+          auditingData.un_taxed_amount = null;
           auditingData.service_product_cost = 0;
           break;
         case "JobInvoice":
@@ -588,7 +592,21 @@ const AuditForm = ({ navigation }) => {
           auditingData.cheque_transaction_type = scannedBillDetails?.register_payments[0]?.type ?? null;
           auditingData.service_amount = scannedBillDetails?.total_service_amount;
           auditingData.service_product_amount = scannedBillDetails?.total_product_amount; // not sure
-          auditingData.service_product_cost = scannedBillDetails?.total_product_cost_amount
+          auditingData.service_product_cost = scannedBillDetails?.total_product_cost_amount;
+          // latest updates keys
+          auditingData.chart_of_accounts_id = scannedBillDetails?.register_payments[0]?.chart_of_accounts_id ?? null;
+          auditingData.chart_of_accounts_name = scannedBillDetails?.register_payments[0]?.chart_of_accounts_name ?? null;
+          auditingData.online_transaction_type = scannedBillDetails?.register_payments[0]?.online_transaction_type ?? null;
+          auditingData.online_status = scannedBillDetails?.register_payments[0]?.online_status ?? null;
+          auditingData.ledger_id = scannedBillDetails?.register_payments[0]?.ledger_id ?? null;
+          auditingData.ledger_type = scannedBillDetails?.register_payments[0]?.ledger_type ?? null;
+          auditingData.ledger_display_name = scannedBillDetails?.register_payments[0]?.ledger_display_name ?? null;
+          break;
+        case "Stock rec":
+          auditingData.amount = scannedBillDetails?.total_purchase_cost ?? 0;
+          auditingData.un_taxed_amount = scannedBillDetails?.untaxed_total_amount ?? 0;
+          auditingData.to_warehouse_id = scannedBillDetails?.to_warehouse_id ?? null;
+          auditingData.to_warehouse_name = scannedBillDetails?.to_warehouse_name ?? null;
           break;
         default:
           break;
