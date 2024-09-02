@@ -147,8 +147,8 @@ const UpdateDetails = ({ route, navigation }) => {
             uom: items?.uom.label,
             unit_price: items.unitPrice,
             unit_cost: '',
-            tax_type_name: "vat 5%",
-            tax_type_id: "648d9b54ef9cd868dfbfa37b"
+            tax_type_id: items?.tax?.id,
+            tax_type_name: items?.tax.label,
           }))
         }
       ]
