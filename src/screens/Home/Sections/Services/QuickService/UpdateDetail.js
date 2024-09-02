@@ -217,14 +217,6 @@ const UpdateDetails = ({ route, navigation }) => {
           keyExtractor={(item, index) => index.toString()}
         />
         <Button
-          title={'SAVE'}
-          width={'50%'}
-          alignSelf={'center'}
-          backgroundColor={isSaving ? COLORS.gray : COLORS.primaryThemeColor}
-          onPress={handleSave}
-          disabled={isSaving || isSubmitting}
-        />
-        <Button
           title={'SUBMIT'}
           width={'50%'}
           alignSelf={'center'}
