@@ -93,7 +93,7 @@ const UpdateDetails = ({ route, navigation }) => {
             uom: items?.uom.label,
             unit_price: items.unitPrice,
             tax_type_id: items?.tax?.id,
-            tax_type_name: items?.tax.label,
+            tax_type_name: items?.tax.label,  /// haii Etta 
           }))
         }
       ]
