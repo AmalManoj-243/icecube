@@ -36,6 +36,7 @@ import { AddSpareParts, ServiceDetails, UpdateDetails } from "@screens/Home/Sect
 import { KPIListingScreen } from "@screens/KPIDashboard";
 import SparePartsRequestDetails from "@screens/Home/Sections/Services/SparePartsRequest/SparePartsRequestDetails";
 import SparePartsIssueCreation from "@screens/Home/Sections/Services/SparePartsRequest/SparePartsIssueCreation";
+import { VisitFormTabs } from "@screens/Home/Options/Visits/VisitFormTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -240,7 +241,7 @@ const StackNavigator = () => {
       />
       <Stack.Screen
         name="VisitForm"
-        component={VisitForm}
+        component={VisitFormTabs}
         options={{ headerShown: false }}
       />
       <Stack.Screen

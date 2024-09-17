@@ -34,12 +34,14 @@ const BoxInspectionForm = ({ navigation, route }) => {
 
   const [errors, setErrors] = useState({});
 
+   // Fetch inventory box items when boxId changes
   useEffect(() => {
     if (boxId) {
       setLoading(true);
       const fetchInventoryBoxItems = async () => {
         try {
           const [boxItems] = await fetchInventoryDetails(boxId)
+           // Map and initialize box items with default inspected quantity
           setBoxItems(boxItems?.items.map((item) => ({
             ...item,
             quantity: item.quantity,
@@ -64,6 +66,7 @@ const BoxInspectionForm = ({ navigation, route }) => {
     <EmptyState imageSource={require('@assets/images/EmptyData/empty_inventory_box.png')} message="Inspected items are empty" />
   );
 
+   // Handle changes in inspected quantity input for each box item
   const handleQuantityChange = useCallback((id, text) => {
     const newQuantity = parseInt(text) || 0;
     setBoxItems((prevItems) =>

@@ -19,7 +19,7 @@ import { styles } from "./styles";
 import { Button } from "@components/common/Button";
 import { COLORS } from "@constants/theme";
 import { showToastMessage } from "@components/Toast";
-import { post, put } from "@api/services/utils";
+import { post } from "@api/services/utils";
 import { useAuthStore } from '@stores/auth';
 import Toast from "react-native-toast-message";
 import { OverlayLoader } from "@components/Loader";
@@ -27,50 +27,13 @@ import { OverlayLoader } from "@components/Loader";
 const InventoryForm = ({ navigation, route }) => {
   const { inventoryDetails = {}, reason = {} } = route?.params || {};
 
+  // Define initial states for items list, visibility, selected type, and more
   const [itemsList, setItemsList] = useState([]);
   const [isVisible, setIsVisible] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
   const [chosenItem, setChosenItem] = useState(null);
   const [loading, setLoading] = useState(false);
   const currentUser = useAuthStore((state) => state.user);
-  const [showButton, setShowButton] = useState(false);
-  const isResponsible = (userId) =>
-    currentUser && userId === currentUser.related_profile._id;
-
-  const hasPermission = () =>
-    currentUser &&
-    (isResponsible(inventoryDetails?.responsible_person?._id) ||
-      inventoryDetails?.employees?.some((employee) =>
-        isResponsible(employee._id)
-      ));
-
-  const tempPermission = () =>
-    currentUser &&
-    inventoryDetails?.temp_assignee?.some((temp) => isResponsible(temp._id));
-
-  const showSubmitButton =
-    (hasPermission() || (tempPermission() && showButton)) && !loading;
-
-  // One-time assignee related state and effect
-  useEffect(() => {
-    const type = inventoryDetails?.type_of_assign;
-    if (type === "one_time" && tempPermission()) {
-      setShowButton(true);
-    }
-  }, [inventoryDetails, currentUser]);
-
-  // Check if the button should be shown or hidden based on time
-  useEffect(() => {
-    if (
-      inventoryDetails?.from_date &&
-      inventoryDetails?.type_of_assign === "one_hour"
-    ) {
-      const fromDate = new Date(inventoryDetails?.from_date);
-      const currentTime = new Date();
-      const oneHourLater = new Date(fromDate.getTime() + 60 * 60 * 1000);
-      setShowButton(currentTime <= oneHourLater && currentTime >= fromDate);
-    }
-  }, [inventoryDetails]);
 
   const [formData, setFormData] = useState({
     reason: reason,
@@ -93,7 +56,7 @@ const InventoryForm = ({ navigation, route }) => {
     stockTransfer: [],
     vendorBill: [],
   });
-
+  // Fetch dropdown options for various inventory types (invoices, services, returns, etc.)
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -143,6 +106,7 @@ const InventoryForm = ({ navigation, route }) => {
     fetchData();
   }, []);
 
+  // Update items list based on inventory details and reason (view or editing mode)
   useEffect(() => {
     setItemsList(
       inventoryDetails?.items.map((item) => ({
@@ -153,12 +117,14 @@ const InventoryForm = ({ navigation, route }) => {
     );
   }, [inventoryDetails?.items, reason.id]);
 
+  // Automatically choose an item if only one item is in the list
   useEffect(() => {
     if (itemsList.length === 1) {
       handleChooseItem(itemsList[0]);
     }
   }, [itemsList]);
 
+  // Handle change in form fields dynamically (e.g., service, sales, remarks)
   const handleFieldChange = (field, value) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -178,6 +144,7 @@ const InventoryForm = ({ navigation, route }) => {
     }
   };
 
+  // Handle the quantity change logic, including validation based on reason
   const handleQuantityChange = (id, text) => {
     if (!formData.reason) {
       showToastMessage("Please select a reason first.");
@@ -203,6 +170,7 @@ const InventoryForm = ({ navigation, route }) => {
       return;
     }
     if (chosenItem) {
+      // Update the chosen item or items list
       setChosenItem({ ...chosenItem, quantity: newQuantity });
     }
     const updatedItems = itemsList.map((oldItem) => {
@@ -213,7 +181,7 @@ const InventoryForm = ({ navigation, route }) => {
     });
     setItemsList(updatedItems);
   };
-
+  // Submit the inventory box request, validating required fields (reason, item)
   const handleInventoryBoxRequest = async () => {
     if (!formData.reason) {
       showToastMessage("Please select a reason.");
@@ -265,23 +233,6 @@ const InventoryForm = ({ navigation, route }) => {
       warehouse_name: currentUser?.warehouse?.warehouse_name || "",
       warehouse_id: currentUser?.warehouse?.warehouse_id,
     };
-    if (inventoryDetails?.type_of_assign === "one_hour") {
-      try {
-        const data = {
-          box_id: inventoryDetails?._id,
-          type_of_assign: null,
-        };
-        const response = await put("/updateInventoryBox", data);
-        if (response.success === true) {
-          showToastMessage("One-time request successfully processed.");
-        } else {
-          showToastMessage("Failed to update");
-        }
-      } catch (error) {
-        console.error("Error updating one-time request:", error);
-        showToastMessage("An error occurred");
-      }
-    }
     try {
       const response = await post(
         "/createInventoryBoxRequest",
@@ -312,6 +263,7 @@ const InventoryForm = ({ navigation, route }) => {
     }
   };
 
+  // Render dynamic form fields based on selected reason (e.g., Sales, Service)
   const toggleBottomSheet = (type) => {
     setSelectedType(type);
     setIsVisible(!isVisible);
@@ -518,13 +470,13 @@ const InventoryForm = ({ navigation, route }) => {
           onChangeText={(text) => handleFieldChange("remarks", text)}
         />
         {/* {showSubmitButton ? ( */}
-          <Button
-            backgroundColor={loading ? COLORS.lightenBoxTheme : COLORS.boxTheme}
-            title={"Submit"}
-            disabled={loading}
-            onPress={handleInventoryBoxRequest}
-            style={styles.submitButton}
-          />
+        <Button
+          backgroundColor={loading ? COLORS.lightenBoxTheme : COLORS.boxTheme}
+          title={"Submit"}
+          disabled={loading}
+          onPress={handleInventoryBoxRequest}
+          style={styles.submitButton}
+        />
         {/* ) : null} */}
         <View style={{ flex: 1, marginBottom: "20%" }} />
       </RoundedScrollContainer>
