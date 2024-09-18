@@ -32,7 +32,7 @@ const VisitPlanDetails = ({ navigation, route }) => {
       setDetails(updatedDetails);
       setShowButton({
         approveButton: updatedDetails?.approval_status === 'Pending' && currentUser?.related_profile?._id === updatedDetails?.visit_employee_manager_id,
-        visitButton:true
+        visitButton: updatedDetails?.approval_status === 'Approved' && updatedDetails?.visit_status === 'Not visited' && currentUser?.related_profile?._id === updatedDetails?.visit_employee_id,
       });
     } catch (error) {
       console.error('Error fetching enquiry details:', error);
