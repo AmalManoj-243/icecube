@@ -11,17 +11,16 @@ import { fetchServiceDetails } from '@api/details/detailApi';
 import { OverlayLoader } from '@components/Loader';
 import { LoadingButton } from '@components/common/Button';
 import { COLORS } from '@constants/theme';
-import { post } from '@api/services/utils';
+import { post, put } from '@api/services/utils';
 import { ConfirmationModal } from '@components/Modal';
 
-const ServiceDetails = ({ navigation, route }) => {
+const QuickServiceDetails = ({ navigation, route }) => {
     const { id: serviceId } = route?.params || {};
     const [details, setDetails] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
-    const [closingReason, setClosingReason] = useState('');
     const [actionToPerform, setActionToPerform] = useState(null);
 
     const fetchDetails = async () => {
@@ -49,12 +48,16 @@ const ServiceDetails = ({ navigation, route }) => {
         setIsSubmitting(true);
         try {
             const closeJobData = {
-                service_id: serviceId,
-                reason: closingReason,
+                _id: details._id,
+                job_stage: "Closed",
+                job_stage_close_reason: null,
             };
-            const response = await post('/closeJob', closeJobData);   ///
+            console.log("Success", closeJobData)
+            const response = await put('/updateJobRegistration', closeJobData);   
+            console.log(response)
             if (response.success === "true") {
                 showToastMessage('Job successfully closed!');
+                navigation.navigate('QuickServiceScreen');
             } else {
                 showToastMessage('Failed to close job. Please try again.');
             }
@@ -65,7 +68,6 @@ const ServiceDetails = ({ navigation, route }) => {
             fetchDetails();
             setIsSubmitting(false);
             setIsConfirmationModalVisible(false);
-            setClosingReason('');
         }
     };
 
@@ -77,7 +79,7 @@ const ServiceDetails = ({ navigation, route }) => {
             };
             const response = await post('/createJobApproveQuote', updateJobData);
             if (response.success === "true") {
-                navigation.navigate('UpdateDetail', {
+                navigation.navigate('QuickServiceUpdateDetails', {
                     id: serviceId,
                     details: {
                         customerName: details.customer_name,
@@ -141,6 +143,16 @@ const ServiceDetails = ({ navigation, route }) => {
                 <DetailField label="Pre Condition" value={details?.pre_condition || '-'} />
                 <DetailField label="Estimation" value={details?.estimation?.toString() || '-'} />
                 <DetailField label="Accessories" value={accessoriesString} />
+                {/* <DetailField label="Complaints"value={details?.service_register_complaints?.[0]?.
+                    master_problem_name || '-'} />
+                <DetailField label="Sub Complaints" value={details?.service_register_complaints?.[0]?.
+                    sub_problems_ids?.[0]?.sub_problem_name || '-'} />
+                <DetailField 
+                    label="Remarks"
+                    value={details?.service_register_complaints?.[0]?.remarks || '-'}
+                    multiline
+                    numberOfLines={3}
+                    textAlignVertical={'top'} /> */}
 
                 <View style={{ flexDirection: 'row', marginVertical: 20 }}>
                     <LoadingButton
@@ -188,4 +200,4 @@ const ServiceDetails = ({ navigation, route }) => {
     );
 };
 
-export default ServiceDetails;
+export default QuickServiceDetails;

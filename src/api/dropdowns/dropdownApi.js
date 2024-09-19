@@ -86,11 +86,11 @@ export const fetchAreaDropdown = async (stateId) => {
   return fetchData(`${DROP_DOWN_API_ENDPOINTS.VIEW_AREA}?state_id=${stateId}`);
 };
 
-export const fetchsalesPersonDropdown = async () => {
+export const fetchSalesPersonDropdown = async () => {
   return fetchData(DROP_DOWN_API_ENDPOINTS.VIEW_SALESPERSON);
 }
 
-export const fetchcollectionAgentDropdown = async () => {
+export const fetchCollectionAgentDropdown = async () => {
   return fetchData(DROP_DOWN_API_ENDPOINTS.VIEW_COLLECTIONAGENT);
 }
 
@@ -114,7 +114,7 @@ export const fetchOpportunityDropdown = async () => {
   return fetchData(DROP_DOWN_API_ENDPOINTS.OPPORTUNITY);
 }
 
-export const fetchenquiryTypeDropdown = async () => {
+export const fetchEnquiryTypeDropdown = async () => {
   return fetchData(DROP_DOWN_API_ENDPOINTS.ENQUIRY_TYPE);
 }
 
@@ -150,7 +150,7 @@ export const fetchConsumerModelDropdown = async (deviceId, brandId) => {
   return fetchData(`${DROP_DOWN_API_ENDPOINTS.CONSUMER_MODEL}?job_device_id=${deviceId}&job_brand_id=${brandId}`);
 }
 
-export const fetchAssignedDropdown = async () => {
+export const fetchAssigneeDropdown = async () => {
   return fetchData(DROP_DOWN_API_ENDPOINTS.ASSIGNED_TO);
 }
 

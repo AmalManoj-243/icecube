@@ -10,10 +10,10 @@ import { TextInput as FormInput } from '@components/common/TextInput';
 import { DropdownSheet } from '@components/common/BottomSheets';
 import {
     fetchSourceDropdown,
-    fetchsalesPersonDropdown,
+    fetchSalesPersonDropdown,
     fetchCustomersDropdown,
     fetchOpportunityDropdown,
-    fetchenquiryTypeDropdown
+    fetchEnquiryTypeDropdown
 } from '@api/dropdowns/dropdownApi';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { formatDateTime } from '@utils/common/date';
@@ -78,8 +78,8 @@ const EditPipeline = ({ navigation, route }) => {
             try {
                 const [sourceData, enquiryTypeData, salesPersonData, customerData, opportunityData] = await Promise.all([
                     fetchSourceDropdown(),
-                    fetchenquiryTypeDropdown(),
-                    fetchsalesPersonDropdown(),
+                    fetchEnquiryTypeDropdown(),
+                    fetchSalesPersonDropdown(),
                     fetchCustomersDropdown(),
                     fetchOpportunityDropdown(),
                 ]);

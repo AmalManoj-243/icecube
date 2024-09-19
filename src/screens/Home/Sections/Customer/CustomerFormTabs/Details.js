@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RoundedScrollContainer } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
 import { DropdownSheet } from '@components/common/BottomSheets';
-import { fetchsalesPersonDropdown, fetchcollectionAgentDropdown } from '@api/dropdowns/dropdownApi';
+import { fetchSalesPersonDropdown, fetchCollectionAgentDropdown } from '@api/dropdowns/dropdownApi';
 import { customerTypes } from '@constants/dropdownConst';
 import { customerTitles } from '@constants/dropdownConst';
 import { modeOfPayment } from '@constants/dropdownConst';
@@ -21,7 +21,7 @@ const Details = ({ formData, onFieldChange, errors }) => {
   useEffect(() => {
     const fetchDropdownData = async () => {
       try {
-        const salesPersonData = await fetchsalesPersonDropdown();
+        const salesPersonData = await fetchSalesPersonDropdown();
         setDropdown(prevDropdown => ({
           ...prevDropdown,
           salesPerson: salesPersonData.map(data => ({
@@ -40,7 +40,7 @@ const Details = ({ formData, onFieldChange, errors }) => {
   useEffect(() => {
     const fetchDropdownData = async () => {
       try {
-        const collectionAgentData = await fetchcollectionAgentDropdown();
+        const collectionAgentData = await fetchCollectionAgentDropdown();
         setDropdown(prevDropdown => ({
           ...prevDropdown,
           collectionAgent: collectionAgentData.map(data => ({

@@ -7,12 +7,12 @@ import { formatData } from '@utils/formatters';
 import { EmptyItem } from '@components/common/empty';
 import { COLORS } from '@constants/theme';
 
-const ServiceScreen = ({ navigation }) => {
+const ServiceScreens = ({ navigation }) => {
 
     const options =
         [
-            { title: 'Quick Service', image: require('@assets/images/Home/section/service.png'), onPress: () => navigation.navigate('QuickServiceScreen') },
-            { title: 'Spare Parts Request', image: require('@assets/images/Home/section/spare_parts.png'), onPress: () => navigation.navigate('SparePartsRequestScreen') },
+            { title: 'Quick Service', image: require('@assets/images/Home/options/crm/enquiry_register.png'), onPress: () => navigation.navigate('QuickServiceScreen') },
+            { title: 'Pick Up', image: require('@assets/images/Home/options/pickup.png'), onPress: () => navigation.navigate('PickupScreen') },
         ]
 
     const renderItem = ({ item }) => {
@@ -26,7 +26,7 @@ const ServiceScreen = ({ navigation }) => {
     return (
         <SafeAreaView backgroundColor={COLORS.white}>
             <NavigationHeader
-                title="Services"
+                title="Service"
                 color={COLORS.black}
                 backgroundColor={COLORS.white}
                 onBackPress={() => navigation.goBack()}
@@ -45,4 +45,4 @@ const ServiceScreen = ({ navigation }) => {
     )
 }
 
-export default ServiceScreen
+export default ServiceScreens

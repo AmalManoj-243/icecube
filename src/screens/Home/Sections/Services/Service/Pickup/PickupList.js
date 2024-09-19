@@ -2,21 +2,23 @@ import React from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
+import { formatDate } from '@utils/common/date';
 
-const SparePartsIssueList = ({ item }) => {
+const PickupList = ({ item, onPress }) => {
   return (
-    <TouchableOpacity activeOpacity={0.8} style={styles.itemContainer}>
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.itemContainer}>
       <View style={styles.leftColumn}>
-        <Text style={styles.head}>{item?.product_name?.trim() || '-'}</Text>
-        <View style={styles.rightColumn}>
-          <Text style={[styles.contentRight]}>{item?.quantity}</Text>
-        </View>
+        <Text style={styles.head}>{item?.sequence_no || '-'}</Text>
+        <Text style={styles.content}>{item?.customer_name?.trim() || '-'}</Text>
       </View>
       <View style={styles.rightColumn}>
-        <Text style={styles.content}>{item?.uom || '-'}</Text>
+        <Text style={styles.content}>{item?.device_name}</Text>
+        <Text style={styles.content}>{item?.warehouse_name}</Text>
+        <Text style={[styles.contentRight]}>{formatDate(item?.date_time, 'dd MMM yyyy') || '-'}</Text>
       </View>
       <View style={styles.rightColumn}>
-        <Text style={styles.contentRight}>{item?.status || '-'}</Text>
+        <Text style={styles.content}>{item?.sales_person_name}</Text>
+        <Text style={[styles.contentRight, { color: 'red' }]}>{item?.job_stage || '-'}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -58,9 +60,8 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontSize:14,
     fontFamily: FONT_FAMILY.urbanistSemiBold,
-    textTransform:'capitalize'
+    textTransform:'capitalize',
   },
- 
   contentRight: {
     color: '#666666',
     fontFamily: FONT_FAMILY.urbanistSemiBold,
@@ -68,4 +69,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SparePartsIssueList;
+export default PickupList;

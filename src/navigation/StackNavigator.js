@@ -24,18 +24,17 @@ import { EnquiryDetailTabs } from "@screens/Home/Options/CRM/EnquiryRegister/Enq
 import { LeadDetailTabs } from "@screens/Home/Options/CRM/Leads/LeadDetailTabs";
 import { EditPipeline, PipelineForm, PipelineScreen } from "@screens/Home/Options/CRM/Pipeline";
 import { PipelineDetailTabs } from "@screens/Home/Options/CRM/Pipeline/PipelineDetailTabs";
-import { PickupScreen } from "@screens/Home/Options/Pickup";
 import { BoxInspectionForm, BoxInspectionScreen } from "@screens/Home/Options/BoxInspection";
 import { AttendanceScreen } from "@screens/Home/Options/Attendance";
 import { MarkAttendance, PunchingScreen } from "@screens/Home/Options/Attendance/Punching";
-import QuickServiceFormTabs from "@screens/Home/Sections/Services/QuickService/QuickServiceFormTabs/QuickServiceFormTabs";
-import QuickServiceScreen from "@screens/Home/Sections/Services/QuickService/QuickServiceScreen";
-import { ServiceScreen } from "@screens/Home/Sections/Services";
-import { SparePartsRequestScreen } from "@screens/Home/Sections/Services/SparePartsRequest";
-import { AddSpareParts, ServiceDetails, UpdateDetails } from "@screens/Home/Sections/Services/QuickService";
 import { KPIListingScreen } from "@screens/KPIDashboard";
-import SparePartsRequestDetails from "@screens/Home/Sections/Services/SparePartsRequest/SparePartsRequestDetails";
-import SparePartsIssueCreation from "@screens/Home/Sections/Services/SparePartsRequest/SparePartsIssueCreation";
+import { SparePartsIssueCreation, SparePartsRequestDetails, SparePartsRequestScreen } from "@screens/Home/Sections/Services/SpareManagements/SparePartsRequest";
+import { AddSpareParts, QuickServiceDetails, QuickServiceScreen, QuickServiceUpdateDetails } from "@screens/Home/Sections/Services/Service/QuickService";
+import { ServiceScreens } from "@screens/Home/Sections/Services/Service";
+import { ServicesScreen } from "@screens/Home/Sections/Services";
+import { SpareManagementsScreen } from "@screens/Home/Sections/Services/SpareManagements";
+import { QuickServiceFormTabs } from "@screens/Home/Sections/Services/Service/QuickService/QuickServiceFormTabs";
+import { EditPickup, PickupDetails, PickupScreen } from "@screens/Home/Sections/Services/Service/Pickup";
 
 const Stack = createNativeStackNavigator();
 
@@ -152,10 +151,30 @@ const StackNavigator = () => {
         options={{ headerShown: false }}
       />
 
-      {/* Services */}
+      {/* Service          Service          Service*/}
       <Stack.Screen
-        name="ServiceScreen"
-        component={ServiceScreen}
+        name="ServiceScreens"
+        component={ServiceScreens}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="QuickServiceUpdateDetails"
+        component={QuickServiceUpdateDetails}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddSpareParts"
+        component={AddSpareParts}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="QuickServiceDetails"
+        component={QuickServiceDetails}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="ServicesScreen"
+        component={ServicesScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -163,43 +182,31 @@ const StackNavigator = () => {
         component={QuickServiceScreen}
         options={{ headerShown: false }}
       />
-
       <Stack.Screen
         name="QuickServiceFormTabs"
         component={QuickServiceFormTabs}
         options={{ headerShown: false }}
       />
-      <Stack.Screen
-        name="UpdateDetail"
-        component={UpdateDetails}
-        options={{ headerShown: false }}
-      />
 
-      <Stack.Screen
-        name="AddSpareParts"
-        component={AddSpareParts}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ServiceDetails"
-        component={ServiceDetails}
-        options={{ headerShown: false }}
-      />
-
-      {/* Spare Parts */}
+      {/* Spare Managements */}
       <Stack.Screen
         name="SparePartsRequestScreen"
         component={SparePartsRequestScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="SparePartsRequestDetails"
-        component={SparePartsRequestDetails}
+        name="SpareManagementsScreen"
+        component={SpareManagementsScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
         name="SparePartsIssueCreation"
         component={SparePartsIssueCreation}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SparePartsRequestDetails"
+        component={SparePartsRequestDetails}
         options={{ headerShown: false }}
       />
 
@@ -320,12 +327,23 @@ const StackNavigator = () => {
         options={{ headerShown: false }}
       />
 
-      {/* pickup */}
+      {/* Pickup */}
       <Stack.Screen
-        name="Pickup"
+        name="PickupScreen"
         component={PickupScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="PickupDetails"
+        component={PickupDetails}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditPickup"
+        component={EditPickup}
+        options={{ headerShown: false }}
+      />
+      
 
       {/* BoxInspection */}
       <Stack.Screen

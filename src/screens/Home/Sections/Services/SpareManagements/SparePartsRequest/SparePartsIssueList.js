@@ -2,20 +2,20 @@ import React from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
-import { formatDate } from '@utils/common/date';
 
-const SparePartsRequestList = ({ item, onPress }) => {
+const SparePartsIssueList = ({ item }) => {
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.itemContainer}>
+    <TouchableOpacity activeOpacity={0.8} style={styles.itemContainer}>
       <View style={styles.leftColumn}>
-        <Text style={styles.head}>{item?.sequence_no || '-'}</Text>
-        <Text style={styles.content}>{item?.created_by_name || '-'}</Text>
+        <Text style={styles.head}>{item?.name?.trim() || '-'}</Text>
+        <View style={styles.rightColumn}>
+          <Text style={[styles.contentRight]}>{item?.quantity}</Text>
+        </View>
       </View>
       <View style={styles.rightColumn}>
-        <Text style={[styles.contentRight]}>{formatDate(item?.date_time, 'dd MMM yyyy') || '-'}</Text>
+        <Text style={styles.content}>{item?.uom || '-'}</Text>
       </View>
       <View style={styles.rightColumn}>
-        <Text style={styles.content}>{item?.assigned_to_name || '-'}</Text>
         <Text style={[styles.contentRight, { color: 'red' }]}>{item?.status || '-'}</Text>
       </View>
     </TouchableOpacity>
@@ -44,9 +44,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rightColumn: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    flex: 1
+    justifyContent: 'space-between', 
+    flexDirection: 'row', 
+    flex: 1 
   },
   head: {
     fontFamily: FONT_FAMILY.urbanistBold,
@@ -56,16 +56,16 @@ const styles = StyleSheet.create({
   content: {
     color: '#666666',
     marginBottom: 5,
-    fontSize: 14,
+    fontSize:14,
     fontFamily: FONT_FAMILY.urbanistSemiBold,
-    textTransform: 'capitalize'
+    textTransform:'capitalize'
   },
-
+ 
   contentRight: {
     color: '#666666',
     fontFamily: FONT_FAMILY.urbanistSemiBold,
-    fontSize: 14,
+    fontSize:14,
   },
 });
 
-export default SparePartsRequestList;
+export default SparePartsIssueList;

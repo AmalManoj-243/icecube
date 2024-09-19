@@ -39,7 +39,7 @@ const QuickServiceScreen = ({ navigation }) => {
     if (item.empty) {
       return <EmptyItem />;
     }
-    return <QuickServiceList item={item} onPress={() => navigation.navigate('ServiceDetails', { id: item._id })} />;
+    return <QuickServiceList item={item} onPress={() => navigation.navigate('QuickServiceDetails', { id: item._id })} />;
   };
 
   const renderEmptyState = () => (
@@ -74,8 +74,8 @@ const QuickServiceScreen = ({ navigation }) => {
         onBackPress={() => navigation.goBack()}
       />
       <RoundedContainer>
-        {renderService()}
-        <FABButton onPress={() => navigation.navigate('QuickServiceFormTabs')} />
+      {renderService()}
+      <FABButton onPress={() => navigation.navigate('QuickServiceFormTabs')} />
       </RoundedContainer>
       <OverlayLoader visible={loading} />
     </SafeAreaView>
