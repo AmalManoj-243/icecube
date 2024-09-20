@@ -26,6 +26,7 @@ import { reasons } from "@constants/dropdownConst";
 import { fetchEmployeesDropdown } from "@api/dropdowns/dropdownApi";
 
 const InventoryScreen = ({ navigation }) => {
+  // Managing modal, loading, and state variables
   const isFocused = useIsFocused();
   const [isVisibleModal, setIsVisibleModal] = useState(false);
   const [isFabOpen, setIsFabOpen] = useState(false);
@@ -37,7 +38,7 @@ const InventoryScreen = ({ navigation }) => {
     useState(false);
   const [isVisibleEmployeeListModal, setIsVisibleEmployeeListModal] =
     useState(false);
-    
+
   const { data, loading, fetchData, fetchMoreData } = useDataFetching(
     fetchInventoryBoxRequest
   );
@@ -45,11 +46,12 @@ const InventoryScreen = ({ navigation }) => {
   const currentUser = useAuthStore((state) => state.user);
   const warehouseId = currentUser?.warehouse?.warehouse_id || "";
 
+  // Helper function to check if the user is responsible for the inventory
   const isResponsibleOrEmployee = (inventoryDetails) => {
     const responsiblePersonId = inventoryDetails?.responsible_person?._id;
     const employeeIds = inventoryDetails?.employees?.map((employee) => employee._id) || [];
     const tempAssigneeIds = inventoryDetails?.temp_assignee?.map((tempAssignee) => tempAssignee._id) || [];
-  
+
     return (
       currentUser &&
       (currentUser.related_profile._id === responsiblePersonId ||
@@ -58,6 +60,7 @@ const InventoryScreen = ({ navigation }) => {
     );
   };
 
+  // Fetch employee dropdown data on mount
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -75,22 +78,26 @@ const InventoryScreen = ({ navigation }) => {
     fetchData();
   }, []);
 
+  // Refetch data when screen gains focus
   useFocusEffect(
     useCallback(() => {
       fetchData();
     }, [])
   );
 
+  // Refetch data when screen becomes active
   useEffect(() => {
     if (isFocused) {
       fetchData();
     }
   }, [isFocused]);
 
+  // Handle load more action for pagination
   const handleLoadMore = () => {
     fetchMoreData();
   };
 
+  // Handle scanning process and navigating based on scanned data
   const handleScan = async (scannedData) => {
     setScanLoading(true);
     try {
@@ -116,6 +123,7 @@ const InventoryScreen = ({ navigation }) => {
     }
   };
 
+  // Handle modal input search
   const handleModalInput = async (text) => {
     setModalLoading(true);
     try {
@@ -144,6 +152,7 @@ const InventoryScreen = ({ navigation }) => {
     }
   };
 
+  // Render inventory items or empty state
   const renderItem = ({ item }) =>
     item.empty ? <EmptyItem /> : <InventoryList item={item} />;
 
@@ -154,6 +163,7 @@ const InventoryScreen = ({ navigation }) => {
     />
   );
 
+  // Handle box opening request for inventory forms
   const handleBoxOpeningRequest = (value) => {
     if (value) {
       navigation.navigate("InventoryForm", {
@@ -165,6 +175,7 @@ const InventoryScreen = ({ navigation }) => {
 
   const handleSelectTemporaryAssignee = (value) => {
   };
+  // Render the inventory list or empty state based on data
   const renderContent = () => (
     <FlashList
       data={formatData(data, 1)}

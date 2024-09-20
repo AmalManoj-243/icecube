@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ButtonContainer, RoundedScrollContainer, SafeAreaView } from '@components/containers';
+import { RoundedScrollContainer, SafeAreaView } from '@components/containers';
 import { NavigationHeader } from '@components/Header';
 import Text from '@components/Text';
 import { View, FlatList } from 'react-native';
@@ -8,7 +8,6 @@ import { DetailField } from '@components/common/Detail';
 import { EmptyState } from '@components/common/empty';
 import { formatDate } from '@utils/common/date';
 import InventoryBoxList from './InventoryBoxList';
-import { useAuthStore } from '@stores/auth';
 import { styles } from './styles';
 import { reasons } from '@constants/dropdownConst';
 import { CustomListModal } from '@components/Modal';
@@ -16,16 +15,7 @@ import { CustomListModal } from '@components/Modal';
 const InventoryDetails = ({ navigation, route }) => {
   const { inventoryDetails } = route?.params || {};
   const [isVisible, setIsVisible] = useState(false)
-  const currentUser = useAuthStore((state) => state.user);
-  const isResponsible = (userId) => currentUser && (userId === currentUser.related_profile._id);
-
-
-  const hasPermission = () =>
-    currentUser &&
-    (isResponsible(inventoryDetails?.responsible_person?._id) ||
-      inventoryDetails?.employees?.some((employee) => isResponsible(employee._id)));
-
-      
+    
   const renderItem = ({ item }) => {
     if (item.empty) return <EmptyItem />;
     return <InventoryBoxList item={item} />;

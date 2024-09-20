@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Keyboard, View, StyleSheet, Text, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Keyboard, View, Image, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from '@components/containers';
 import { NavigationHeader } from '@components/Header';
 import { LoadingButton } from '@components/common/Button';
@@ -12,8 +12,6 @@ import { fetchAssigneeDropdown, fetchCustomerNameDropdown, fetchDeviceDropdown, 
 import { formatDateTime } from '@utils/common/date';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { ActionModal } from '@components/Modal'
-import { formatData } from '@utils/formatters';
-import { FlatList } from 'react-native-gesture-handler';
 import SignaturePad from '@components/SignaturePad'
 import { validateFields } from '@utils/validation';
 import { CheckBox } from '@components/common/CheckBox';
@@ -22,18 +20,12 @@ import { AntDesign } from '@expo/vector-icons';
 import { fetchPickupDetails } from '@api/details/detailApi';
 import { useFocusEffect } from '@react-navigation/native';
 import { OverlayLoader } from '@components/Loader';
-import { COLORS, FONT_FAMILY } from '@constants/theme';
 
 const EditPickup = ({ navigation, route }) => {
   const { id: pickupId } = route?.params || {};
   const [isLoading, setIsLoading] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [url, setUrl] = useState('')
-  const [imageUrls, setImageUrls] = useState([])
-  const [driverSignatureUrl, setDriverSignatureUrl] = useState('');
-  const [customerSignatureUrl, setCustomerSignatureUrl] = useState('');
-  const [coordinatorSignatureUrl, setCoordinatorSignatureUrl] = useState('');
   const [selectedType, setSelectedType] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
   const [formData, setFormData] = useState({});
@@ -70,7 +62,7 @@ const EditPickup = ({ navigation, route }) => {
         customerSignatureUrl: detail?.customer_signature || null,
         driverSignatureUrl: detail?.driver_signature || null,
         coordinatorSignatureUrl: detail?.service_coordinator_signature || null,
-        image: detail?.attachment_details || null,
+        imageUrls: detail?.attachment_details || [],
         // below two are not shown in web so commanded
         // assignee: { id: detail?.assignee_id || '', label: detail?.assignee_name || '' },
         // salesPerson: { id: detail?.sales_person_id || '', label: detail?.sales_person_name || '' },
@@ -257,8 +249,7 @@ const EditPickup = ({ navigation, route }) => {
     if (validateForm(fieldsToValidate)) {
       setIsSubmitting(true);
       const pickupData = {
-        pickupId: id,
-        _id: id,
+        _id: pickupId,
         date: formatDate(formData.date, 'yyyy-MM-dd'),
         device_id: formData?.device?.id ?? null,
         device_name: formData?.device?.label ?? null,
@@ -277,11 +268,11 @@ const EditPickup = ({ navigation, route }) => {
         assignee_name: formData?.assignee?.label ?? null,
         sales_person_id: formData?.salesPerson?.id ?? null,
         sales_person_name: formData?.salesPerson?.label ?? null,
-        driver_signature: driverSignatureUrl || null,
-        customer_signature: customerSignatureUrl || null,
-        service_coordinator_signature: coordinatorSignatureUrl || null,
+        driver_signature: formData?.driverSignatureUrl || null,
+        customer_signature: formData?.customerSignatureUrl || null,
+        service_coordinator_signature: formData?.coordinatorSignatureUrl || null,
         remarks: formData?.remarks || null,
-        attachment_details: imageUrls.length > 0 ? imageUrls : [],
+        attachment_details: formData?.imageUrls.length > 0 ? imageUrls : [],
         // below 5 values are not in the forminput 
         // warranty_date: null,
         // contact_number: null,
@@ -289,11 +280,11 @@ const EditPickup = ({ navigation, route }) => {
         // address: null,
         // tracking_no: null,
       };
-
+      console.log("🚀 ~ EditPickup ~ pickupData:", JSON.stringify(pickupData, null, 2));
       try {
         const response = await put("/updateJobBooking", pickupData);
-        console.log("🚀 ~ EditPickup ~ pickupData:", JSON.stringify(pickupData, null, 2));
-        if (response.success) {
+        console.log("🚀 ~ file: EditPickup.js:286 ~ handleSubmit ~ response:", response.data)
+        if (response.message) {
           showToast({
             type: "success", title: "Success",
             message: response.message || "Pickup Updated Successfully",
@@ -439,22 +430,21 @@ const EditPickup = ({ navigation, route }) => {
         />
         <SignaturePad
           setScrollEnabled={setScrollEnabled}
-          setUrl={setDriverSignatureUrl}
           title={'Driver Signature'}
-          editable={false}
+          previousSignature={formData.driverSignatureUrl}
         />
         <SignaturePad
           setScrollEnabled={setScrollEnabled}
-          setUrl={setCustomerSignatureUrl}
           title={'Customer Signature'}
-          editable={false}
+          previousSignature={formData.customerSignatureUrl}
         />
-        {formData?.isShowCoordinatorSignaturePad  
-        && <SignaturePad
-          setScrollEnabled={setScrollEnabled}
-          setUrl={setCoordinatorSignatureUrl}
-          title={'Co-Ordinator Signature'}
-        />}
+        {formData?.isShowCoordinatorSignaturePad
+          && <SignaturePad
+            setScrollEnabled={setScrollEnabled}
+            setUrl={(url) => handleFieldChange('coordinatorSignatureUrl', url)}
+            title={'Co-Ordinator Signature'}
+            previousSignature={formData.coordinatorSignatureUrl}
+          />}
         <FormInput
           label={"Remarks"}
           placeholder={"Enter Remarks"}
@@ -464,20 +454,10 @@ const EditPickup = ({ navigation, route }) => {
           onChangeText={(value) => handleFieldChange('remarks', value)}
         />
         <ActionModal
-        title="Attach file"
-        setImageUrl={(url) => handleFieldChange('imageUrls', [...formData.imageUrls, url])} />
-        {formData.imageUrls?.length > 0 && (
-        <UploadsContainer imageUrls={formData.imageUrls} onDelete={handleDeleteImage} /> )}
-        <View style={styles.uploadsContainer}>
-        <Text style={styles.labell}>Uploads</Text>
-        <FlatList
-          data={formatData(imageUrls, 4)}
-          numColumns={4}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={{ padding: 10 }}
-          showsVerticalScrollIndicator={false}
-          renderItem={renderItem} />
-        </View>
+          title="Attach file"
+          setImageUrl={(url) => handleFieldChange('imageUrls', [...formData.imageUrls, url])} />
+        {formData?.imageUrls && formData?.imageUrls?.length > 0 && (
+          <UploadsContainer imageUrls={formData.imageUrls} onDelete={handleDeleteImage} />)}
         {renderBottomSheet()}
         <LoadingButton title="SAVE" onPress={handleSubmit} marginTop={10} loading={isSubmitting} />
         <View style={{ marginBottom: 10 }} />
@@ -492,51 +472,5 @@ const EditPickup = ({ navigation, route }) => {
     </SafeAreaView>
   );
 };
-
-const styles = StyleSheet.create({
-  uploadsContainer: {
-    flex: 1,
-    borderRadius: 6,
-    borderWidth: 0.8,
-    borderColor: '#BBB7B7',
-    backgroundColor: 'white',
-    marginVertical: 5,
-  },
-  listContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 8,
-  },
-  image: {
-    width: 90,
-    height: 90,
-    borderRadius: 8
-  },
-  labell: {
-    fontSize: 16,
-    fontFamily: FONT_FAMILY.urbanistBold,
-    color: COLORS.black,
-    paddingHorizontal: 10,
-    marginTop: 5
-  },
-  itemInvisible: {
-    backgroundColor: 'transparent',
-  },
-  itemStyle: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: 8,
-  },
-  deleteIconContainer: {
-    position: 'absolute',
-    top: -10,
-    right: -10,
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    borderRadius: 12,
-    padding: 5,
-  },
-});
 
 export default EditPickup;

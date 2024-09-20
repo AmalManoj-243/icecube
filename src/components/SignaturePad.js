@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Image } from "react-native";
 import SignatureScreen from "react-native-signature-canvas";
 import Text from "./Text";
 import { COLORS, FONT_FAMILY } from "@constants/theme";
@@ -17,7 +17,7 @@ export const CustomClearButton = ({ title, onPress }) => {
     );
 };
 
-const SignaturePad = ({ setUrl, setScrollEnabled, title }) => {
+const SignaturePad = ({ setUrl, setScrollEnabled, title, previousSignature = '' }) => {
     const [isSign, setSign] = useState(false);
     const ref = useRef();
 
@@ -70,13 +70,20 @@ const SignaturePad = ({ setUrl, setScrollEnabled, title }) => {
         <>
             <Text style={styles.label}>{title}</Text>
             <View style={styles.signContainer}>
-                <SignatureScreen
+                {previousSignature ? (
+                    <Image
+                        // resizeMode={"contain"}
+                        style={{ width: "100%", height: '100%' }}
+                        source={{ uri: previousSignature }}
+                    />
+                ) : <SignatureScreen
                     webStyle={style}
                     ref={ref}
                     onOK={handleOK}
                     onBegin={() => setScrollEnabled(false)}
                     onEnd={handleEnd}
-                />
+                />}
+
             </View>
             <View style={{ alignSelf: "flex-end", marginTop: 10 }}>
                 {isSign ? <CustomClearButton title="CLEAR" onPress={handleClear} /> : null}
@@ -98,13 +105,6 @@ const styles = StyleSheet.create({
         borderColor: "#BBB7B7",
         borderRadius: 5,
         overflow: "hidden",
-    },
-    row: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        width: "100%",
-        alignItems: "center",
     },
     button: {
         width: 100,
@@ -129,5 +129,13 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#2e2a4f",
         fontFamily: FONT_FAMILY.urbanistSemiBold,
+    },
+    preview: {
+        width: 335,
+        height: 114,
+        backgroundColor: "#F8F8F8",
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 15,
     },
 });

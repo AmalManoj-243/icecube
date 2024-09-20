@@ -35,6 +35,7 @@ import { ServicesScreen } from "@screens/Home/Sections/Services";
 import { SpareManagementsScreen } from "@screens/Home/Sections/Services/SpareManagements";
 import { QuickServiceFormTabs } from "@screens/Home/Sections/Services/Service/QuickService/QuickServiceFormTabs";
 import { EditPickup, PickupDetails, PickupScreen } from "@screens/Home/Sections/Services/Service/Pickup";
+import { VisitFormTabs } from "@screens/Home/Options/Visits/VisitFormTabs";
 
 const Stack = createNativeStackNavigator();
 
@@ -247,7 +248,7 @@ const StackNavigator = () => {
       />
       <Stack.Screen
         name="VisitForm"
-        component={VisitForm}
+        component={VisitFormTabs}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -343,7 +344,6 @@ const StackNavigator = () => {
         component={EditPickup}
         options={{ headerShown: false }}
       />
-      
 
       {/* BoxInspection */}
       <Stack.Screen
@@ -374,10 +374,10 @@ const StackNavigator = () => {
         component={MarkAttendance}
         options={{ headerShown: false }}
       />
-      <Stack.Screen 
-      name="KPIListingScreen"
-      component={KPIListingScreen}
-      options={{ headerShown: false }}
+      <Stack.Screen
+        name="KPIListingScreen"
+        component={KPIListingScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

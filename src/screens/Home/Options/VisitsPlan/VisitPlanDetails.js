@@ -77,8 +77,8 @@ const VisitPlanDetails = ({ navigation, route }) => {
         title="Visit Plan Details"
         onBackPress={() => navigation.goBack()}
         logo={false}
-        // iconOneName="edit"
-        // iconOnePress={() => { navigation.navigate('EditVisitPlan', { visitPlanId: id }) }}
+      // iconOneName="edit"
+      // iconOnePress={() => { navigation.navigate('EditVisitPlan', { visitPlanId: id }) }}
       />
 
       <RoundedScrollContainer>

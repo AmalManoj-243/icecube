@@ -109,6 +109,14 @@ export const allValidationRules = {
     product: {
         message: 'Please select Spare Name',
         validate: validateRequired,
+    },
+    timeIn: {
+        message: 'Please select Time In',
+        validate: validateRequired,
+    },
+    timeOut: {
+        message: 'Please select Time Out',
+        validate: validateRequired,
     }
 
     // Add other fields as needed
