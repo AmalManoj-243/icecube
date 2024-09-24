@@ -3,7 +3,8 @@ import { StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import Text from '@components/Text';
 import { BottomSheetModal, BottomSheetFlatList } from '@gorhom/bottom-sheet';
 import { FONT_FAMILY } from '@constants/theme';
-import {  NavigationHeader } from '@components/Header';
+import { NavigationHeader } from '@components/Header';
+import { SearchContainer } from '@components/containers';
 
 
 const DropdownSheet = ({
@@ -11,6 +12,9 @@ const DropdownSheet = ({
     items,
     onValueChange,
     title,
+    placeholder = 'Search...',
+    search = false,
+    onSearchText = () => { },
     onClose = () => { }
 }) => {
     const bottomSheetModalRef = useRef(null);
@@ -52,6 +56,7 @@ const DropdownSheet = ({
         >
             {/* <BottomSheetHeader title={title} /> */}
             <NavigationHeader title={title} onBackPress={() => bottomSheetModalRef.current?.dismiss()} />
+            {search && <SearchContainer placeholder={placeholder} onSearchText={onSearchText} />}
             <BottomSheetFlatList
                 data={items}
                 numColumns={1}
@@ -67,7 +72,7 @@ const DropdownSheet = ({
 const styles = StyleSheet.create({
     contentContainer: {
         paddingBottom: 20,
-        marginVertical:10
+        marginVertical: 10
     },
     item: {
         marginVertical: 3,

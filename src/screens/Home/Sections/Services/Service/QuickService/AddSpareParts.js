@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RoundedScrollContainer, SafeAreaView } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
-import { fetchProductsDropdown,fetchUnitOfMeasureDropdown,fetchTaxDropdown } from '@api/dropdowns/dropdownApi';
+import { fetchProductsDropdown, fetchUnitOfMeasureDropdown, fetchTaxDropdown } from '@api/dropdowns/dropdownApi';
 import { DropdownSheet } from '@components/common/BottomSheets';
 import { NavigationHeader } from '@components/Header';
 import { Button } from '@components/common/Button';
@@ -14,6 +14,7 @@ const AddSpareParts = ({ navigation, route }) => {
     const { id, addSpareParts } = route?.params || {};
     const [selectedType, setSelectedType] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
+    const [searchText, setSearchText] = useState('');
 
     const [dropdown, setDropdown] = useState({
         products: [],
@@ -33,8 +34,6 @@ const AddSpareParts = ({ navigation, route }) => {
         taxType: ''
     });
 
-   console.log('Formdata-------------------------------', formData) 
-
     const [errors, setErrors] = useState({});
 
     const calculateSubTotal = (unitPrice, quantity, isInclusive) => {
@@ -48,11 +47,11 @@ const AddSpareParts = ({ navigation, route }) => {
         }
     };
 
-    const handleQuantityChange = (value, ) => {
+    const handleQuantityChange = (value,) => {
         const spareTotalPrice = calculateSpareTotalPrice(formData.unitPrice, value, formData.isInclusive);
         const tax = calculateTax(formData.unitPrice, value, formData.isInclusive);
         const total = calculateTotal(spareTotalPrice, tax);
-    
+
         setFormData(prevFormData => ({
             ...prevFormData,
             quantity: value,
@@ -61,15 +60,15 @@ const AddSpareParts = ({ navigation, route }) => {
             total,
         }));
     };
-    
+
     const handleFieldChange = (field, value) => {
         let updatedFormData = { ...formData, [field]: value };
-    
+
         if (field === 'unitPrice' || field === 'quantity') {
             const spareTotalPrice = calculateSpareTotalPrice(updatedFormData.unitPrice, updatedFormData.quantity, updatedFormData.isInclusive);
             const tax = calculateTax(updatedFormData.unitPrice, updatedFormData.quantity, updatedFormData.isInclusive);
             const total = calculateTotal(spareTotalPrice, tax);
-    
+
             updatedFormData = {
                 ...updatedFormData,
                 subTotal: calculateSubTotal(updatedFormData.unitPrice, updatedFormData.quantity, tax, updatedFormData.isInclusive),
@@ -78,9 +77,9 @@ const AddSpareParts = ({ navigation, route }) => {
                 total,
             };
         }
-    
+
         setFormData(updatedFormData);
-    
+
         if (errors[field]) {
             setErrors(prevErrors => ({
                 ...prevErrors,
@@ -88,12 +87,12 @@ const AddSpareParts = ({ navigation, route }) => {
             }));
         }
     };
-    
+
     const handleInclusiveChange = (isInclusive) => {
         const spareTotalPrice = calculateSpareTotalPrice(formData.unitPrice, formData.quantity, isInclusive);
         const tax = calculateTax(formData.unitPrice, formData.quantity, isInclusive);
         const total = calculateTotal(spareTotalPrice, tax);
-    
+
         setFormData(prevFormData => ({
             ...prevFormData,
             isInclusive,
@@ -102,34 +101,34 @@ const AddSpareParts = ({ navigation, route }) => {
             total,
         }));
     };
-    
-const calculateSpareTotalPrice = (unitPrice, quantity, isInclusive) => {
-    const subtotal = parseFloat(unitPrice) * parseFloat(quantity);
-    
-    if (isInclusive) {
-        const spareTotalWithoutTax = (subtotal / 1.05).toFixed(2);
-        return spareTotalWithoutTax;
-    } else {
-        return subtotal.toFixed(2);
-    }
-};
 
-const calculateTax = (unitPrice, quantity, isInclusive) => {
-    const subtotal = parseFloat(unitPrice) * parseFloat(quantity);
-    if (isInclusive) {
-        return (subtotal - (subtotal / 1.05)).toFixed(2);
-    } else {
-        return (subtotal * 0.05).toFixed(2);
-    }
-};
+    const calculateSpareTotalPrice = (unitPrice, quantity, isInclusive) => {
+        const subtotal = parseFloat(unitPrice) * parseFloat(quantity);
+
+        if (isInclusive) {
+            const spareTotalWithoutTax = (subtotal / 1.05).toFixed(2);
+            return spareTotalWithoutTax;
+        } else {
+            return subtotal.toFixed(2);
+        }
+    };
+
+    const calculateTax = (unitPrice, quantity, isInclusive) => {
+        const subtotal = parseFloat(unitPrice) * parseFloat(quantity);
+        if (isInclusive) {
+            return (subtotal - (subtotal / 1.05)).toFixed(2);
+        } else {
+            return (subtotal * 0.05).toFixed(2);
+        }
+    };
 
     const handleProductSelection = (selectedProduct) => {
         const unitPrice = selectedProduct.unitPrice ? selectedProduct.unitPrice.toString() : '0';
         const description = selectedProduct.productDescription || '';
         const defaultQuantity = "1";
         const initialSubTotal = (parseFloat(unitPrice) * parseFloat(defaultQuantity)).toFixed(2);
-        const tax = calculateTax(initialSubTotal,defaultQuantity,formData.isInclusive);
-        const total = calculateTotal(initialSubTotal,tax)
+        const tax = calculateTax(initialSubTotal, defaultQuantity, formData.isInclusive);
+        const total = calculateTotal(initialSubTotal, tax)
         const spareTotalPrice = initialSubTotal
 
         setFormData(prevFormData => ({
@@ -151,10 +150,10 @@ const calculateTax = (unitPrice, quantity, isInclusive) => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const ProductsData = await fetchProductsDropdown();
+                const ProductsData = await fetchProductsDropdown(searchText);
                 setDropdown(prevDropdown => ({
                     ...prevDropdown,
-                    products: ProductsData.map(data => ({
+                    products: ProductsData?.map(data => ({
                         id: data._id,
                         label: data.product_name?.trim(),
                         unitPrice: data.sale_price,
@@ -207,14 +206,14 @@ const calculateTax = (unitPrice, quantity, isInclusive) => {
                     id: data._id,
                     label: data.tax_type_name,
                 }));
-    
+
                 const defaultTax = taxItems.find(tax => tax.label === "vat 5%");
                 console.log("🚀 ~ file: AddSpareParts.js:210 ~ fetchTax ~ defaultTax:", defaultTax)
                 // setDropdown(prevDropdown => ({
                 //     ...prevDropdown,
                 //     taxes: taxItems,
                 // }));
-    
+
                 if (defaultTax) {
                     setFormData(prevFormData => ({
                         ...prevFormData,
@@ -225,10 +224,10 @@ const calculateTax = (unitPrice, quantity, isInclusive) => {
                 console.error('Error fetching Tax dropdown data:', error);
             }
         };
-    
+
         fetchTax();
     }, []);
-    
+
     const toggleBottomSheet = (type) => {
         setSelectedType(isVisible ? null : type);
         setIsVisible(!isVisible);
@@ -287,7 +286,10 @@ const calculateTax = (unitPrice, quantity, isInclusive) => {
                 items={items}
                 title={selectedType}
                 onClose={() => setIsVisible(false)}
+                search
+                onSearchText={(value) => setSearchText(value)}
                 onValueChange={(value) => {
+                    setSearchText('')
                     if (selectedType === 'Spare Name') {
                         handleProductSelection(value);
                     } else {
@@ -377,7 +379,7 @@ const calculateTax = (unitPrice, quantity, isInclusive) => {
                     alignSelf={'center'}
                     backgroundColor={COLORS.primaryThemeColor}
                     onPress={handleAddItems}
-                /> 
+                />
                 {renderBottomSheet()}
             </RoundedScrollContainer>
         </SafeAreaView>

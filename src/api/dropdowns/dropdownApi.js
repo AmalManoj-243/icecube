@@ -122,8 +122,9 @@ export const fetchNonInspectedBoxDropdown = async (id) => {
   return fetchDataUsingWarehouse(DROP_DOWN_API_ENDPOINTS.NON_INSPECTED, id);
 }
 
-export const fetchProductsDropdown = async () => {
-  return fetchData(DROP_DOWN_API_ENDPOINTS.PRODUCTS);
+export const fetchProductsDropdown = async (searchText='') => {
+  console.log("🚀 ~ file: dropdownApi.js:126 ~ fetchProductsDropdown ~ searchText:", searchText)
+  return fetchData(`${DROP_DOWN_API_ENDPOINTS.PRODUCTS}?product_name=${searchText}`);
 }
 
 export const fetchUomDropdown = async () => {
