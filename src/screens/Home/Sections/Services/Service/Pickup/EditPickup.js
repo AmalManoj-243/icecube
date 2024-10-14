@@ -311,7 +311,7 @@ const EditPickup = ({ navigation, route }) => {
       <View style={styles.listContainer} onPress={onPress}>
         {imageLoading && <ActivityIndicator size="small" color={'black'} style={{ position: 'absolute', top: 30 }} />}
         <Image source={{ uri: image }} style={styles.image}
-          onLoad={() => setImageLoading(true)}
+          onLoad={() => setImageLoading(true)} // upload container
         />
         <View style={styles.deleteIconContainer}>
           <TouchableOpacity onPress={() => handleDeleteImage(index)}>

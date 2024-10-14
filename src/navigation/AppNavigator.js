@@ -58,7 +58,7 @@ const AppNavigator = () => {
           tabBarIcon: ({ focused }) =>
             <TabBarIcon
               focused={focused}
-              iconComponent={require('@assets/icons/bottom_tabs/cart.png')}
+              iconComponent={require('@assets/icons/bottom_tabs/kpi.png')}
               label="KPI"
             />
           // tabBarStyle: { display: 'none' }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 import { View, TouchableOpacity, StyleSheet, FlatList, Dimensions, Platform, Image } from 'react-native';
 import Modal from 'react-native-modal';
 import Text from '@components/Text';
@@ -7,58 +7,47 @@ import { NavigationHeader } from '@components/Header';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
 import { uploadApi } from '@api/uploads';
 
-const ActionModal = ({ title, setImageUrl }) => {
+const DocumentModal = ({ title, setDocumentUrl }) => {
     const [isActionVisible, setIsActionVisible] = useState(false)
     const screenHeight = Dimensions.get('window').height;
 
-    const takePhoto = async () => {
+    const pickDocument = async () => {
+        console.log("Opening document picker..."); 
         toggleModal();
-        let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false,
-            aspect: [4, 3],
-            base64: true,
-            quality: 1,
+        let result = await DocumentPicker.getDocumentAsync({
+            type: '*/*', 
         });
-        handleImagePicked(result);
+        handleDocumentPicked(result);
     };
+    
 
-    const pickImage = async () => {
-        toggleModal();
-        let result = await ImagePicker.launchImageLibraryAsync({
-            base64: true,
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false,
-            aspect: [4, 3],
-            quality: 1,
-        });
-        handleImagePicked(result);
-    };
-
-    const handleImagePicked = async (pickerResult) => {
-        if (!pickerResult.cancelled) {
-            const imagePath = pickerResult.assets[0].uri;
-            // console.log("🚀 ~ handleImagePicked ~ imagePath:", imagePath)
+    const handleDocumentPicked = async (pickerResult) => {
+        console.log("Document picker result:", pickerResult); 
+        if (pickerResult.assets && pickerResult.assets.length > 0) {
+            const documentUri = pickerResult.assets[0].uri; 
+            console.log("Document URI:", documentUri); 
             try {
-                if (imagePath) {
-                    const url = await uploadApi(imagePath);
+                if (documentUri) {
+                    const url = await uploadApi(documentUri); 
+                    console.log("Uploaded document URL:", url); 
                     if (url) {
-                        setImageUrl(url);
+                        setDocumentUrl(url);
                     } else {
                         console.error('Upload API response is empty or undefined.');
                     }
                 } else {
-                    console.warn('Invalid')
+                    console.warn('Invalid document');
                 }
             } catch (error) {
-                console.error('Error occurred during image upload:', error);
+                console.error('Error occurred during document upload:', error);
             }
+        } else {
+            console.warn('No document selected or picker was canceled.');
         }
     };
-
+     
     const options = [
-        { title: 'Take Photo', image: require('@assets/icons/modal/camera.png'), onPress: () => takePhoto() },
-        { title: 'Gallery', image: require('@assets/icons/modal/gallery_upload.png'), onPress: () => pickImage() },
+        { title: 'Upload Document', image: require('@assets/icons/modal/file_upload.png'), onPress: () => pickDocument() },
         { title: 'Cancel', image: require('@assets/icons/modal/cancel.png'), onPress: () => toggleModal() },
     ]
 
@@ -111,13 +100,13 @@ const ActionModal = ({ title, setImageUrl }) => {
             </Modal>
             <Text style={styles.label}>{title}</Text>
             <TouchableOpacity style={{ width: 80, height: 80 }} onPress={toggleModal}>
-                <Image source={require('@assets/icons/modal/image_upload.png')} style={{ width: 80, height: 80, tintColor: COLORS.orange }} />
+                <Image source={require('@assets/icons/modal/document.png')} style={{ width: 80, height: 80, tintColor: COLORS.orange }} />
             </TouchableOpacity>
         </>
     );
 };
 
-export default ActionModal;
+export default DocumentModal;
 
 export const styles = StyleSheet.create({
     modalContainer: {
@@ -146,13 +135,12 @@ export const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        // backgroundColor: '#f1f1f1',
         margin: 8,
         borderStyle: 'dotted'
     },
     image: {
-        width: 35,
-        height: 35,
+        width: 25,
+        height: 25,
         tintColor: COLORS.primaryThemeColor,
         marginBottom: 15,
     },

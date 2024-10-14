@@ -2,26 +2,25 @@ import React, { useEffect, useState } from 'react';
 import { RoundedScrollContainer, SafeAreaView } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
 import { fetchEmployeesDropdown } from '@api/dropdowns/dropdownApi';
-import { DropdownSheet } from '@components/common/BottomSheets';
+import { MultiSelectDropdownSheet } from '@components/common/BottomSheets';
 import { NavigationHeader } from '@components/Header';
 import { Button } from '@components/common/Button';
 import { COLORS } from '@constants/theme';
 import { Keyboard } from 'react-native';
 import { validateFields } from '@utils/validation';
+import { put } from '@api/services/utils';
 
 const AddParticipants = ({ navigation, route }) => {
     const { id, addParticipants } = route?.params || {};
-    console.log("HALOOOOOO id", id);
+    console.log("Participants Id", id);
+    console.log("Add Participants", addParticipants);
+    const [details, setDetails] = useState({});
     const [selectedType, setSelectedType] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
-    const [noOfEmployees, setNoOfEmployees] = useState(0);
     const [selectedEmployees, setSelectedEmployees] = useState([]);
     const [errors, setErrors] = useState({});
     const [dropdown, setDropdown] = useState({ employee: [] });
-    const [formData, setFormData] = useState({
-        noOfEmployees: '',
-        employees: [],
-    });
+    const [formData, setFormData] = useState({ employee: [] });
 
     useEffect(() => {
         const fetchDropdownData = async () => {
@@ -43,19 +42,8 @@ const AddParticipants = ({ navigation, route }) => {
     }, []);
 
     const toggleBottomSheet = (type) => {
-        setSelectedType(isVisible ? null : type);
+        setSelectedType(type);
         setIsVisible(!isVisible);
-    };
-
-    const onFieldChange = (field, value) => {
-        setFormData({
-            ...formData,
-            [field]: value,
-        });
-
-        if (field === 'noOfEmployees') {
-            setNoOfEmployees(parseInt(value, 10) || 0);
-        }
     };
 
     const validateForm = (fieldsToValidate) => {
@@ -66,25 +54,33 @@ const AddParticipants = ({ navigation, route }) => {
     };
 
     const handleAddParticipants = async () => {
-        const fieldsToValidate = ['noOfEmployees', 'employees'];
-        if (validateForm(fieldsToValidate)) {
-            const participantData = {
-                employees: formData.employees || [],
-            };
+      const fieldsToValidate = ['employee'];
+      if (validateForm(fieldsToValidate)) {
+          const participantData = {
+              _id: details._id || id,
+              participants: selectedEmployees.map(emp => ({
+                  assignee_id: emp.id,
+                  assignee_name: emp.label.trim(),
+              })),
+          };
+          try {
+            const response = await put('/updateKpiTasks', participantData);
+            console.log('Participant response:', response);
             console.log('Added Participants:', participantData);
-            addParticipants(participantData);
-            navigation.goBack({ id });
-        }
-    };
+            addParticipants(participantData.participants);
+            navigation.navigate('KPIActionDetails',  id );
+          }catch (error) {
+            console.error('Error Adding Participants:', error);
+          }
+      }
+    }
 
-    const handleEmployeeSelection = (value) => {
-        if (selectedEmployees.length < noOfEmployees) {
-            setSelectedEmployees(prevSelected => [...prevSelected, value]);
-            setFormData(prevFormData => ({
-                ...prevFormData,
-                employees: [...prevFormData.employees, value],
-            }));
-        }
+    const handleEmployeeSelection = (selectedValues) => {
+        setSelectedEmployees(selectedValues);
+        setFormData(prevFormData => ({
+            ...prevFormData,
+            employee: selectedValues,
+        }));
         setIsVisible(false);
     };
 
@@ -101,10 +97,12 @@ const AddParticipants = ({ navigation, route }) => {
                 return null;
         }
         return (
-            <DropdownSheet
+            <MultiSelectDropdownSheet
                 isVisible={isVisible}
                 items={items}
+                refreshIcon={true}
                 title={selectedType}
+                previousSelections={formData.employee}
                 onClose={() => setIsVisible(false)}
                 onValueChange={handleEmployeeSelection}
             />
@@ -119,21 +117,17 @@ const AddParticipants = ({ navigation, route }) => {
             />
             <RoundedScrollContainer>
                 <FormInput
-                    label={"Number of Employees"}
-                    placeholder={"Enter Number of Employees"}
-                    editable={true}
-                    keyboardType="numeric"
-                    onChangeText={(value) => onFieldChange('noOfEmployees', value)}
-                    value={formData.noOfEmployees.toString()}
-                />
-                <FormInput
                     label={"Employee"}
                     placeholder={"Select Employee"}
                     dropIcon={"menu-down"}
                     items={dropdown.employee}
                     editable={false}
-                    validate={errors.employees}
-                    value={selectedEmployees.map(emp => emp.label).join(', ')} 
+                    multiline={true}
+                    numberOfLines={3}
+                    textAlignVertical="top"
+                    marginTop={10}
+                    validate={errors.employee}
+                    value={selectedEmployees.map(emp => emp.label).join(', ')}
                     onPress={() => toggleBottomSheet('Employee')}
                 />
                 <Button

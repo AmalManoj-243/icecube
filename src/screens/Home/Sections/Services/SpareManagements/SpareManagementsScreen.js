@@ -11,9 +11,9 @@ const SpareManagementsScreen = ({ navigation }) => {
 
     const options =
         [
-            { title: 'Spare Parts Request', image: require('@assets/images/Home/options/crm/enquiry_register.png'), onPress: () => navigation.navigate('SparePartsRequestScreen') },
-            { title: 'Spare Parts Issues', image: require('@assets/images/Home/options/crm/lead.png'), onPress: () => navigation.navigate('') },
-            { title: 'Spare Parts Return', image: require('@assets/images/Home/options/crm/pipeline.png'), onPress: () => navigation.navigate('') },
+            { title: 'Spare Parts Request', image: require('@assets/images/Home/section/spare.png'), onPress: () => navigation.navigate('SparePartsRequestScreen') },
+            // { title: 'Spare Parts Issues', image: require('@assets/images/Home/options/crm/lead.png'), onPress: () => navigation.navigate('') },
+            // { title: 'Spare Parts Return', image: require('@assets/images/Home/options/crm/pipeline.png'), onPress: () => navigation.navigate('') },
         ]
 
     const renderItem = ({ item }) => {

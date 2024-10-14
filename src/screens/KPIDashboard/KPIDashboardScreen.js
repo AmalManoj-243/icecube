@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Dimensions, Text, Platform } from 'react-native';
+import { View, StyleSheet, Dimensions, Text, Platform, TouchableOpacity } from 'react-native';
 import { PieChart } from 'react-native-svg-charts';
 import { NavigationHeader } from '@components/Header';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
@@ -48,22 +48,10 @@ const KPIDashboardScreen = ({ navigation }) => {
         }
     }, [isFocused]);
 
-
-    // const chartData = [
-    //     { name: 'Assigned', value: dashBoardDetails.assignedKpiData.length || 0, color: '#FF6384' },
-    //     { name: 'Urgent', value: dashBoardDetails.urgentKpiData.length || 0, color: '#d802db' },
-    //     { name: 'Important', value: dashBoardDetails.importantKpiData.length || 0, color: '#36A2EB' },
-    //     { name: 'Regular Task', value: dashBoardDetails.serviceKpiData.length || 0, color: '#FFCE56' },
-    //     { name: 'In-Progress', value: dashBoardDetails.inProgressKpi.length || 0, color: '#4BB543' },
-    //     { name: 'Completed', value: dashBoardDetails.completedKpi.length || 0, color: '#4BC0C0' },
-    // ];
-
-
     const randomColor = () => (
         '#' + ((Math.random() * 0xffffff) << 0).toString(16) + '000000'
     ).slice(0, 7);
 
-    // Define fixed colors for each KPI category
     const colorMapping = {
         'Assigned': '#d802db',
         'Urgent': '#FFDE43',
@@ -91,35 +79,6 @@ const KPIDashboardScreen = ({ navigation }) => {
             key: `pie-${index}`,
         }));
 
-    // const PieSection = ({ data, title }) => (
-    //     <View style={styles.chartContainer}>
-    //         <Text style={styles.title}>{title}</Text>
-    //         <View style={styles.divider} />
-    //         <View style={styles.chartLegendContainer}>
-    //             <PieChart
-    //                 data={data}
-    //                 width={screenWidth * 0.45}
-    //                 chartConfig={chartConfig}
-    //                 accessor={'value'}
-    //                 backgroundColor={'transparent'}
-    //                 center={[35, -10]}
-    //                 height={175.24}
-    //                 absolute
-    //                 hasLegend={false}
-    //                 onPress={(index) => handlePieChartPress(index)}
-    //             />
-    //             <View style={styles.legendContainer}>
-    //                 {data.map((item, index) => (
-    //                     <TouchableOpacity key={index} onPress={() => handlePieChartPress(index)} style={styles.itemContainer}>
-    //                         <View style={[styles.legendDot, { backgroundColor: item.color }]} />
-    //                         <Text style={styles.legendLabel}>{`${item.name}: ${item.value}`}</Text>
-    //                     </TouchableOpacity>
-    //                 ))}
-    //             </View>
-    //         </View>
-    //     </View>
-    // );
-
     const PieSection = ({ data, title }) => (
         <View style={styles.chartContainer}>
             <Text style={styles.title}>{title}</Text>
@@ -135,13 +94,17 @@ const KPIDashboardScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.legendContainer}>
                     {pieData.map((item, index) => (
-                        <View key={index} style={styles.legendItem}>
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.legendItem}
+                            onPress={() => navigation.navigate('KPIListingScreen', { kpiCategory: item.name })} // Navigate on press
+                        >
                             <View style={[styles.legendDot, { backgroundColor: item.svg.fill }]} />
                             <Text style={styles.legendLabel}>{`${item.name}: ${item.value}`}</Text>
-                            {/* <Text style={styles.legendLabel}>{`${item.value}`}</Text> */}
-                        </View>
+                        </TouchableOpacity>
                     ))}
                 </View>
+
             </View>
         </View>
     );
@@ -157,17 +120,6 @@ const KPIDashboardScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    chartContainer: {
-        // margin: 20,
-        // borderRadius: 10,
-        // padding: 10,
-        // backgroundColor: '#FFFFFF',
-        // shadowColor: '#000',
-        // shadowOffset: { width: 0, height: 4 },
-        // shadowOpacity: 0.1,
-        // shadowRadius: 8,
-        // elevation: 3,
-    },
     chartLegendContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -179,6 +131,7 @@ const styles = StyleSheet.create({
     pieChart: {
         height: 200,
         width: '100%',
+        marginLeft: -10,
     },
     title: {
         fontSize: 16,

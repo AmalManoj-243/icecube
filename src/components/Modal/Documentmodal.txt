@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 import { View, TouchableOpacity, StyleSheet, FlatList, Dimensions, Platform, Image } from 'react-native';
 import Modal from 'react-native-modal';
 import Text from '@components/Text';
@@ -7,60 +7,44 @@ import { NavigationHeader } from '@components/Header';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
 import { uploadApi } from '@api/uploads';
 
-const ActionModal = ({ title, setImageUrl }) => {
-    const [isActionVisible, setIsActionVisible] = useState(false)
+const DocumentModal = ({ title, setDocumentUrl }) => {
+    const [isActionVisible, setIsActionVisible] = useState(false);
     const screenHeight = Dimensions.get('window').height;
 
-    const takePhoto = async () => {
+    const pickDocument = async () => {
         toggleModal();
-        let result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false,
-            aspect: [4, 3],
-            base64: true,
-            quality: 1,
+        let result = await DocumentPicker.getDocumentAsync({
+            type: '*/*',
+            copyToCacheDirectory: true,
         });
-        handleImagePicked(result);
+        handleDocumentPicked(result);
     };
 
-    const pickImage = async () => {
-        toggleModal();
-        let result = await ImagePicker.launchImageLibraryAsync({
-            base64: true,
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: false,
-            aspect: [4, 3],
-            quality: 1,
-        });
-        handleImagePicked(result);
-    };
-
-    const handleImagePicked = async (pickerResult) => {
-        if (!pickerResult.cancelled) {
-            const imagePath = pickerResult.assets[0].uri;
-            // console.log("🚀 ~ handleImagePicked ~ imagePath:", imagePath)
+    const handleDocumentPicked = async (pickerResult) => {
+        if (pickerResult.type === 'success') {
+            const documentPath = pickerResult.uri;
+            console.log("🚀 ~ handleDocumentPicked ~ documentPath:", documentPath)
             try {
-                if (imagePath) {
-                    const url = await uploadApi(imagePath);
+                if (documentPath) {
+                    const url = await uploadApi(documentPath);
                     if (url) {
-                        setImageUrl(url);
+                        setDocumentUrl(url);
                     } else {
                         console.error('Upload API response is empty or undefined.');
                     }
                 } else {
-                    console.warn('Invalid')
+                    console.warn('Invalid document path');
                 }
             } catch (error) {
-                console.error('Error occurred during image upload:', error);
+                console.error('Error occurred during document upload:', error);
             }
         }
     };
 
     const options = [
-        { title: 'Take Photo', image: require('@assets/icons/modal/camera.png'), onPress: () => takePhoto() },
-        { title: 'Gallery', image: require('@assets/icons/modal/gallery_upload.png'), onPress: () => pickImage() },
+        { title: 'Choose Document', image: require('@assets/icons/modal/document.png'), onPress: () => pickDocument() },
         { title: 'Cancel', image: require('@assets/icons/modal/cancel.png'), onPress: () => toggleModal() },
-    ]
+    ];
 
     const ListAction = ({ title, image, onPress }) => {
         return (
@@ -72,8 +56,8 @@ const ActionModal = ({ title, setImageUrl }) => {
     };
 
     const toggleModal = () => {
-        setIsActionVisible(!isActionVisible)
-    }
+        setIsActionVisible(!isActionVisible);
+    };
 
     return (
         <>
@@ -102,7 +86,7 @@ const ActionModal = ({ title, setImageUrl }) => {
                 </View>
                 <FlatList
                     data={options}
-                    numColumns={3}
+                    numColumns={1} // Optional what can be included
                     keyExtractor={(item, index) => index.toString()}
                     contentContainerStyle={{ padding: 8 }}
                     showsVerticalScrollIndicator={false}
@@ -111,13 +95,13 @@ const ActionModal = ({ title, setImageUrl }) => {
             </Modal>
             <Text style={styles.label}>{title}</Text>
             <TouchableOpacity style={{ width: 80, height: 80 }} onPress={toggleModal}>
-                <Image source={require('@assets/icons/modal/image_upload.png')} style={{ width: 80, height: 80, tintColor: COLORS.orange }} />
+                <Image source={require('@assets/icons/modal/file_upload.png')} style={{ width: 80, height: 80, tintColor: COLORS.orange }} />
             </TouchableOpacity>
         </>
     );
 };
 
-export default ActionModal;
+export default DocumentModal;
 
 export const styles = StyleSheet.create({
     modalContainer: {
@@ -136,7 +120,7 @@ export const styles = StyleSheet.create({
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.2,
             },
-        })
+        }),
     },
     container: {
         borderColor: COLORS.primaryThemeColor,
@@ -146,9 +130,8 @@ export const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        // backgroundColor: '#f1f1f1',
         margin: 8,
-        borderStyle: 'dotted'
+        borderStyle: 'dotted',
     },
     image: {
         width: 35,
@@ -160,7 +143,7 @@ export const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: FONT_FAMILY.urbanistBold,
         color: COLORS.black,
-        alignSelf: 'center'
+        alignSelf: 'center',
     },
     label: {
         marginVertical: 5,
@@ -168,4 +151,4 @@ export const styles = StyleSheet.create({
         color: '#2e2a4f',
         fontFamily: FONT_FAMILY.urbanistSemiBold,
     },
-});
+})

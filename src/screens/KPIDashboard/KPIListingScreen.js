@@ -18,7 +18,6 @@ const KPIListingScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(false);
     const route = useRoute();
     const { kpiCategory } = route.params;
-    console.log("🚀 ~ file: KPIListingScreen.js:21 ~ KPIListingScreen ~ kpiCategory:", kpiCategory)
     const [dashBoardDetails, setDashBoardDetails] = useState({
         assignedKpiData: [],
         importantKpiData: [],

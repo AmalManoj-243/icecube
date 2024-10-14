@@ -10,5 +10,7 @@ import ConfirmationModal from "./ConfirmationModal";
 import PauseModal from "./PauseModal";
 import UpdatesModal from "./UpdatesModal";
 import ReAssignModal from "./ReAssignModal";
+import CompleteModal from "./CompleteModal";
+import DocumentModal from "./DocumentModal";
 
-export { ActionModal, LogoutModal, InputModal, CustomListModal, EmployeeListModal, RulesModal, AddUpdateModal, MeetingsScheduleModal, ConfirmationModal, PauseModal, UpdatesModal, ReAssignModal }
+export { ActionModal, LogoutModal, InputModal, CustomListModal, EmployeeListModal, RulesModal, AddUpdateModal, MeetingsScheduleModal, ConfirmationModal, PauseModal, UpdatesModal, ReAssignModal, CompleteModal, DocumentModal }

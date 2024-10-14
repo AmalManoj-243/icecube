@@ -42,7 +42,7 @@ const PipelineScreen = ({ navigation }) => {
   };
 
   const renderEmptyState = () => (
-    <EmptyState imageSource={require('@assets/images/EmptyData/empty.png')} message={'No Data'} />
+    <EmptyState imageSource={require('@assets/images/EmptyData/empty.png')} message={'No Pipelines Found'} />
   );
 
   const renderContent = () => (
