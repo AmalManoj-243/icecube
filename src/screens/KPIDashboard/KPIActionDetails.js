@@ -11,7 +11,7 @@ import { OverlayLoader } from '@components/Loader';
 import { Button } from '@components/common/Button';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
-import { put, post } from '@api/services/utils';
+import { put } from '@api/services/utils';
 import { CompleteModal, ConfirmationModal, DocumentModal, PauseModal, ReAssignModal, UpdatesModal } from '@components/Modal';
 import { useAuthStore } from '@stores/auth';
 import { KPIUpdateList } from '@components/KPI';
@@ -20,6 +20,7 @@ import { TitleWithButton } from '@components/Header';
 
 const KPIActionDetails = ({ navigation, route }) => {
   const { id } = route?.params || {};
+  console.log("ID Here maybe", id)
   const currentUser = useAuthStore((state) => state.user);
   const [details, setDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -47,6 +48,10 @@ const KPIActionDetails = ({ navigation, route }) => {
         files: upload.files || []
       })) || [];
       setKpiDocument(mappedDocuments);
+      const mappedParticipants = updatedDetails?.participants?.map((participant) => ({
+        assignee_name: participant.assignee_name,
+      })) || [];
+      setParticipants(mappedParticipants);
     } catch (error) {
       console.error('Error fetching KPI details:', error);
       showToastMessage('Failed to fetch KPI details. Please try again.');
@@ -54,7 +59,6 @@ const KPIActionDetails = ({ navigation, route }) => {
       setIsLoading(false);
     }
   };
-
 
   useFocusEffect(
     useCallback(() => {
@@ -87,7 +91,7 @@ const KPIActionDetails = ({ navigation, route }) => {
     const data = {
       _id: details._id || id,
       status: 'In progress',
-      assignee_id: currentUser._id,
+      assignee_id: currentUser?.related_profile?._id,
       assignee_name: currentUser?.related_profile?.name,
       progress_status: 'Ongoing',
       isDeveloper: false,
@@ -104,7 +108,7 @@ const KPIActionDetails = ({ navigation, route }) => {
       progress_status: 'Pause',
       _id: details._id || id,
       isDeveloper: false,
-      assignee_id: currentUser._id,
+      assignee_id: currentUser?.related_profile?._id,
       assignee_name: currentUser?.related_profile?.name,
     };
     console.log("Pause Data", data)
@@ -118,7 +122,7 @@ const KPIActionDetails = ({ navigation, route }) => {
     // }
     const data = {
       _id: details._id || id,
-      assignee_id: currentUser._id,
+      assignee_id: currentUser?.related_profile?._id,
       assignee_name: currentUser?.related_profile?.name,
       estimatedTime: details.totalEstimation?.[0]?.estimated_time || 0,
       // assignedToId: selectedAssignee._id,
@@ -132,7 +136,7 @@ const KPIActionDetails = ({ navigation, route }) => {
   const handleCompleteTask = () => {
     const data = {
       _id: details._id || id,
-      assignee_id: currentUser._id,
+      assignee_id: currentUser?.related_profile?._id,
       assignee_name: currentUser?.related_profile?.name,
       progress_status: 'Completed',
       status: 'Completed',
@@ -140,36 +144,12 @@ const KPIActionDetails = ({ navigation, route }) => {
     handleTaskAction(data, 'Task Completed Successfully', setIsCompleteModalVisible);
   };
 
-  // const handleUploadDocument = async (actionData, successMessage, modalSetter) => {
-  //   setIsSubmitting(true);
-  //   try {
-  //     const response = await post('/fileUploadMultiple', actionData);
-  //     if (response.success === true) {
-  //       const updatedDocuments = response.data || [];
-  //       showToastMessage(successMessage);
-  //       setFormData((prevData) => ({
-  //         ...prevData,
-  //         documentUrls: updatedDocuments 
-  //       }));
-  //     } else {
-  //       showToastMessage('Failed to perform action. Please try again.');
-  //     }
-  //   } catch (error) {
-  //     console.error('API error:', error);
-  //     showToastMessage('An error occurred. Please try again.');
-  //   } finally {
-  //     fetchDetails();
-  //     setIsSubmitting(false);
-  //     modalSetter(false);
-  //   }
-  // };
-
   const handleDocumentUploads = async (url) => {
     const data = {
       _id: details._id || id,
       documentUploads: [
         {
-          assignee_id: currentUser._id,
+          assignee_id: currentUser?.related_profile?._id,
           assignee_name: currentUser?.related_profile?.name,
           files: url || [],
         }
@@ -185,7 +165,7 @@ const KPIActionDetails = ({ navigation, route }) => {
       kpiStatusUpdates: [
         {
           isDeveloper: true,
-          assignee_id: currentUser._id,
+          assignee_id: currentUser?.related_profile?._id,
           assignee_name: currentUser?.related_profile?.name,
           file: documentUrls || [],
           updateText,
@@ -205,6 +185,19 @@ const KPIActionDetails = ({ navigation, route }) => {
           <ListAction document={item.files} index={index} onDelete={onDelete} />
         )}
       />
+    );
+  };
+
+  const ParticipantsList = ({ participants }) => {
+    return (
+      <FlatList
+        data={participants}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <View style={{ padding: 5 }}>
+            <Text style={styles.participants}>{item.assignee_name}</Text>
+          </View>
+        )} />
     );
   };
 
@@ -251,6 +244,7 @@ const KPIActionDetails = ({ navigation, route }) => {
     handleFieldChange('documentUrls', updatedDocuments);
   };
 
+  const isMeet = details.isMeeting === true;
   const isTaskStarted = details.progress_status === 'Ongoing';
   const isTaskPaused = details.progress_status === 'Pause';
   const isTaskCompleted = details.progress_status === 'Completed';
@@ -302,18 +296,16 @@ const KPIActionDetails = ({ navigation, route }) => {
         <DetailField label="Is Customer Review Needed" value={details?.is_customer_review_needed ? 'Needed' : 'Not Needed' || '-'} />
         <DetailField label="Guidelines" value={details?.guide_lines?.join(', ') || '-'} />
 
-        <TitleWithButton label={'Add Participants'} onPress={() => { navigation.navigate('AddParticipants', { id }) }} />
-
-        <FlatList
-          data={participants}
-          renderItem={({ item }) => (
-            <Text>{item.assignee_name}</Text>
-          )}
-          keyExtractor={(item, index) => item.assignee_id || index.toString()}
-        />
+        <TitleWithButton label={'Add Participants'} onPress={() => {
+          if (isMeet) {
+          // console.log('Navigating with id:', id);
+          navigation.navigate('AddParticipants', { id });
+          }
+        }}
+        disabled={!isMeet} />
+        <ParticipantsList participants={participants} />
 
         <TitleWithButton label={'Updates'} onPress={() => setIsModalVisible(true)} />
-
         <DocumentModal
           visible={isModalVisible}
           title="Files"
@@ -368,7 +360,7 @@ const KPIActionDetails = ({ navigation, route }) => {
               setActionToPerform('pause');
               setIsPauseModalVisible(true);
             }}
-            disabled={!isTaskStarted || isTaskCompleted}
+            disabled={!isTaskStarted || isTaskCompleted || isMeet}
             title={(
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <AntDesign name="pausecircle" size={20} color={COLORS.white} />
@@ -383,7 +375,7 @@ const KPIActionDetails = ({ navigation, route }) => {
           />
         </View>
 
-        <View style={{ flexDirection: 'row', marginVertical: 5, padding: 1 }}>
+        <View style={{ flexDirection: 'row', marginTop: -5, padding: 1 }}>
           <Button
             width={'50%'}
             backgroundColor={COLORS.brightBlue}
@@ -391,7 +383,7 @@ const KPIActionDetails = ({ navigation, route }) => {
               setActionToPerform('reAssign');
               setIsAssignModalVisible(true);
             }}
-            disabled={details?.progress_status !== 'Ongoing'}
+            disabled={details?.progress_status !== 'Ongoing' || 'isMeet'}
             title={(
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
                 <AntDesign name="reload1" size={20} color={COLORS.white} />
@@ -495,6 +487,12 @@ const styles = StyleSheet.create({
     top: 5,
     right: 5,
   },
+  participants: {
+    flex: 2 / 3,
+    fontSize: 14,
+    color: COLORS.primaryThemeColor,
+    fontFamily: FONT_FAMILY.urbanistSemiBold,
+  }
 });
 
 export default KPIActionDetails;

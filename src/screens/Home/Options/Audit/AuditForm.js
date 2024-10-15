@@ -50,9 +50,9 @@ const AuditForm = ({ navigation }) => {
   };
 
   // Function to handle scanned data
-  const handleScan = async (data) => {
+  const handleScan = async (data) => {     // VB 203
 
-    const billParts = data.split('-')
+    const billParts = data.split('-')      // VB-203
     const billName = billParts[0]
     console.log("🚀 ~ file: AuditForm.js:54 ~ handleScan ~ billName:", billName)
     const billSequence = billParts.slice(1).join('-')

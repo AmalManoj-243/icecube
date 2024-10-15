@@ -11,9 +11,8 @@ import { validateFields } from '@utils/validation';
 import { put } from '@api/services/utils';
 
 const AddParticipants = ({ navigation, route }) => {
-    const { id, addParticipants } = route || {};
+    const { id } = route.params || {};
     console.log("Participants Id", id);
-    console.log("Add Participants", addParticipants);
     const [details, setDetails] = useState({});
     const [selectedType, setSelectedType] = useState(null);
     const [isVisible, setIsVisible] = useState(false);
@@ -86,11 +85,13 @@ const AddParticipants = ({ navigation, route }) => {
     const renderBottomSheet = () => {
         let items = [];
         let fieldName = '';
+        let previousSelections = [];
 
         switch (selectedType) {
             case 'Employee':
                 items = dropdown.employee;
                 fieldName = 'employee';
+                previousSelections = formData.employee;
                 break;
             default:
                 return null;
@@ -104,6 +105,7 @@ const AddParticipants = ({ navigation, route }) => {
                 previousSelections={formData.employee}
                 onClose={() => setIsVisible(false)}
                 onValueChange={handleEmployeeSelection}
+                // previousSelections={previousSelections}
             />
         );
     };

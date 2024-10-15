@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { Image, StyleSheet, FlatList, View, Text, TouchableOpacity, Linking } from 'react-native';
 import { SafeAreaView } from '@components/containers';
@@ -16,9 +16,9 @@ import { CompleteModal, ConfirmationModal, DocumentModal, PauseModal, ReAssignMo
 import { useAuthStore } from '@stores/auth';
 import { KPIUpdateList } from '@components/KPI';
 import { formatDateTime } from '@utils/common/date';
+import { TitleWithButton } from '@components/Header';
 
 const KPIActionDetails = ({ navigation, route }) => {
-
   const { id } = route?.params || {};
   const currentUser = useAuthStore((state) => state.user);
   const [details, setDetails] = useState({});
@@ -32,7 +32,7 @@ const KPIActionDetails = ({ navigation, route }) => {
   const [isCompleteModalVisible, setIsCompleteModalVisible] = useState(false);
   const [participants, setParticipants] = useState([]);
   const [kpiUpdates, setKpiUpdates] = useState([]);
-  const [documentLoading, setDocumentLoading] = useState(true);
+  const [kpiDocument, setKpiDocument] = useState([]);
   const [formData, setFormData] = useState({ documentUrls: [] });
   const [errors, setErrors] = useState({});
 
@@ -42,8 +42,11 @@ const KPIActionDetails = ({ navigation, route }) => {
       const [updatedDetails] = await fetchKPIDashboardDetails(id);
       setDetails(updatedDetails || {});
       setKpiUpdates(updatedDetails?.kpiStatusUpdates || []);
-      // cosnt fileuploadurl = documentuploads?. map this files || []
-      // set 
+      // Map through document uploads and the files
+      const mappedDocuments = updatedDetails?.documentUploads?.map((upload) => ({
+        files: upload.files || []
+      })) || [];
+      setKpiDocument(mappedDocuments);
     } catch (error) {
       console.error('Error fetching KPI details:', error);
       showToastMessage('Failed to fetch KPI details. Please try again.');
@@ -51,6 +54,7 @@ const KPIActionDetails = ({ navigation, route }) => {
       setIsLoading(false);
     }
   };
+
 
   useFocusEffect(
     useCallback(() => {
@@ -86,20 +90,24 @@ const KPIActionDetails = ({ navigation, route }) => {
       assignee_id: currentUser._id,
       assignee_name: currentUser?.related_profile?.name,
       progress_status: 'Ongoing',
+      isDeveloper: false,
       estimatedTime: details.totalEstimation?.[0]?.estimated_time || 0,
-      time: new Date(),
+      // time: new Date(),
     };
+    console.log("Start Data", data)
     handleTaskAction(data, 'Task Started Successfully', setIsStartModalVisible);
   };
 
   const handlePauseTask = (pauseReason) => {
     const data = {
+      pause_reason: pauseReason,
+      progress_status: 'Pause',
       _id: details._id || id,
+      isDeveloper: false,
       assignee_id: currentUser._id,
       assignee_name: currentUser?.related_profile?.name,
-      progress_status: 'Pause',
-      pause_reason: pauseReason,
     };
+    console.log("Pause Data", data)
     handleTaskAction(data, 'Task Paused Successfully', setIsPauseModalVisible);
   };
 
@@ -194,12 +202,12 @@ const KPIActionDetails = ({ navigation, route }) => {
         data={documentUrls}
         keyExtractor={(item, index) => index.toString()}
         renderItem={({ item, index }) => (
-          <ListAction document={item} index={index} onDelete={onDelete} />
+          <ListAction document={item.files} index={index} onDelete={onDelete} />
         )}
       />
     );
   };
-  
+
   const ListAction = ({ document, index }) => {
     const handleOpenDocument = (url) => {
       Linking.canOpenURL(url)
@@ -215,7 +223,7 @@ const KPIActionDetails = ({ navigation, route }) => {
 
     return (
       <View style={styles.listContainer}>
-        <TouchableOpacity onPress={() => handleOpenDocument(document)}>
+        <TouchableOpacity onPress={() => handleOpenDocument(document[0])}>
           <Image
             source={require('@assets/icons/modal/file_upload.png')}
             style={styles.image}
@@ -230,7 +238,6 @@ const KPIActionDetails = ({ navigation, route }) => {
     );
   };
 
-
   const handleFieldChange = (field, value) => {
     setFormData((prevFormData) => ({ ...prevFormData, [field]: value }));
     if (errors[field]) {
@@ -238,29 +245,11 @@ const KPIActionDetails = ({ navigation, route }) => {
     }
   };
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setDocumentLoading(false);
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, []);
-
   const handleDeleteDocument = (index) => {
     const updatedDocuments = [...formData.documentUrls];
     updatedDocuments.splice(index, 1);
     handleFieldChange('documentUrls', updatedDocuments);
   };
-
-  const addParticipants = (addedParticipants) => {
-    const formattedParticipants = addedParticipants.map(emp => ({
-      assignee_id: emp?.assignee.id,
-      assignee_name: emp?.assignee.name,
-    }));
-
-    setSparePartsItems(prevItems => [...prevItems, ...formattedParticipants]);
-    console.log("Added Participants", formattedParticipants);
-  };
-
 
   const isTaskStarted = details.progress_status === 'Ongoing';
   const isTaskPaused = details.progress_status === 'Pause';
@@ -305,23 +294,15 @@ const KPIActionDetails = ({ navigation, route }) => {
         <DetailField label="Checklists" value={details?.remarks || '-'} />
         <DetailField label="Reference Document" value={details?.pre_condition || '-'} />
         <DetailField label="Estimated Time (HR)" value={details?.totalEstimation?.[0]?.estimated_time?.toString() || '-'} />
-        {/* <DetailField label="Deadline" value={formatDateTime(details?.deadline || 'No Data')} /> */}
-        <DetailField label="Deadline" value={details?.deadline || 'No Data'} />
+        <DetailField label="Deadline" value={formatDateTime(details?.deadline) || 'No data'} />
+        {/* <DetailField label="Deadline" value={details?.deadline || 'No Data'} /> */}
         <DetailField label="KPI Points" value={details?.kpi_points || '-'} />
         <DetailField label="Warehouse" value={details?.warehouse?.[0]?.warehouse_name || '-'} />
         <DetailField label="Is Manager Review Needed" value={details?.is_manager_review_needed ? 'Needed' : 'Not Needed' || '-'} />
         <DetailField label="Is Customer Review Needed" value={details?.is_customer_review_needed ? 'Needed' : 'Not Needed' || '-'} />
         <DetailField label="Guidelines" value={details?.guide_lines?.join(', ') || '-'} />
 
-        <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginVertical: 10 }}>
-          <Text style={styles.label}>Add Participants</Text>
-          <TouchableOpacity activeOpacity={0.7}
-            onPress={() => {
-              navigation.navigate('AddParticipants', { id, addParticipants });
-            }}>
-            <AntDesign name="pluscircle" size={25} color={COLORS.orange} />
-          </TouchableOpacity>
-        </View>
+        <TitleWithButton label={'Add Participants'} onPress={() => { navigation.navigate('AddParticipants', { id }) }} />
         <FlatList
           data={participants}
           renderItem={({ item }) => (
@@ -330,27 +311,18 @@ const KPIActionDetails = ({ navigation, route }) => {
           keyExtractor={(item, index) => item.assignee_id || index.toString()}
         />
 
-        <View style={{ justifyContent: 'space-between', flexDirection: 'row', marginVertical: 10 }}>
-          <Text style={styles.label}>Updates</Text>
-          <TouchableOpacity activeOpacity={0.7}
-            onPress={() => setIsModalVisible(true)} >
-            <AntDesign name="pluscircle" size={26} color={COLORS.orange} />
-          </TouchableOpacity>
-        </View>
+        <TitleWithButton label={'Updates'} onPress={() => setIsModalVisible(true)} />
         <DocumentModal
           visible={isModalVisible}
           title="Files"
           onClose={() => setIsModalVisible(false)}
           setDocumentUrl={(url) => {
-            console.log("Picked document URL:", url);
-            handleFieldChange('documentUrls', [...(formData.documentUrls || []), url]);
             handleDocumentUploads(url);
-            // handleUploadDocument();
           }}
         />
-        {formData?.documentUrls && formData.documentUrls.length > 0 && (
+        {kpiDocument && kpiDocument?.length > 0 && (
           <UploadsContainer
-            documentUrls={formData.documentUrls}
+            documentUrls={kpiDocument || []}
             onDelete={handleDeleteDocument}
           />
         )}
