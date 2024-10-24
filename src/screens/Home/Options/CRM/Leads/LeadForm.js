@@ -37,7 +37,7 @@ const LeadForm = ({ navigation, route }) => {
     companyName: '',
     jobPosition: '',
     phoneNumber: '',
-    watsappNumber: '',
+    whatsappNumber: '',
     emailAddress: '',
     address: '',
     remarks: '',
@@ -162,7 +162,7 @@ const LeadForm = ({ navigation, route }) => {
         job_position: formData.jobPosition,
         email: formData.emailAddress,
         phone_no: formData.phoneNumber,
-        whatsapp_no: formData.watsappNumber,
+        whatsapp_no: formData.whatsappNumber,
         status: 'new',
         sales_person_id: formData?.salesPerson?.id || null,
         audio_url: null,
@@ -252,19 +252,19 @@ const LeadForm = ({ navigation, route }) => {
           onChangeText={(value) => handleFieldChange('jobPosition', value)}
         />
         <FormInput
-          label="Phone no."
+          label="Phone Number"
           required
-          placeholder="Enter Phone no."
+          placeholder="Enter Phone Number"
           keyboardType="numeric"
           value={formData.phoneNumber}
           validate={errors.phoneNumber}
           onChangeText={(value) => handleFieldChange('phoneNumber', value)}
         />
         <FormInput
-          label="Whatsapp no."
-          placeholder="Enter whatsapp no."
+          label="Whatsapp Number"
+          placeholder="Enter whatsapp Number"
           keyboardType="numeric"
-          onChangeText={(value) => handleFieldChange('watsappNumber', value)}
+          onChangeText={(value) => handleFieldChange('whatsappNumber', value)}
         />
         <FormInput
           label="Email"

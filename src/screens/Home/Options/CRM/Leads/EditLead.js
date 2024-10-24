@@ -43,7 +43,7 @@ const EditLead = ({ navigation, route }) => {
                 companyName: detail?.company_name || '',
                 jobPosition: detail?.job_position || '',
                 phoneNumber: detail?.phone_no || '',
-                watsappNumber: detail?.whatsapp_no || '',
+                whatsappNumber: detail?.whatsapp_no || '',
                 emailAddress: detail?.email || '',
                 address: detail?.address || '',
                 remarks: detail?.remarks || '',
@@ -152,7 +152,7 @@ const EditLead = ({ navigation, route }) => {
                 job_position: formData.jobPosition,
                 email: formData.emailAddress,
                 phone_no: formData.phoneNumber,
-                whatsapp_no: formData.watsappNumber,
+                whatsapp_no: formData.whatsappNumber,
                 status: formData?.status,
                 sales_person_id: formData?.salesPerson?.id || null,
                 audio_url: null,
@@ -251,8 +251,8 @@ const EditLead = ({ navigation, route }) => {
                     label="Watsapp no."
                     placeholder="Enter watsapp no."
                     keyboardType="numeric"
-                    value={formData.watsappNumber}
-                    onChangeText={(value) => handleFieldChange('watsappNumber', value)}
+                    value={formData.whatsappNumber}
+                    onChangeText={(value) => handleFieldChange('whatsappNumber', value)}
                 />
                 <FormInput
                     label="Email"

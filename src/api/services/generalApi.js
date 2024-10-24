@@ -181,14 +181,14 @@ export const fetchEnquiryRegister = async ({ offset, limit, loginEmployeeId }) =
   }
 };
 
-export const fetchProductRequisitory = async ({ offset, limit,searchText}) => {
+export const fetchPurchaseRequisition = async ({ offset, limit,searchText}) => {
   try {
     const queryParams = {
       offset,
       limit,
       ...(searchText !== undefined && { sequence_no: searchText }),
     };
-    const response = await get(API_ENDPOINTS.VIEW_PRODUCT_REQUISITION,queryParams);
+    const response = await get(API_ENDPOINTS.VIEW_PURCHASE_REQUISITION,queryParams);
     return response.data;
 
   } catch(error){

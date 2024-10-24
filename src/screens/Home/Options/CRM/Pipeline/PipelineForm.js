@@ -8,13 +8,7 @@ import { post } from '@api/services/utils';
 import { RoundedScrollContainer } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
 import { DropdownSheet } from '@components/common/BottomSheets';
-import {
-  fetchSourceDropdown,
-  fetchSalesPersonDropdown,
-  fetchCustomersDropdown,
-  fetchOpportunityDropdown,
-  fetchEnquiryTypeDropdown
-} from '@api/dropdowns/dropdownApi';
+import { fetchSourceDropdown, fetchSalesPersonDropdown, fetchCustomersDropdown, fetchOpportunityDropdown, fetchEnquiryTypeDropdown} from '@api/dropdowns/dropdownApi';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useAuthStore } from '@stores/auth';
 import { formatDateTime } from '@utils/common/date';

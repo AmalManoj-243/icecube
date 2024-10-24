@@ -3,26 +3,22 @@ import { RoundedScrollContainer, SafeAreaView } from "@components/containers";
 import { NavigationHeader } from "@components/Header";
 import { TextInput as FormInput } from "@components/common/TextInput";
 import { Button } from "@components/common/Button";
-import {
-  DropdownSheet,
-  MultiSelectDropdownSheet,
-} from "@components/common/BottomSheets";
+import { DropdownSheet, MultiSelectDropdownSheet } from "@components/common/BottomSheets";
 import { COLORS } from "@constants/theme";
-import {
-  fetchProductsDropdown,
-  fetchSupplierDropDown,
-} from "@api/dropdowns/dropdownApi";
-import { Keyboard } from "react-native";
+import { fetchProductsDropdown, fetchSupplierDropDown } from "@api/dropdowns/dropdownApi";
+import { Keyboard, Alert } from "react-native";
+import { validateFields } from '@utils/validation';
 
 const AddProductLines = ({ navigation, route }) => {
-  const [dropdown, setDropdown] = useState({
-    products: [],
-    suppliers: [],
-  });
   const [searchText, setSearchText] = useState("");
   const [isVisible, setIsVisible] = useState(false);
   const [selectedType, setSelectedType] = useState(null);
   const [selectedSuppliers, setSelectedSuppliers] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [dropdown, setDropdown] = useState({
+    products: [],
+    suppliers: [],
+  });
 
   const [formData, setFormData] = useState({
     productId: "",
@@ -93,29 +89,29 @@ const AddProductLines = ({ navigation, route }) => {
     }));
   };
 
-  const validateFields = (fieldsToValidate) => {
+  const validateForm = (fieldsToValidate) => {
     Keyboard.dismiss();
-    // const {isValid,}
-
-  }
+    const { isValid, errors } = validateFields(formData, fieldsToValidate);
+    setErrors(errors);
+    return isValid;
+  };
 
   const handleAddProducts = () => {
-    const productLines = {
-      product_name: formData.productName || '',
-      product_id: formData.productId  || '',
-      suppliers: selectedSuppliers.map((supplier) => ({
-        supplier_id: supplier.id,
-        name: supplier.label,
-      })),
-      quantity: formData.quantity  || '',
-      remarks: formData.remarks  || '',
-    };
-    // Log the productLines object to the console
-  console.log('Product Lines before navigation:', productLines);
-    // navigation.navigate("PurchaseRequisitionForm", {
-    //   product_lines: [productLines], // Passing an array with the product line
-    // });
-    navigation.navigate("PurchaseRequisitionForm", );
+    const fieldsToValidate = ['productName', 'quantity', 'remarks', 'suppliers'];
+    if (validateForm(fieldsToValidate)) {
+      const productLines = {
+        product_name: formData.productName || '',
+        product_id: formData.productId || '',
+        quantity: formData.quantity || '',
+        remarks: formData.remarks || '',
+        suppliers: selectedSuppliers.map((supplier) => ({
+          supplier_id: supplier.id,
+          name: supplier.label,
+        })),
+      };
+      console.log('Product Lines Data:', productLines);
+      navigation.navigate("PurchaseRequisitionForm", { newProductLine: productLines });
+    }
   };
 
   const renderBottomSheet = () => {
@@ -179,14 +175,17 @@ const AddProductLines = ({ navigation, route }) => {
           editable={false}
           required
           multiline={true}
+          validate={errors.productName}
           value={formData.productName}
           onPress={() => toggleBottomSheet("Product")}
         />
         <FormInput
           label={"Quantity"}
-          placeholder={"Enter quantity"}
+          placeholder={"Enter Quantity"}
           required
           editable={true}
+          keyboardType='numeric'
+          validate={errors.quantity}
           value={formData.quantity}
           onChangeText={(text) =>
             setFormData((prevFormData) => ({ ...prevFormData, quantity: text }))
@@ -194,10 +193,11 @@ const AddProductLines = ({ navigation, route }) => {
         />
         <FormInput
           label={"Remarks"}
-          placeholder={"Enter remarks"}
+          placeholder={"Enter Remarks"}
           required
           editable={true}
           multiline={true}
+          validate={errors.remarks}
           value={formData.remarks}
           onChangeText={(text) =>
             setFormData((prevFormData) => ({ ...prevFormData, remarks: text }))
@@ -210,6 +210,7 @@ const AddProductLines = ({ navigation, route }) => {
           multiline={true}
           editable={false}
           required
+          validate={errors.suppliers}
           value={selectedSuppliers.map((supplier) => supplier.label).join(", ")}
           onPress={() => toggleBottomSheet("Supplier")}
         />

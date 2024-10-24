@@ -2,20 +2,30 @@ import React from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
-import { formatDate } from '@utils/common/date';
 
-const PurchaseRequisitionList = ({ item, onPress }) => {
+const PurchaseDetailList = ({ item, onPress }) => {
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.itemContainer}>
       <View style={styles.leftColumn}>
-        <Text style={styles.head}>{item?.sequence_no ||'-'}</Text>
+        <Text style={styles.head}>{item?.product?.product_name?.trim() || '-'}</Text>
         <View style={styles.rightColumn}>
-          <Text style={styles.content}>{item?.request_details[0]?.requested_by?.employee_name || '-'}</Text>
+          <Text style={styles.content}>{item?.quantity || '-'}</Text>
         </View>
       </View>
       <View style={styles.rightColumn}>
-        <Text style={styles.content}>{item?.request_details[0]?.warehouse?.warehouse_name || '-'}</Text>
-        <Text style={styles.contentRight}>{formatDate(item?.date) || '-'}</Text>
+        <Text style={styles.content}>{item?.remarks || '-'}</Text>
+        <View style={styles.contentRight}>
+          {item?.suppliers?.length > 0 ? (
+            item.suppliers.map((supplier, index) => (
+              <Text key={index} style={styles.supplierContent}>
+                {supplier?.supplier?.suplier_name || '-'}
+                {index < item.suppliers.length - 1 ? ',' : ''}
+              </Text>
+            ))
+          ) : (
+            <Text style={styles.supplierContent}>No suppliers</Text>
+          )} 
+        </View>
       </View>
     </TouchableOpacity>
   );
@@ -43,9 +53,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rightColumn: {
-    justifyContent: 'space-between', 
-    flexDirection: 'row', 
-    flex: 1 
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    flex: 1,
   },
   head: {
     fontFamily: FONT_FAMILY.urbanistBold,
@@ -55,16 +65,16 @@ const styles = StyleSheet.create({
   content: {
     color: '#666666',
     marginBottom: 5,
-    fontSize:14,
+    fontSize: 14,
     fontFamily: FONT_FAMILY.urbanistSemiBold,
-    textTransform:'capitalize'
+    textTransform: 'capitalize',
   },
- 
-  contentRight: {
+  supplierContent: {
     color: '#666666',
     fontFamily: FONT_FAMILY.urbanistSemiBold,
-    fontSize:14,
+    fontSize: 14,
+    marginBottom: 2,
   },
 });
 
-export default PurchaseRequisitionList;
+export default PurchaseDetailList;

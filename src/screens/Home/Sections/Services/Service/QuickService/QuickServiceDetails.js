@@ -12,7 +12,7 @@ import { OverlayLoader } from '@components/Loader';
 import { Button } from '@components/common/Button';
 import { COLORS } from '@constants/theme';
 import { post, put } from '@api/services/utils';
-import { CloseModal, ConfirmationModal } from '@components/Modal';
+import { CloseModal } from '@components/Modal';
 
 const QuickServiceDetails = ({ navigation, route }) => {
     const { id: serviceId } = route?.params || {};
@@ -20,7 +20,6 @@ const QuickServiceDetails = ({ navigation, route }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isCloseModalVisible, setIsCloseModalVisible] = useState(false);
-    const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
     const [actionToPerform, setActionToPerform] = useState(null);
 
     const fetchDetails = async () => {
@@ -65,7 +64,6 @@ const QuickServiceDetails = ({ navigation, route }) => {
         } finally {
             fetchDetails();
             setIsSubmitting(false);
-            setIsConfirmationModalVisible(false);
         }
     };
 
@@ -152,10 +150,7 @@ const QuickServiceDetails = ({ navigation, route }) => {
                         width={'50%'}
                         backgroundColor={COLORS.green}
                         title="UPDATE"
-                        onPress={() => {
-                            setActionToPerform('update');
-                            setIsUpdateModalVisible(true);
-                        }}
+                        onPress={handleUpdateJob}
                         disabled={isJobClosedOrCompleted}
                     />
                 </View>
@@ -169,13 +164,6 @@ const QuickServiceDetails = ({ navigation, route }) => {
                     onClose={() => setIsCloseModalVisible(!isCloseModalVisible)}
                     onSubmit={handleCloseJob}
                 />
-                <ConfirmationModal
-                    isVisible={isUpdateModalVisible}
-                    onCancel={() => setIsUpdateModalVisible(false)}
-                    onConfirm={handleUpdateJob}
-                    headerMessage='Are you sure you want to update this service job?'
-                />
-
                 <OverlayLoader visible={isLoading || isSubmitting} />
             </RoundedScrollContainer>
         </SafeAreaView>

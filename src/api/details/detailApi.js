@@ -196,3 +196,9 @@ export const fetchVisitPlanDetails = async (detailId) => {
 export const fetchKPIDashboardDetails = async (detailId) => {
   return fetchDetails(API_ENDPOINTS.VIEW_KPI, detailId);
 };
+
+export const fetchPurchaseRequisitionDetails = async (detailId) => {
+  return fetchDetails(API_ENDPOINTS.VIEW_PURCHASE_REQUISITION, detailId);
+};
+
+// fetchPurchaseRequisitionDetails

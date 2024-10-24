@@ -86,6 +86,7 @@ const SparePartsRequestDetails = ({ navigation, route }) => {
                     renderItem={({ item }) => <SparePartsIssueList item={item} />}
                     keyExtractor={(item) => item._id}
                 />
+                
                 <View style={{ flexDirection: 'row', marginVertical: 20 }}>
                     <LoadingButton
                         width={'50%'}

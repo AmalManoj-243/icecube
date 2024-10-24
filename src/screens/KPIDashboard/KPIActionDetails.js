@@ -286,7 +286,7 @@ const KPIActionDetails = ({ navigation, route }) => {
           )}
         </React.Fragment>
         ))}
-        <ActionModal
+        {/* <ActionModal
           title="Add Checklist"
           setImageUrl={(url) => handleFieldChange('imageUrls', [...formData.imageUrls, url])} />
         {formData?.imageUrls && formData?.imageUrls?.length > 0 && (
@@ -294,7 +294,7 @@ const KPIActionDetails = ({ navigation, route }) => {
             imageUrls={formData.imageUrls}
             onDelete={handleDeleteImage}
           />
-        )}
+        )} */}
 
         <View style={{ marginTop: 10, marginBottom: 10 }}>
           <DetailField

@@ -117,7 +117,31 @@ export const allValidationRules = {
     timeOut: {
         message: 'Please select Time Out',
         validate: validateRequired,
-    }
+    },
+    requestedByName:{
+        message: 'Please select Request By Name',
+        validate: validateRequired,
+    },
+    warehouse: {
+        message: 'Please select Request By Name',
+        validate: validateRequired,
+    },
+    requireBy:{
+        message: 'Please select Require By',
+        validate: validateRequired,
+    },
+    productName: {
+        message: 'Please select Product Name',
+        validate: validateRequired,
+    },
+    quantity:{
+        message: 'Please select Quantity',
+        validate: validateRequired,
+    },
+    supplier: {
+        message: 'Please select Suppliers',
+        validate: validateRequired,
+    },
 
     // Add other fields as needed
 };

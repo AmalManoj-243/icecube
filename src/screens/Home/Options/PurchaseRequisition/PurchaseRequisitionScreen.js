@@ -1,23 +1,20 @@
-import { View, Text } from 'react-native'
 import React, { useCallback, useEffect } from 'react'
-import { useFocusEffect, useIsFocused } from '@react-navigation/native'
-import { useDataFetching, useDebouncedSearch } from '@hooks';
-import { fetchProductDetails } from '@api/details/detailApi';
-import styles from '@screens/Categories/styles';
-import PurchaseRequisitionList from './PurchaseRequisitionList';
-import { EmptyState } from '@components/common/empty';
+import { useIsFocused, useFocusEffect } from '@react-navigation/native'
 import { FlashList } from '@shopify/flash-list';
-import { AnimatedLoader, OverlayLoader } from '@components/Loader';
-import { NavigationHeader } from '@components/Header';
-import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/containers';
-import { FABButton } from '@components/common/Button';
 import { formatData } from '@utils/formatters';
-import { fetchProductRequisitory } from '@api/services/generalApi';
+import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/containers';
+import { EmptyItem, EmptyState } from '@components/common/empty';
+import { NavigationHeader } from '@components/Header';
+import { FABButton } from '@components/common/Button';
+import { fetchPurchaseRequisition } from '@api/services/generalApi';
+import { useDataFetching, useDebouncedSearch } from '@hooks';
+import PurchaseRequisitionList from './PurchaseRequisitionList';
+import { OverlayLoader } from '@components/Loader';
 
 const PurchaseRequisitionScreen = ({ navigation }) => {
 
   const isFocused = useIsFocused();
-  const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchProductRequisitory);
+  const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchPurchaseRequisition);
   const { searchText, handleSearchTextChange } = useDebouncedSearch((text) => fetchData({ searchText: text }));
 
   useFocusEffect(
@@ -39,7 +36,7 @@ const PurchaseRequisitionScreen = ({ navigation }) => {
     if (item.empty) {
       return <EmptyItem />;
     }
-    return <PurchaseRequisitionList item={item} onPress={() => navigation.navigate('ProductRequisitionForm', { id: item._id })} />;
+    return <PurchaseRequisitionList item={item} onPress={() => navigation.navigate('PurchaseRequisitionDetails', { id: item._id })} />;
   };
 
   const renderEmptyState = () => (
@@ -73,7 +70,7 @@ const PurchaseRequisitionScreen = ({ navigation }) => {
         title="Purchase Requisition"
         onBackPress={() => navigation.goBack()}
       />
-      <SearchContainer placeholder="Search Enquiries.." onChangeText={''} />
+      {/* <SearchContainer placeholder="Search Enquiries.." onChangeText={handleSearchTextChange} /> */}
       <RoundedContainer>
         {renderProductRequisition()}
         <FABButton onPress={() => navigation.navigate('PurchaseRequisitionForm')} />

@@ -279,9 +279,9 @@ const AuditForm = ({ navigation }) => {
         continue;
       }
 
-      if (splittedBillName === 'Stock rec'){
+      // if (splittedBillName === 'Stock rec'){
 
-      }
+      // }
 
       if (!displayBillDetails[field]) {
         updateErrorState(errorMessages[field], field);

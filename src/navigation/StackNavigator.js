@@ -36,7 +36,7 @@ import { SpareManagementsScreen } from "@screens/Home/Sections/Services/SpareMan
 import { QuickServiceFormTabs } from "@screens/Home/Sections/Services/Service/QuickService/QuickServiceFormTabs";
 import { EditPickup, PickupDetails, PickupScreen } from "@screens/Home/Sections/Services/Service/Pickup";
 import { VisitFormTabs } from "@screens/Home/Options/Visits/VisitFormTabs";
-import { AddProductLines, PurchaseRequisitionForm, PurchaseRequisitionScreen } from "@screens/Home/Options/PurchaseRequisition";
+import { AddProductLines, EditPurchaseRequisitionDetails, PurchaseRequisitionDetails, PurchaseRequisitionForm, PurchaseRequisitionScreen } from "@screens/Home/Options/PurchaseRequisition";
 
 const Stack = createNativeStackNavigator();
 
@@ -410,12 +410,24 @@ const StackNavigator = () => {
       options={{headerShown: false}}
       />
       <Stack.Screen 
+      name="PurchaseRequisitionDetails"
+      component={PurchaseRequisitionDetails}
+      options={{headerShown: false}}
+      />
+      <Stack.Screen 
+      name="EditPurchaseRequisitionDetails"
+      component={EditPurchaseRequisitionDetails}
+      options={{headerShown: false}}
+      />
+      <Stack.Screen 
       name="AddProductLines"
       component={AddProductLines}
-      options={{headerShown: false}}/>
-
+      options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
 
 export default StackNavigator;
+
+// EditPurchaseRequisitionDetails
