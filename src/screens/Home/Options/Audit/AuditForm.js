@@ -640,9 +640,11 @@ const AuditForm = ({ navigation }) => {
 
         case "Stock rec":
           auditingData.amount = scannedBillDetails?.total_purchase_cost ?? 0;
-          auditingData.un_taxed_amount = scannedBillDetails?.untaxed_total_amount ?? 0;
-          auditingData.to_warehouse_id = scannedBillDetails?.to_warehouse_id ?? null;
-          auditingData.to_warehouse_name = scannedBillDetails?.to_warehouse_name ?? null;
+      auditingData.un_taxed_amount = scannedBillDetails?.untaxed_total_amount ?? 0;
+      auditingData.to_warehouse_id = scannedBillDetails?.to_warehouse_id ?? null;
+      auditingData.to_warehouse_name = scannedBillDetails?.to_warehouse_name ?? null;
+      auditingData.warehouse_id = scannedBillDetails?.from_warehouse_id ?? null;
+      auditingData.warehouse_name = scannedBillDetails?.from_warehouse_name ?? null;
           break;
           
         case "Fund rec":
