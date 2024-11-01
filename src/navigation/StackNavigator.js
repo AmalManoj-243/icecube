@@ -39,7 +39,7 @@ import { VisitFormTabs } from "@screens/Home/Options/Visits/VisitFormTabs";
 import { PurchasesScreen } from "@screens/Home/Options/Purchases";
 import { AddPriceLines, EditPriceEnquiryDetails, PriceEnquiryDetails, PriceEnquiryForm, PriceEnquiryScreen } from "@screens/Home/Options/Purchases/PriceEnquiry";
 import { AddProductLines, EditPurchaseRequisitionDetails, PurchaseRequisitionDetails, PurchaseRequisitionForm, PurchaseRequisitionScreen } from "@screens/Home/Options/Purchases/PurchaseRequisition";
-import { PurchaseOrderDetails, PurchaseOrderForm, PurchaseOrderList, PurchaseOrderScreen } from "@screens/Home/Options/Purchases/PurchaseOrder";
+import { AddPurchaseLines, PurchaseOrderDetails, PurchaseOrderForm, PurchaseOrderList, PurchaseOrderScreen } from "@screens/Home/Options/Purchases/PurchaseOrder";
 
 const Stack = createNativeStackNavigator();
 
@@ -475,6 +475,11 @@ const StackNavigator = () => {
       <Stack.Screen
         name="PurchaseOrderScreen"
         component={PurchaseOrderScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddPurchaseLines"
+        component={AddPurchaseLines}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

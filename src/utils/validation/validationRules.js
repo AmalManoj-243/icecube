@@ -123,7 +123,7 @@ export const allValidationRules = {
         validate: validateRequired,
     },
     warehouse: {
-        message: 'Please select Request By Name',
+        message: 'Please select Warehouse',
         validate: validateRequired,
     },
     requireBy:{
@@ -142,6 +142,28 @@ export const allValidationRules = {
         message: 'Please select Suppliers',
         validate: validateRequired,
     },
+    vendorName: {
+        message: 'Please select Vendor Name',
+        validate: validateRequired,
+    },
+    trnNumber: {
+        message: 'Please select TRN Number',
+        validate: validateRequired,
+    },
+    currency: {
+        message: 'Please select Currency',
+        validate: validateRequired,
+    },
+    purchaseType: {
+        message: 'Please select Purchase Type',
+        validate: validateRequired,
+    },
+    countryOfOrigin: {
+        message: 'Please select Country Of Origin',
+        validate: validateRequired,
+    },
+
+
 
     // Add other fields as needed
 };

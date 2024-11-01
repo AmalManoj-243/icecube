@@ -2,5 +2,6 @@ import PurchaseOrderDetails from "./PurchaseOrderDetails";
 import PurchaseOrderForm from "./PurchaseOrderForm";
 import PurchaseOrderList from "./PurchaseOrderList";
 import PurchaseOrderScreen from "./PurchaseOrderScreen";
+import AddPurchaseLines from "./AddPurchaseLines";
 
-export { PurchaseOrderForm, PurchaseOrderScreen, PurchaseOrderList, PurchaseOrderDetails }
+export { AddPurchaseLines, PurchaseOrderForm, PurchaseOrderScreen, PurchaseOrderList, PurchaseOrderDetails }

@@ -62,3 +62,8 @@ export const actions = [
   { label: "Lost", value: "Lost" },
   { label: "Qualified", value: "Qualified" }
 ];
+
+export const purchaseType = [
+  { label: "Local Purchase", value: "Local Purchase" },
+  { label: "International Purchase", value: "International Purchase" },
+];

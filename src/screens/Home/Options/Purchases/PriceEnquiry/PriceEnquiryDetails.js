@@ -24,11 +24,13 @@ const PriceEnquiryDetails = ({ navigation, route }) => {
     const [priceLines, setPriceLines] = useState(updatedPriceLines || []);
     const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
     const [actionToPerform, setActionToPerform] = useState(null);
+    const [responseData, setResponseData] = useState({}); 
 
     const fetchDetails = async () => {
         setIsLoading(true);
         try {
             const updatedDetails = await fetchPriceEnquiryDetails(priceId);
+            setResponseData(updatedDetails[0] || {}); 
             const requestDetails = updatedDetails[0]?.request_details?.[0];
             setDetails(updatedDetails[0] || {});
             setPriceLines(requestDetails?.supplier_prices || []);
@@ -49,23 +51,30 @@ const PriceEnquiryDetails = ({ navigation, route }) => {
     );
 
     const handlePurchaseOrder = async () => {
+        setIsSubmitting(true); 
         try {
-            const { _id } = details;
-            const response = await post('/createPriceEnquiryPurchaseOrder', { _id });
+            const purchaseOrderData = {
+                purchase_enquiry_lines: priceLines,
+                purchase_order_models: [] 
+            };
+            
+            const response = await post('/createPriceEnquiryPurchaseOrder', purchaseOrderData); 
+            console.log("Purchase Order Response:", response);
             if (response.success === true || response.success === 'true') {
-                showToastMessage('Purchase Order Created Successfully');
-                navigation.navigate('OptionScreen');
+                showToastMessage('Purchase Order Created Successfully'); 
+                await fetchDetails();
+                navigation.navigate('PurchaseOrderScreen'); 
             } else {
-                showToastMessage('Failed to Create Purchase Order. Please try again.');
+                showToastMessage('Failed to Create Purchase Order. Please try again.'); 
             }
         } catch (error) {
-            showToastMessage('An error occurred. Please try again.');
+            console.error('Error creating purchase order:', error);
+            showToastMessage('An error occurred. Please try again.'); 
         } finally {
-            fetchDetails();
-            setIsSubmitting(false);
+            setIsSubmitting(false); 
         }
-    };
-
+    };    
+    
     const handleDeletePrice = async () => {
         setIsSubmitting(true);
         try {
@@ -89,7 +98,7 @@ const PriceEnquiryDetails = ({ navigation, route }) => {
         navigation.navigate('EditPriceEnquiryDetails', { id: priceId });
     };
 
-    const isPurchaseOrderDisabled = priceLines.some(item => item.status === 'Approved');
+    const isPurchaseOrderDisabled = responseData?.purchase_order_models?.[0]?.status === "purchase_order";
 
     const handleUpdateStatus = async (id, price, isSwitchOn) => {
         const reqBody = {
@@ -135,7 +144,7 @@ const PriceEnquiryDetails = ({ navigation, route }) => {
                         backgroundColor={COLORS.tabIndicator}
                         title="Purchase Order"
                         onPress={handlePurchaseOrder}
-                        disabled={isPurchaseOrderDisabled}
+                        disabled={isPurchaseOrderDisabled} // Disable button based on the condition
                     />
                     <View style={{ width: 5 }} />
                     <Button

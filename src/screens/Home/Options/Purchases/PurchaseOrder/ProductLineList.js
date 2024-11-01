@@ -8,23 +8,6 @@ const ProductLineList = ({ item, onPress }) => {
     <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.itemContainer}>
       <View style={styles.leftColumn}>
         <Text style={styles.head}>{item?.product_name?.trim() || '-'}</Text>
-        <View style={styles.rightColumn}>
-          <Text style={styles.content}>{item?.quantity || '-'}</Text>
-        </View>
-      </View>
-      <View style={styles.rightColumn}>
-        <Text style={styles.content}>{item?.remarks || '-'}</Text>
-        <View style={styles.contentRight}>
-          {item?.suppliers?.length > 0 ? (
-            item.suppliers.map((supplier, index) => (
-              <Text key={index} style={styles.supplierContent}>
-                {supplier?.name || '-'},
-              </Text>
-            ))
-          ) : (
-            <Text style={styles.supplierContent}>No suppliers</Text>
-          )} 
-        </View>
       </View>
     </TouchableOpacity>
   );
@@ -51,28 +34,10 @@ const styles = StyleSheet.create({
   leftColumn: {
     flex: 1,
   },
-  rightColumn: {
-    justifyContent: 'space-between',
-    flexDirection: 'row',
-    flex: 1,
-  },
   head: {
     fontFamily: FONT_FAMILY.urbanistBold,
     fontSize: 17,
     marginBottom: 5,
-  },
-  content: {
-    color: '#666666',
-    marginBottom: 5,
-    fontSize: 14,
-    fontFamily: FONT_FAMILY.urbanistSemiBold,
-    textTransform: 'capitalize',
-  },
-  supplierContent: {
-    color: '#666666',
-    fontFamily: FONT_FAMILY.urbanistSemiBold,
-    fontSize: 14,
-    marginBottom: 2,
   },
 });
 

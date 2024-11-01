@@ -20,7 +20,6 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
     const [details, setDetails] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [priceLines, setPriceLines] = useState(updatedPriceLines || []);
     const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
     const [actionToPerform, setActionToPerform] = useState(null);
 
@@ -47,46 +46,46 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
         }, [purchaseOrderId])
     );
 
-    // const handleVendorBill = async () => {
-    //     try {
-    //         const { _id } = details;
-    //         const response = await post('/createPriceEnquiryPurchaseOrder', { _id });
-    //         if (response.success === true || response.success === 'true') {
-    //             showToastMessage('Purchase Order Created Successfully');
-    //             navigation.navigate('OptionScreen');
-    //         } else {
-    //             showToastMessage('Failed to Create Purchase Order. Please try again.');
-    //         }
-    //     } catch (error) {
-    //         showToastMessage('An error occurred. Please try again.');
-    //     } finally {
-    //         fetchDetails();
-    //         setIsSubmitting(false);
-    //     }
-    // };
+    const handleVendorBill = async () => {
+        try {
+            const { _id } = details;
+            const response = await post('/createPriceEnquiryPurchaseOrder', { _id });
+            if (response.success === true || response.success === 'true') {
+                showToastMessage('Purchase Order Created Successfully');
+                navigation.navigate('OptionScreen');
+            } else {
+                showToastMessage('Failed to Create Purchase Order. Please try again.');
+            }
+        } catch (error) {
+            showToastMessage('An error occurred. Please try again.');
+        } finally {
+            fetchDetails();
+            setIsSubmitting(false);
+        }
+    };
 
-    // const handleDeletePrice = async () => {
-    //     setIsSubmitting(true);
-    //     try {
-    //         const { _id } = details;
-    //         const response = await deleteRequest(`//${_id}`);
-    //         if (response.success === true || response.success === 'true') {
-    //             showToastMessage('Price Enquiry Deleted Successfully');
-    //             navigation.navigate('PriceEnquiryScreen');
-    //         } else {
-    //             showToastMessage('Failed to Delete Price Enquiry. Please try again.');
-    //         }
-    //     } catch (error) {
-    //         showToastMessage('An error occurred. Please try again.');
-    //     } finally {
-    //         fetchDetails();
-    //         setIsSubmitting(false);
-    //     }
-    // };
+    const handleDeletePrice = async () => {
+        setIsSubmitting(true);
+        try {
+            const { _id } = details;
+            const response = await deleteRequest(`//${_id}`);
+            if (response.success === true || response.success === 'true') {
+                showToastMessage('Price Enquiry Deleted Successfully');
+                navigation.navigate('PriceEnquiryScreen');
+            } else {
+                showToastMessage('Failed to Delete Price Enquiry. Please try again.');
+            }
+        } catch (error) {
+            showToastMessage('An error occurred. Please try again.');
+        } finally {
+            fetchDetails();
+            setIsSubmitting(false);
+        }
+    };
 
-    // const handleEditPrice = () => {
-    //     navigation.navigate('EditPriceEnquiryDetails', { id: purchaseOrderId });
-    // };
+    const handleEditPrice = () => {
+        navigation.navigate('EditPriceEnquiryDetails', { id: purchaseOrderId });
+    };
 
     return (
         <SafeAreaView>
@@ -96,20 +95,15 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
                 logo={false}
             />
             <RoundedScrollContainer>
-                <DetailField label="Sequence No" value={details?.request_details?.[0]?.requested_by?.employee_name || '-'} />
-                <DetailField label="Supplier Name" value={formatDate(details?.request_details?.[0]?.request_date)} />
-                <DetailField label="Ordered Date" value={details?.request_details?.[0]?.warehouse?.warehouse_name || '-'} />
-                <DetailField label="Bill Date" value={formatDate(details?.request_details?.[0]?.require_by)} />
-                <DetailField label="Purchase Type" value={formatDate(details?.request_details?.[0]?.require_by)} />
-                <DetailField label="Company" value={formatDate(details?.request_details?.[0]?.require_by)} />
-                <DetailField label="Country" value={formatDate(details?.request_details?.[0]?.require_by)} />
-                <DetailField label="Currency" value={formatDate(details?.request_details?.[0]?.require_by)} />
-                <DetailField label="TRN Number" value={formatDate(details?.request_details?.[0]?.require_by)} />
-                <FlatList
-                    data={priceLines}
-                    renderItem={({ item }) => <PriceDetailList item={item} />}
-                    keyExtractor={(item) => item._id}
-                />
+                <DetailField label="Sequence No" value={details?.sequence_no || '-'} /> 
+                <DetailField label="Supplier Name" value={details?.supplier?.supplier_name || '-'} />
+                <DetailField label="Ordered Date" value={formatDate(details?.order_date)} />
+                <DetailField label="Bill Date" value={formatDate(details?.bill_date)} />
+                <DetailField label="Purchase Type" value={details?.purchase_type || '-'} />
+                <DetailField label="Country" value={details?.country?.country_name} />
+                <DetailField label="Company" value={details?.company?.company_name} />
+                <DetailField label="Currency" value={details?.currency?.currency_name} />
+                <DetailField label="TRN Number" value={details?.Trn_number} />
 
                 <View style={{ flexDirection: 'row', marginVertical: 20 }}>
                     <Button
