@@ -7,20 +7,20 @@ import { RoundedScrollContainer } from '@components/containers';
 import { DetailField } from '@components/common/Detail';
 import { formatDate } from '@utils/common/date';
 import { showToastMessage } from '@components/Toast';
-import { fetchPurchaseOrderDetails } from '@api/details/detailApi';
-import PurchaseOrderDetailList from './PurchaseOrderDetailList';
+import { fetchDeliveryNoteDetails } from '@api/details/detailApi';
 import { OverlayLoader } from '@components/Loader';
 import { Button } from '@components/common/Button';
 import { COLORS } from '@constants/theme';
 import { post, deleteRequest } from '@api/services/utils';
 import { ConfirmationModal, MenuModal } from '@components/Modal';
+import DeliveryNoteDetailList from './DeliveryNoteDetailList';
 
-const PurchaseOrderDetails = ({ navigation, route }) => {
-    const { id: purchaseOrderId } = route?.params || {};
+const DeliveryNoteDetails = ({ navigation, route }) => {
+    const { id: deliveryNoteId } = route?.params || {};
     const [details, setDetails] = useState({});
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [purchaseOrderLines, setPurchaseOrderLines] = useState([]);
+    const [deliveryNotes, setDeliveryNotes] = useState([]);
     const [isMenuModalVisible, setIsMenuModalVisible] = useState(false);
     const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
     const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -28,10 +28,10 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
     const fetchDetails = async () => {
         setIsLoading(true);
         try {
-            const updatedDetails = await fetchPurchaseOrderDetails(purchaseOrderId);
+            const updatedDetails = await fetchDeliveryNoteDetails(deliveryNoteId);
             if (updatedDetails && updatedDetails[0]) {
                 setDetails(updatedDetails[0]);
-                setPurchaseOrderLines(updatedDetails[0]?.products_lines || []);
+                setDeliveryNotes(updatedDetails[0]?.products_lines || []);
             }
         } catch (error) {
             console.error('Error fetching purchase order details:', error);
@@ -43,10 +43,10 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
 
     useFocusEffect(
         useCallback(() => {
-            if (purchaseOrderId) {
-                fetchDetails(purchaseOrderId);
+            if (deliveryNoteId) {
+                fetchDetails(deliveryNoteId);
             }
-        }, [purchaseOrderId])
+        }, [deliveryNoteId])
     );
 
     const handleVendorBill = async () => {
@@ -85,77 +85,50 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
         }
     };
 
-    const handleEditPrice = () => {
-        navigation.navigate('EditPriceEnquiryDetails', { id: purchaseOrderId });
+    const hanldePdfDownload = () => {
+        navigation.navigate('EditPriceEnquiryDetails', { id: deliveryNoteId });
     };
 
     return (
         <SafeAreaView>
             <NavigationHeader
-                title={details?.sequence_no || 'Purchase Order Details'}
+                title={details?.sequence_no || 'Delivery Note Details'}
                 onBackPress={() => navigation.goBack()}
                 logo={false}
-                iconOneName='edit'
-                iconOnePress={() => setIsMenuModalVisible(true)}
             />
             <RoundedScrollContainer>
                 <DetailField label="Sequence No" value={details?.sequence_no || '-'} />
                 <DetailField label="Supplier Name" value={details?.supplier?.supplier_name || '-'} />
+                <DetailField label="LPO No" value={details?.LPO_no || '-'} />
                 <DetailField label="Ordered Date" value={formatDate(details?.order_date)} />
                 <DetailField label="Bill Date" value={formatDate(details?.bill_date)} />
-                <DetailField label="Purchase Type" value={details?.purchase_type || '-'} />
+                <DetailField label="Purchase Type" value={details?.purchase_type} />
                 <DetailField label="Company" value={details?.company?.company_name} />
                 <DetailField label="Country" value={details?.country?.country_name} />
                 <DetailField label="Currency" value={details?.currency?.currency_name} />
                 <DetailField label="TRN Number" value={details?.Trn_number} />
                 <FlatList
-                    data={purchaseOrderLines}
-                    renderItem={({ item }) => <PurchaseOrderDetailList item={item} />}
+                    data={deliveryNotes}
+                    renderItem={({ item }) => <DeliveryNoteDetailList item={item} />}
                     keyExtractor={(item) => item._id}
                 />
 
-                <View style={{ flexDirection: 'row', marginVertical: 20 }}>
-                    <Button
-                        width={'30%'}
-                        backgroundColor={COLORS.lightRed}
-                        title="DELETE"
-                        onPress={() => {
-                            setIsConfirmationModalVisible(true);
-                        }}
-                    />
+                <View style={{ flexDirection: 'row', marginVertical: 5 }}>
                     <View style={{ width: 5 }} />
                     <Button
-                        width={'40%'}
+                        width={'50%'}
                         backgroundColor={COLORS.tabIndicator}
-                        title="Vendor Bills"
+                        title="Vendor Bill"
                         onPress={handleVendorBill}
                     />
                     <View style={{ width: 5 }} />
                     <Button
-                        width={'30%'}
+                        width={'50%'}
                         backgroundColor={COLORS.green}
-                        title="EDIT"
-                        onPress={handleEditPrice}
+                        title="PDF Download"
+                        onPress={hanldePdfDownload}
                     />
                 </View>
-
-                <ConfirmationModal
-                    isVisible={isConfirmationModalVisible}
-                    onCancel={() => setIsConfirmationModalVisible(false)}
-                    headerMessage="Are you sure you want to delete this?"
-                    onConfirm={() => {
-                        handleDeletePrice();
-                        setIsConfirmationModalVisible(false);
-                    }}
-                />
-
-                <MenuModal
-                    isVisible={isMenuModalVisible}
-                    onCancel={() => setIsMenuModalVisible(false)}
-                    onOptionSelect={(option) => {
-                        showToastMessage(`${option} selected`);
-                    }}
-                />
 
                 <OverlayLoader visible={isLoading || isSubmitting} />
             </RoundedScrollContainer>
@@ -163,4 +136,4 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
     );
 };
 
-export default PurchaseOrderDetails;
+export default DeliveryNoteDetails;

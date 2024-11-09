@@ -9,7 +9,7 @@ import { formatDate } from '@utils/common/date';
 import { showToastMessage } from '@components/Toast';
 import { TextInput as FormInput } from "@components/common/TextInput";
 import { fetchPriceEnquiryDetails } from '@api/details/detailApi';
-import PriceDetailList from './PriceDetailList';
+import PriceEnquiryDetailList from './PriceEnquiryDetailList';
 import { OverlayLoader } from '@components/Loader';
 import { Button } from '@components/common/Button';
 import { COLORS } from '@constants/theme';
@@ -82,7 +82,7 @@ const EditPriceEnquiryDetails = ({ navigation, route }) => {
                     price: parseFloat(price),
                     status: "Pending",
                 }));
-    
+
             const updateData = {
                 _id: details._id,
                 supplier_price_array: validPriceLines,
@@ -99,54 +99,54 @@ const EditPriceEnquiryDetails = ({ navigation, route }) => {
         } finally {
             setIsSubmitting(false);
         }
-    };       
-    
+    };
+
     return (
-      <SafeAreaView>
-        <NavigationHeader
-            title={details?.sequence_no || 'Edit Purchase Details'}
-            onBackPress={() => navigation.goBack()}
-            logo={false}
-        />
-        <RoundedScrollContainer>
-            <DetailField label="Requested By" value={details?.request_details?.[0]?.requested_by?.employee_name || '-'} />
-            <DetailField label="Request Date" value={formatDate(details?.request_details?.[0]?.request_date)} />
-            <DetailField label="Warehouse" value={details?.request_details?.[0]?.warehouse?.warehouse_name || '-'} />
-            <DetailField label="Require By" value={formatDate(details?.request_details?.[0]?.require_by)} />
-            <FormInput
-                label={"Price"}
-                placeholder={"Enter Price"}
-                editable={true}
-                keyboardType="numeric"
-                value={inputPrice}
-                onChangeText={handlePriceChange}
+        <SafeAreaView>
+            <NavigationHeader
+                title={details?.sequence_no || 'Edit Purchase Details'}
+                onBackPress={() => navigation.goBack()}
+                logo={false}
             />
-
-            <FlatList
-                data={priceLines}
-                renderItem={({ item }) => <PriceDetailList item={item} />}
-                keyExtractor={(item) => item._id}
-            />
-
-            <View style={{ flexDirection: 'row', marginVertical: 20 }}>
-                <Button
-                    width={'50%'}
-                    backgroundColor={COLORS.tabIndicator}
-                    title="VIEW"
-                    onPress={handleViewPrice}
+            <RoundedScrollContainer>
+                <DetailField label="Requested By" value={details?.request_details?.[0]?.requested_by?.employee_name || '-'} />
+                <DetailField label="Request Date" value={formatDate(details?.request_details?.[0]?.request_date)} />
+                <DetailField label="Warehouse" value={details?.request_details?.[0]?.warehouse?.warehouse_name || '-'} />
+                <DetailField label="Require By" value={formatDate(details?.request_details?.[0]?.require_by)} />
+                <FormInput
+                    label={"Price"}
+                    placeholder={"Enter Price"}
+                    editable={true}
+                    keyboardType="numeric"
+                    value={inputPrice}
+                    onChangeText={handlePriceChange}
                 />
-                <View style={{ width: 5 }} />
-                <Button
-                    width={'50%'}
-                    backgroundColor={COLORS.green}
-                    title="SUBMIT"
-                    onPress={handleEditPrice}
-                />
-            </View>
 
-            <OverlayLoader visible={isLoading || isSubmitting} />
-        </RoundedScrollContainer>
-      </SafeAreaView>
+                <FlatList
+                    data={priceLines}
+                    renderItem={({ item }) => <PriceEnquiryDetailList item={item} />}
+                    keyExtractor={(item) => item._id}
+                />
+
+                <View style={{ flexDirection: 'row', marginVertical: 20 }}>
+                    <Button
+                        width={'50%'}
+                        backgroundColor={COLORS.tabIndicator}
+                        title="VIEW"
+                        onPress={handleViewPrice}
+                    />
+                    <View style={{ width: 5 }} />
+                    <Button
+                        width={'50%'}
+                        backgroundColor={COLORS.green}
+                        title="SUBMIT"
+                        onPress={handleEditPrice}
+                    />
+                </View>
+
+                <OverlayLoader visible={isLoading || isSubmitting} />
+            </RoundedScrollContainer>
+        </SafeAreaView>
     );
 };
 

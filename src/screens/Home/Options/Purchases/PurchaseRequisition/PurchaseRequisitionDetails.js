@@ -12,7 +12,7 @@ import PurchaseDetailList from './PurchaseDetailList';
 import { OverlayLoader } from '@components/Loader';
 import { Button } from '@components/common/Button';
 import { COLORS } from '@constants/theme';
-import { put, post, deleteRequest } from '@api/services/utils';
+import { post, deleteRequest } from '@api/services/utils';
 import { ConfirmationModal } from '@components/Modal';
 
 const PurchaseRequisitionDetails = ({ navigation, route }) => {

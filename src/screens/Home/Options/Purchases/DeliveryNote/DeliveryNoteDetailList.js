@@ -1,27 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
-import { formatDate } from '@utils/common/date';
 
-const PurchaseOrderList = ({ item, onPress }) => {
+const DeliveryNoteDetailList = ({ item, onPress }) => {
+
+  // Destructure the fields for easier access
+  const {
+    product = { product_name: '-', product_description: '-' },
+    scheduled_date = '-',
+    quantity = '-',
+    product_unit_of_measure = '-',
+    unit_price = '-',
+    taxes = { taxes_name: '-' },
+    sub_total = '-'
+  } = item || {};
+
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.itemContainer}>
       <View style={styles.leftColumn}>
-        <Text style={styles.head}>{item?.sequence_no || '-'}</Text>
+        <Text style={styles.head}>{product.product_name.trim()}</Text>
         <View style={styles.rightColumn}> 
-          <Text style={styles.content}>{formatDate(item?.bill_date) || '-'}</Text>
-          {/* <Text style={styles.content}>{item?.currency?.currency_name || '-'}</Text> */}
-          <Text style={styles.content}>Aed</Text>
-        </View>       
-        <View style={styles.rightColumn}> 
-          <Text style={styles.contentRight}>{item?.supplier?.supplier_name || '-'}</Text>
-          <Text style={styles.content}>{item?.purchase_type || '-'}</Text>
+          <Text style={styles.content}>{product.product_description}</Text>
+          <Text style={styles.content}>{scheduled_date}</Text>
         </View>
-        <View style={styles.rightColumn}>
-          <Text style={styles.content}>{item?.total_amount || '-'}</Text>
-          <Text style={[styles.contentRight, {color: 'red'}]}>{item?.status || '-'}</Text>
-        </View>
+      <View style={styles.leftColumn}>
+        <Text style={styles.contentRight}>{quantity}</Text>
+      </View>
+      <View style={styles.rightColumn}>
+          <Text style={styles.contentRight}>{product_unit_of_measure}</Text>
+        <Text style={styles.content}>{unit_price}</Text>
+      </View>
+      <View style={styles.rightColumn}>
+        <Text style={styles.content}>{taxes.taxes_name}</Text>
+        <Text style={styles.content}>{sub_total}</Text>
+      </View>
       </View>
     </TouchableOpacity>
   );
@@ -72,4 +85,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PurchaseOrderList;
+export default DeliveryNoteDetailList;

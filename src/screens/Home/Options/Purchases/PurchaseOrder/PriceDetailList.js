@@ -4,9 +4,9 @@ import { Switch } from 'react-native-paper';
 import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
 
-const PriceDetailList = ({ item, onPress, onUpdateStatus }) => {
+const PriceEnquiryDetailList = ({ item, onPress, onUpdateStatus }) => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
- 
+
   // Destructure item properties for easy access
   const {
     products: { product_name = '-' } = {},
@@ -16,7 +16,7 @@ const PriceDetailList = ({ item, onPress, onUpdateStatus }) => {
     price = '-',
   } = item || {};
 
-  
+
   const suppliers = supplier ? [supplier] : [];
   const isSwitchEnabled = status === 'Pending' || 'Approved' && price !== '-';
 
@@ -29,7 +29,7 @@ const PriceDetailList = ({ item, onPress, onUpdateStatus }) => {
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.itemContainer}>
       <View style={styles.leftColumn}>
-      <Text style={styles.productName}>{product_name.trim()}</Text>
+        <Text style={styles.productName}>{product_name.trim()}</Text>
         <View style={styles.rightColumn}>
           <Text style={styles.content}>{quantity}</Text>
           <Text style={[styles.contentRight, { color: 'red' }]}>{status}</Text>
@@ -83,9 +83,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   rightColumn: {
-    justifyContent: 'space-between', 
-    flexDirection: 'row', 
-    flex: 1 
+    justifyContent: 'space-between',
+    flexDirection: 'row',
+    flex: 1
   },
   head: {
     fontFamily: FONT_FAMILY.urbanistBold,
@@ -110,4 +110,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PriceDetailList;
+export default PriceEnquiryDetailList;

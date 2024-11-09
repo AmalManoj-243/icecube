@@ -33,7 +33,7 @@ const AuditForm = ({ navigation }) => {
   const [splittedBillName, setSplittedBillName] = useState('')
   const loginUser = useAuthStore(state => state.user)
   const warehouseId = loginUser?.warehouse?.warehouse_id
-  
+
   useEffect(() => {
     resetFormState();
   }, [splittedBillName]);
@@ -50,7 +50,7 @@ const AuditForm = ({ navigation }) => {
   };
 
   // Function to handle scanned data
-    const handleScan = async (data) => {     // VB 203
+  const handleScan = async (data) => {     // VB 203
     const billParts = data.split('-')      // VB-203
     const billName = billParts[0]
     console.log("🚀 ~ file: AuditForm.js:54 ~ handleScan ~ billName:", billName)
@@ -60,7 +60,7 @@ const AuditForm = ({ navigation }) => {
 
     try {
       let response, billDetails;
-      // console.log("Response of customer data", billDetails)
+      console.log("Response of Customer Data :", billDetails)
       switch (billName) {
         case "Invoice":
           response = await fetchBills.invoiceDetails(billSequence);
@@ -134,7 +134,7 @@ const AuditForm = ({ navigation }) => {
           break;
 
         case "SUPREC":
-          response = await fetchBills.supplierRecieptsDetails(billSequence);
+          response = await fetchBills.supplierReceiptsDetails(billSequence);
           billDetails = response[0];
           break;
 
@@ -457,7 +457,7 @@ const AuditForm = ({ navigation }) => {
           auditingData.ledger_name = ledger?.ledger_name ?? null;
           auditingData.ledger_display_name = ledger?.ledger_display_name ?? null;
           break;
-          
+
         case "SUPPAY":
           auditingData.supplier_id = scannedBillDetails?.supplier?.supplier_id ?? null;
           auditingData.supplier_name = scannedBillDetails?.supplier?.supplier_name ?? null;
@@ -644,13 +644,13 @@ const AuditForm = ({ navigation }) => {
 
         case "Stock rec":
           auditingData.amount = scannedBillDetails?.total_purchase_cost ?? 0;
-      auditingData.un_taxed_amount = scannedBillDetails?.untaxed_total_amount ?? 0;
-      auditingData.to_warehouse_id = scannedBillDetails?.to_warehouse_id ?? null;
-      auditingData.to_warehouse_name = scannedBillDetails?.to_warehouse_name ?? null;
-      auditingData.warehouse_id = scannedBillDetails?.from_warehouse_id ?? null;
-      auditingData.warehouse_name = scannedBillDetails?.from_warehouse_name ?? null;
+          auditingData.un_taxed_amount = scannedBillDetails?.untaxed_total_amount ?? 0;
+          auditingData.to_warehouse_id = scannedBillDetails?.to_warehouse_id ?? null;
+          auditingData.to_warehouse_name = scannedBillDetails?.to_warehouse_name ?? null;
+          auditingData.warehouse_id = scannedBillDetails?.from_warehouse_id ?? null;
+          auditingData.warehouse_name = scannedBillDetails?.from_warehouse_name ?? null;
           break;
-          
+
         case "Fund rec":
           auditingData.amount = scannedBillDetails?.amount ?? 0;
           auditingData.to_warehouse_id = scannedBillDetails?.to_warehouse_id ?? null;
@@ -744,6 +744,7 @@ const AuditForm = ({ navigation }) => {
             label={'Customer'}
             placeholder={'Customer name'}
             editable={false}
+            multiline={true}
             value={displayBillDetails?.displayName?.toUpperCase()?.trim() || ''}
             validate={errors.displayName}
           />

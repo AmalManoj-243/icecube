@@ -4,24 +4,18 @@ import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
 import { formatDate } from '@utils/common/date';
 
-const PurchaseOrderList = ({ item, onPress }) => {
+const DeliveryNoteList = ({ item, onPress }) => {
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.itemContainer}>
       <View style={styles.leftColumn}>
-        <Text style={styles.head}>{item?.sequence_no || '-'}</Text>
-        <View style={styles.rightColumn}> 
-          <Text style={styles.content}>{formatDate(item?.bill_date) || '-'}</Text>
-          {/* <Text style={styles.content}>{item?.currency?.currency_name || '-'}</Text> */}
-          <Text style={styles.content}>Aed</Text>
-        </View>       
-        <View style={styles.rightColumn}> 
-          <Text style={styles.contentRight}>{item?.supplier?.supplier_name || '-'}</Text>
-          <Text style={styles.content}>{item?.purchase_type || '-'}</Text>
-        </View>
+        <Text style={styles.head}>{item?.sequence_no ||'-'}</Text>
         <View style={styles.rightColumn}>
-          <Text style={styles.content}>{item?.total_amount || '-'}</Text>
-          <Text style={[styles.contentRight, {color: 'red'}]}>{item?.status || '-'}</Text>
+          <Text style={styles.content}>{item?.supplier?.supplier_name || '-'}</Text>
         </View>
+      </View>
+      <View style={styles.rightColumn}>
+        <Text style={styles.content}>{item?.products_lines?.[0]?.sub_total || '-'}</Text>
+        <Text style={styles.contentRight}>{formatDate(item?.order_date) || '-'}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -72,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PurchaseOrderList;
+export default DeliveryNoteList;

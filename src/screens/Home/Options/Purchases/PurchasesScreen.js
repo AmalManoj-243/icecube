@@ -13,7 +13,8 @@ const PurchasesScreen = ({ navigation }) => {
         [
             { title: 'Purchase Requisition', image: require('@assets/images/Home/options/buy.png'), onPress: () => navigation.navigate('PurchaseRequisitionScreen') },
             { title: 'Price Enquiry', image: require('@assets/images/Home/options/price_enquiry.png'), onPress: () => navigation.navigate('PriceEnquiryScreen') },
-            { title: 'Purchase Order', image: require('@assets/images/Home/options/price_enquiry.png'), onPress: () => navigation.navigate('PurchaseOrderScreen') },
+            { title: 'Purchase Order', image: require('@assets/images/Home/options/PurchaseOrder.png'), onPress: () => navigation.navigate('PurchaseOrderScreen') },
+            { title: 'Delivery Note', image: require('@assets/images/Home/options/DeliveryNote.png'), onPress: () => navigation.navigate('DeliveryNoteScreen') },
         ]
 
     const renderItem = ({ item }) => {

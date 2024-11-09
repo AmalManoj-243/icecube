@@ -40,6 +40,7 @@ import { PurchasesScreen } from "@screens/Home/Options/Purchases";
 import { AddPriceLines, EditPriceEnquiryDetails, PriceEnquiryDetails, PriceEnquiryForm, PriceEnquiryScreen } from "@screens/Home/Options/Purchases/PriceEnquiry";
 import { AddProductLines, EditPurchaseRequisitionDetails, PurchaseRequisitionDetails, PurchaseRequisitionForm, PurchaseRequisitionScreen } from "@screens/Home/Options/Purchases/PurchaseRequisition";
 import { AddPurchaseLines, PurchaseOrderDetails, PurchaseOrderForm, PurchaseOrderList, PurchaseOrderScreen } from "@screens/Home/Options/Purchases/PurchaseOrder";
+import { DeliveryNoteDetails, DeliveryNoteScreen } from "@screens/Home/Options/Purchases/DeliveryNote";
 
 const Stack = createNativeStackNavigator();
 
@@ -408,31 +409,6 @@ const StackNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="PriceEnquiryForm"
-        component={PriceEnquiryForm}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="PriceEnquiryScreen"
-        component={PriceEnquiryScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="PriceEnquiryDetails"
-        component={PriceEnquiryDetails}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="EditPriceEnquiryDetails"
-        component={EditPriceEnquiryDetails}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="AddPriceLines"
-        component={AddPriceLines}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
         name="PurchaseRequisitionForm"
         component={PurchaseRequisitionForm}
         options={{ headerShown: false }}
@@ -455,6 +431,31 @@ const StackNavigator = () => {
       <Stack.Screen
         name="AddProductLines"
         component={AddProductLines}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PriceEnquiryForm"
+        component={PriceEnquiryForm}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PriceEnquiryScreen"
+        component={PriceEnquiryScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="PriceEnquiryDetails"
+        component={PriceEnquiryDetails}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditPriceEnquiryDetails"
+        component={EditPriceEnquiryDetails}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="AddPriceLines"
+        component={AddPriceLines}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -482,10 +483,18 @@ const StackNavigator = () => {
         component={AddPurchaseLines}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="DeliveryNoteScreen"
+        component={DeliveryNoteScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="DeliveryNoteDetails"
+        component={DeliveryNoteDetails}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 };
 
 export default StackNavigator;
-
-// EditPurchaseRequisitionDetails

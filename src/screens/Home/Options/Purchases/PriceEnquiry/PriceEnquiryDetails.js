@@ -8,13 +8,12 @@ import { DetailField } from '@components/common/Detail';
 import { formatDate } from '@utils/common/date';
 import { showToastMessage } from '@components/Toast';
 import { fetchPriceEnquiryDetails } from '@api/details/detailApi';
-import PriceDetailList from './PriceDetailList';
+import PriceEnquiryDetailList from './PriceEnquiryDetailList';
 import { OverlayLoader } from '@components/Loader';
 import { Button } from '@components/common/Button';
 import { COLORS } from '@constants/theme';
 import { post, deleteRequest, put } from '@api/services/utils';
 import { ConfirmationModal } from '@components/Modal';
-import { Switch } from 'react-native-paper';
 import { useAuthStore } from '@stores/auth';
 
 const PriceEnquiryDetails = ({ navigation, route }) => {
@@ -27,13 +26,13 @@ const PriceEnquiryDetails = ({ navigation, route }) => {
     const [priceLines, setPriceLines] = useState(updatedPriceLines || []);
     const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
     const [actionToPerform, setActionToPerform] = useState(null);
-    const [responseData, setResponseData] = useState({}); 
+    const [responseData, setResponseData] = useState({});
 
     const fetchDetails = async () => {
         setIsLoading(true);
         try {
             const updatedDetails = await fetchPriceEnquiryDetails(priceId);
-            setResponseData(updatedDetails[0] || {}); 
+            setResponseData(updatedDetails[0] || {});
             const requestDetails = updatedDetails[0]?.request_details?.[0];
             setDetails(updatedDetails[0] || {});
             setPriceLines(requestDetails?.supplier_prices || []);
@@ -54,7 +53,7 @@ const PriceEnquiryDetails = ({ navigation, route }) => {
     );
 
     const handlePurchaseOrder = async () => {
-        setIsSubmitting(true); 
+        setIsSubmitting(true);
         try {
             const purchaseOrderData = {
                 employee_id: currentUser?._id || "",
@@ -77,17 +76,17 @@ const PriceEnquiryDetails = ({ navigation, route }) => {
                     supplier_id: item?.supplier?.suplier_id || "",
                     supplier_name: item?.supplier?.suplier_name || "",
                     // taxes: "", // tax id
-                    received_quantity: item?.received_quantity || 0, 
-                    billed_quantity: item?.billed_quantity || 0, 
-                    scheduled_date: formatDate(new Date, 'yyyy/MM/dd'), 
+                    received_quantity: item?.received_quantity || 0,
+                    billed_quantity: item?.billed_quantity || 0,
+                    scheduled_date: formatDate(new Date, 'yyyy/MM/dd'),
                     // description: item?.description || "",
-                })),               
+                })),
             };
             console.log("🚀 ~ PriceEnquiryDetails ~ purchaseOrderData:", JSON.stringify(purchaseOrderData, null, 2));
             const response = await post('/createPriceEnquiryPurchaseOrder', purchaseOrderData);
             if (response.success === true || response.success === 'true') {
                 showToastMessage('Purchase Order Created Successfully');
-                setResponseData(response.data); 
+                setResponseData(response.data);
                 await fetchDetails();
                 navigation.navigate('PurchaseOrderScreen');
             } else {
@@ -99,8 +98,8 @@ const PriceEnquiryDetails = ({ navigation, route }) => {
         } finally {
             setIsSubmitting(false);
         }
-    };      
-    
+    };
+
     const handleDeletePrice = async () => {
         setIsSubmitting(true);
         try {
@@ -150,7 +149,7 @@ const PriceEnquiryDetails = ({ navigation, route }) => {
                 <DetailField label="Require By" value={formatDate(details?.request_details?.[0]?.require_by)} />
                 <FlatList
                     data={priceLines}
-                    renderItem={({ item }) => <PriceDetailList item={item} onUpdateStatus={handleUpdateStatus} />}
+                    renderItem={({ item }) => <PriceEnquiryDetailList item={item} onUpdateStatus={handleUpdateStatus} />}
                     keyExtractor={(item) => item._id}
                 />
 

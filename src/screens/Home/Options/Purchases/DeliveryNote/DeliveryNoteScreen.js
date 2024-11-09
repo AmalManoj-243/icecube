@@ -5,16 +5,15 @@ import { formatData } from '@utils/formatters';
 import { RoundedContainer, SafeAreaView, SearchContainer } from '@components/containers';
 import { EmptyItem, EmptyState } from '@components/common/empty';
 import { NavigationHeader } from '@components/Header';
-import { FABButton } from '@components/common/Button';
-import { fetchPurchaseRequisition } from '@api/services/generalApi';
+import { fetchDeliveryNote } from '@api/services/generalApi';
 import { useDataFetching, useDebouncedSearch } from '@hooks';
-import PurchaseRequisitionList from './PurchaseRequisitionList';
+import DeliveryNoteList from './DeliveryNoteList';
 import { OverlayLoader } from '@components/Loader';
 
-const PurchaseRequisitionScreen = ({ navigation }) => {
+const DeliveryNoteScreen = ({ navigation }) => {
 
   const isFocused = useIsFocused();
-  const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchPurchaseRequisition);
+  const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchDeliveryNote);
   const { searchText, handleSearchTextChange } = useDebouncedSearch((text) => fetchData({ searchText: text }));
 
   useFocusEffect(
@@ -36,11 +35,11 @@ const PurchaseRequisitionScreen = ({ navigation }) => {
     if (item.empty) {
       return <EmptyItem />;
     }
-    return <PurchaseRequisitionList item={item} onPress={() => navigation.navigate('PurchaseRequisitionDetails', { id: item._id })} />;
+    return <DeliveryNoteList item={item} onPress={() => navigation.navigate('DeliveryNoteDetails', { id: item._id })} />;
   };
 
   const renderEmptyState = () => (
-    <EmptyState imageSource={require('@assets/images/EmptyData/empty.png')} message={'No Purchase Requisitions Found'} />
+    <EmptyState imageSource={require('@assets/images/EmptyData/empty.png')} message={'No Delivery Note Found'} />
   );
 
   const renderContent = () => (
@@ -57,7 +56,7 @@ const PurchaseRequisitionScreen = ({ navigation }) => {
     />
   );
 
-  const renderProductRequisition = () => {
+  const renderDeliveryNote = () => {
     if (data.length === 0 && !loading) {
       return renderEmptyState();
     }
@@ -67,17 +66,15 @@ const PurchaseRequisitionScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
       <NavigationHeader
-        title="Purchase Requisition"
+        title="Delivery Note"
         onBackPress={() => navigation.goBack()}
       />
-      {/* <SearchContainer placeholder="Search Enquiries.." onChangeText={handleSearchTextChange} /> */}
       <RoundedContainer>
-        {renderProductRequisition()}
-        <FABButton onPress={() => navigation.navigate('PurchaseRequisitionForm')} />
+      {renderDeliveryNote()}
       </RoundedContainer>
       <OverlayLoader visible={loading} />
     </SafeAreaView>
   );
 };
 
-export default PurchaseRequisitionScreen;
+export default DeliveryNoteScreen;

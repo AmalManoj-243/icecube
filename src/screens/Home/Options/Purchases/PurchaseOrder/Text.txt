@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
-import { View, FlatList, Text, Modal, TouchableOpacity } from 'react-native';
+import { View, FlatList, Text, StyleSheet } from 'react-native';
 import { SafeAreaView } from '@components/containers';
 import NavigationHeader from '@components/Header/NavigationHeader';
 import { RoundedScrollContainer } from '@components/containers';
@@ -13,7 +13,8 @@ import { OverlayLoader } from '@components/Loader';
 import { Button } from '@components/common/Button';
 import { COLORS } from '@constants/theme';
 import { post, deleteRequest } from '@api/services/utils';
-import { ConfirmationModal, MenuModal } from '@components/Modal';
+import { ConfirmationModal } from '@components/Modal';
+import { AntDesign } from '@expo/vector-icons';
 
 const PurchaseOrderDetails = ({ navigation, route }) => {
     const { id: purchaseOrderId } = route?.params || {};
@@ -21,9 +22,8 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [purchaseOrderLines, setPurchaseOrderLines] = useState([]);
-    const [isMenuModalVisible, setIsMenuModalVisible] = useState(false);
+    // console.log("🚀 ~ PurchaseOrderDetails ~ purchaseOrderLines:", JSON.stringify(purchaseOrderLines, null, 2));
     const [isConfirmationModalVisible, setIsConfirmationModalVisible] = useState(false);
-    const [isMenuVisible, setIsMenuVisible] = useState(false);
 
     const fetchDetails = async () => {
         setIsLoading(true);
@@ -96,10 +96,9 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
                 onBackPress={() => navigation.goBack()}
                 logo={false}
                 iconOneName='edit'
-                iconOnePress={() => setIsMenuModalVisible(true)}
             />
             <RoundedScrollContainer>
-                <DetailField label="Sequence No" value={details?.sequence_no || '-'} />
+                <DetailField label="Sequence No" value={details?.sequence_no || '-'} /> 
                 <DetailField label="Supplier Name" value={details?.supplier?.supplier_name || '-'} />
                 <DetailField label="Ordered Date" value={formatDate(details?.order_date)} />
                 <DetailField label="Bill Date" value={formatDate(details?.bill_date)} />
@@ -148,19 +147,17 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
                         setIsConfirmationModalVisible(false);
                     }}
                 />
-
-                <MenuModal
-                    isVisible={isMenuModalVisible}
-                    onCancel={() => setIsMenuModalVisible(false)}
-                    onOptionSelect={(option) => {
-                        showToastMessage(`${option} selected`);
-                    }}
-                />
-
                 <OverlayLoader visible={isLoading || isSubmitting} />
             </RoundedScrollContainer>
         </SafeAreaView>
     );
 };
+
+const styles = StyleSheet.create({
+    searchIcon: {
+        marginLeft: 15,
+        marginRight: 10
+    },
+});
 
 export default PurchaseOrderDetails;
