@@ -38,6 +38,11 @@ export const modeOfPayment = [
   { label: 'Cash and Credit', value: 'Cash and Credit' },
 ];
 
+export const purchaseType = [
+  { label: 'Local Purchase', value: 'Local Purchase' },
+  { label: 'International Purchase', value: 'International Purchase' },
+];
+
 export const customerBehaviour = [
   { label: 'Fast Payment', value: 'Fast Payment' },
   { label: 'Normal Payment', value: 'Normal Payment' },
@@ -61,9 +66,4 @@ export const actions = [
   { label: "Hold", value: "Hold" },
   { label: "Lost", value: "Lost" },
   { label: "Qualified", value: "Qualified" }
-];
-
-export const purchaseType = [
-  { label: "Local Purchase", value: "Local Purchase" },
-  { label: "International Purchase", value: "International Purchase" },
 ];

@@ -31,12 +31,12 @@ const AddPurchaseLines = ({ navigation }) => {
     productName: '',
     description: '',
     scheduledDate: new Date(),
-    company: { id: currentUser?.company?.company_id || '', label: currentUser?.company?.name },
-    quantity: '1',
+    quantity: '0',
     uom: '',
     unitPrice: '',
-    taxes: 'vat 5%',
+    taxes: 'vat 0%',
     subTotal: '',
+    total: ''
   });
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const AddPurchaseLines = ({ navigation }) => {
   }, []);
 
   useEffect(() => {
-    const fetchDropdownData = async () => {
+    const fetchTax = async () => {
       try {
         const taxData = await fetchTaxDropdown();
         setDropdown(prevDropdown => ({
@@ -105,20 +105,30 @@ const AddPurchaseLines = ({ navigation }) => {
       }
     };
 
-    fetchDropdownData();
+    fetchTax();
   }, []);
 
-  const handleProductSelection = (selectedProduct) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      productId: selectedProduct.id,
-      productName: selectedProduct.label,
-      description: selectedProduct.product_description || '', 
-      unitPrice: selectedProduct.cost || '', 
-      subTotal: (selectedProduct.cost || 0) * (prevFormData.quantity || 1), 
-    }));
-    setIsVisible(false);
-  };
+  useEffect(() => {
+    const calculateTaxAndTotal = () => {
+      const untaxedAmount = parseFloat(formData.subTotal) || 0;
+      let tax = 0;
+
+      if (formData.taxes?.label === "vat 5%") {
+        tax = untaxedAmount * 0.05;
+      } else if (formData.taxes?.label === "vat 0%") {
+        tax = 0;
+      }
+
+      const total = untaxedAmount + tax;
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        tax: tax.toFixed(2),
+        total: total.toFixed(2),
+      }));
+    };
+
+    calculateTaxAndTotal();
+  }, [formData.subTotal, formData.taxes]);
 
   const toggleBottomSheet = (type) => {
     setSelectedType(type);
@@ -154,6 +164,18 @@ const AddPurchaseLines = ({ navigation }) => {
     }
   };
 
+  const handleProductSelection = (selectedProduct) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      productId: selectedProduct.id,
+      productName: selectedProduct.label,
+      description: selectedProduct.product_description || '',
+      unitPrice: selectedProduct.cost || '',
+      subTotal: (selectedProduct.cost || 0) * (prevFormData.quantity || 1),
+    }));
+    setIsVisible(false);
+  };
+
   const handleAddProducts = () => {
     const fieldsToValidate = ['productName'];
     if (validateForm(fieldsToValidate)) {
@@ -161,17 +183,17 @@ const AddPurchaseLines = ({ navigation }) => {
         product_name: formData.productName,
         product_id: formData.productId,
         description: formData.description || '',
-        scheduledDate: formData.scheduledDate || '',
-        company: formData.company || '',
+        scheduledDate: formatDate(formData.scheduledDate || ''),
         quantity: formData.quantity || '',
         uom: formData.uom || '',
         unitPrice: formData.unitPrice || '',
-        taxType: formData.taxType || '',
-        subTotal: formData.subTotal || '',
         taxes: formData.taxes || '',
+        subTotal: formData.subTotal || '',
+        untaxedAmount: formData.subTotal || '',
+        tax: formData.tax || '',
         total: formData.total || '',
       };
-      console.log('Product Line Data:', productLine);
+      console.log("🚀 ~ AddPurchaseLines ~ productLine:", JSON.stringify(productLine, null, 2));
       navigation.navigate("PurchaseOrderForm", { newProductLine: productLine });
     }
   };
@@ -191,7 +213,7 @@ const AddPurchaseLines = ({ navigation }) => {
         break;
       case 'Tax':
         items = dropdown.taxes;
-        fieldName = 'tax';
+        fieldName = 'taxes';
         break;
       default:
         return null;
@@ -202,7 +224,7 @@ const AddPurchaseLines = ({ navigation }) => {
         items={items}
         title={selectedType}
         onClose={() => setIsVisible(false)}
-        search={true}
+        search={selectedType === "Product Name"}
         onSearchText={(value) => setSearchText(value)}
         onValueChange={(value) => {
           setSearchText('')
@@ -249,13 +271,6 @@ const AddPurchaseLines = ({ navigation }) => {
           onPress={() => setIsDatePickerVisible(true)}
         />
         <FormInput
-          label="Company"
-          placeholder="Enter Company"
-          value={formData.company?.label}
-          editable={false}
-          onChangeText={(value) => handleFieldChange('company', value)}
-        />
-        <FormInput
           label="Quantity"
           placeholder="Enter Quantity"
           keyboardType="numeric"
@@ -268,12 +283,13 @@ const AddPurchaseLines = ({ navigation }) => {
           dropIcon="menu-down"
           editable={false}
           value={formData.uom?.label || ''}
-          onPress={() => toggleBottomSheet('UOM')}
+          onPress={() => toggleBottomSheet('')}
+        // onPress={() => toggleBottomSheet('UOM')}
         />
         <FormInput
           label="Unit Price"
           placeholder="Unit Price"
-          keyboardType="numeric"
+          editable={false}
           value={formData.unitPrice.toString()}
           onChangeText={(value) => handleFieldChange('unitPrice', parseFloat(value))}
         />
@@ -282,7 +298,7 @@ const AddPurchaseLines = ({ navigation }) => {
           placeholder="Tax Type"
           dropIcon="menu-down"
           editable={false}
-          value={formData.tax?.label || ''}
+          value={formData.taxes?.label || 'vat 0%'}
           onPress={() => toggleBottomSheet('Tax')}
         />
         <FormInput
@@ -294,7 +310,7 @@ const AddPurchaseLines = ({ navigation }) => {
         <FormInput
           label="Untaxed Amount"
           editable={false}
-          value={formData.addedAmount}
+          value={formData.subTotal.toString()}
         />
         <FormInput
           label="Taxes"
@@ -307,6 +323,7 @@ const AddPurchaseLines = ({ navigation }) => {
           value={formData.total}
         />
 
+        {renderBottomSheet()}
         <Button
           title="Add Product"
           width="50%"
@@ -314,15 +331,16 @@ const AddPurchaseLines = ({ navigation }) => {
           backgroundColor={COLORS.primaryThemeColor}
           onPress={handleAddProducts}
         />
-
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
           mode="date"
-          onConfirm={(date) => { handleFieldChange("scheduledDate", date); setIsDatePickerVisible(false) }}
           minimumDate={new Date()}
+          onConfirm={(date) => {
+            setIsDatePickerVisible(false);
+            handleFieldChange("scheduledDate", date);
+          }}
           onCancel={() => setIsDatePickerVisible(false)}
         />
-        {renderBottomSheet()}
       </RoundedScrollContainer>
     </SafeAreaView>
   );

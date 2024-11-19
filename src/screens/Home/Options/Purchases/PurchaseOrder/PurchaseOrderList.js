@@ -11,8 +11,7 @@ const PurchaseOrderList = ({ item, onPress }) => {
         <Text style={styles.head}>{item?.sequence_no || '-'}</Text>
         <View style={styles.rightColumn}> 
           <Text style={styles.content}>{formatDate(item?.bill_date) || '-'}</Text>
-          {/* <Text style={styles.content}>{item?.currency?.currency_name || '-'}</Text> */}
-          <Text style={styles.content}>Aed</Text>
+          <Text style={styles.content}>{item?.currency?.currency_name || '-'}</Text>
         </View>       
         <View style={styles.rightColumn}> 
           <Text style={styles.contentRight}>{item?.supplier?.supplier_name || '-'}</Text>

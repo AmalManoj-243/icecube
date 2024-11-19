@@ -115,7 +115,7 @@ const AuditForm = ({ navigation }) => {
         case "E/PPAY":
           response = await fetchBills.salaryAdvancePaymentDetails(billSequence);
           billDetails = response[0];
-          consle.log("Bill data", billDetails);
+          console.log("Bill data", billDetails);
           break;
 
         case "CHEQREC":

@@ -161,3 +161,24 @@ const styles = StyleSheet.create({
 });
 
 export default PurchaseOrderDetails;
+
+ {
+    "product_id": "656f2cb002e1b1b31fafc6c6",
+    "product_name": "DESKTOP POWER SUPPLY LENOVO SKYWALK",
+    "description": "",
+    "scheduledDate": "18 November 2024",
+    "quantity": 1,
+    "uom": {
+      "id": "66506f212e5cf73d8446ff52",
+      "label": "Pcs"
+    },
+    "unitPrice": 300.00,
+    "taxes": {
+      "id": "648d9b54ef9cd868dfbfa37b",
+      "label": "vat 5%"
+    },
+    "subTotal": 300.00,
+    "untaxedAmount": 300.00,
+    "tax": "25.50",
+    "total": "325.50"
+  }

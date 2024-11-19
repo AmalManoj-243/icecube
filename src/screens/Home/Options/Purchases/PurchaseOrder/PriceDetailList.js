@@ -7,7 +7,6 @@ import { FONT_FAMILY } from '@constants/theme';
 const PriceEnquiryDetailList = ({ item, onPress, onUpdateStatus }) => {
   const [isSwitchOn, setIsSwitchOn] = useState(false);
 
-  // Destructure item properties for easy access
   const {
     products: { product_name = '-' } = {},
     quantity = '-',

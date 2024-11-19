@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { RoundedScrollContainer, SafeAreaView } from "@components/containers";
 import { NavigationHeader, TitleWithButton } from "@components/Header";
 import { fetchSupplierDropdown, fetchCurrencyDropdown, fetchCountryDropdown, fetchWarehouseDropdown } from "@api/dropdowns/dropdownApi";
+import { purchaseType } from "@constants/dropdownConst";
 import { DropdownSheet } from "@components/common/BottomSheets";
 import { TextInput as FormInput } from "@components/common/TextInput";
 import { LoadingButton } from "@components/common/Button";
@@ -14,7 +15,6 @@ import { OverlayLoader } from "@components/Loader";
 import ProductLineList from "./ProductLineList";
 import { validateFields } from '@utils/validation';
 import { showToast } from '@utils/common';
-import { purchaseType } from "@constants/dropdownConst";
 import { COLORS, FONT_FAMILY } from "@constants/theme";
 
 const PurchaseOrderForm = ({ route, navigation }) => {
@@ -25,6 +25,7 @@ const PurchaseOrderForm = ({ route, navigation }) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [productLines, setProductLines] = useState([]);
+  console.log("🚀 ~ PurchaseOrderForm ~ productLines:", JSON.stringify(productLines, null, 2));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [dropdown, setDropdown] = useState({
@@ -45,9 +46,31 @@ const PurchaseOrderForm = ({ route, navigation }) => {
     countryOfOrigin: "",
     billDate: "",
     warehouse: { id: currentUser?.warehouse?.warehouse_id || '', label: currentUser?.warehouse?.warehouse_name },
-    untaxedAmount: "",
-    totalAmount: ""
+    untaxedAmount: 0,
+    totalAmount: 0
   });
+
+  const calculateTotals = () => {
+    let untaxedAmount = 0;
+    let taxes = 0;
+
+    productLines.forEach((line) => {
+      untaxedAmount += line.subTotal || 0;
+      taxes += line.tax || 0;
+    });
+
+    const totalAmount = untaxedAmount + taxes;
+
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      untaxedAmount,
+      totalAmount,
+    }));
+  };
+
+  useEffect(() => {
+    calculateTotals();
+  }, [productLines]);
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -108,6 +131,16 @@ const PurchaseOrderForm = ({ route, navigation }) => {
     const productLineData = {
       product_id: newProductLine.product_id,
       product_name: newProductLine.product_name,
+      description: newProductLine.description || '', 
+      scheduledDate: newProductLine.scheduledDate || '', 
+      quantity: newProductLine.quantity || 0,
+      uom: newProductLine.uom || { id: '', label: '' },
+      unitPrice: newProductLine.unitPrice || 0, 
+      taxes: newProductLine.taxes || { id: '', label: '' },
+      subTotal: newProductLine.subTotal || 0,
+      untaxedAmount: newProductLine.untaxedAmount || 0,
+      tax: newProductLine.tax || 0,
+      total: newProductLine.total || 0,
     };
     setProductLines((prevLines) => [...prevLines, productLineData]);
   };
@@ -151,7 +184,7 @@ const PurchaseOrderForm = ({ route, navigation }) => {
         fieldName = "currency";
         break;
       case "Purchase Type":
-        items = dropdown.purchaseType;
+        items = purchaseType;
         fieldName = "purchaseType";
         break;
       case "Country Of Origin":
@@ -165,7 +198,6 @@ const PurchaseOrderForm = ({ route, navigation }) => {
       default:
         return null;
     }
-
     return (
       <DropdownSheet
         isVisible={isVisible}
@@ -201,17 +233,20 @@ const PurchaseOrderForm = ({ route, navigation }) => {
         total_amount: formData?.totalAmount || null,
         warehouse_id: formData?.warehouse?.id ?? null,
         products_line: productLines.map((line) => ({
-          product: line.product_id || null,
-          description: line.description || null,
-          quantity: line.quantity || null,
-          unit_price: line.sale_price || null,
-          sub_total: line.total || 0,
-          tax_value: line.tax || 0,
-          scheduled_date: formData.orderDate || "",
-          recieved_quantity: "",
-          billed_quantity: "",
-          product_unit_of_measure: "Pcs",
-          taxes: ""
+          product: line?.product_id,
+          description: line?.description,
+          quantity: line?.quantity,
+          unit_price: line?.unit_price,
+          sub_total: line?.sub_total,
+          tax_value: line?.tax,
+          scheduled_date: line?.scheduledDate,
+          recieved_quantity: 0,
+          billed_quantity: 0,
+          uom: line?.uom?.label,
+          product_unit_of_measure: line?.uom?.label,
+          taxes: line?.taxes?.id,
+          tax_type_name: line?.taxes?.label,
+          tax_type_id: line?.taxes?.id,
         }))
       }
       console.log("🚀 ~ ServiceFormTabs ~ purchaseOrderData:", JSON.stringify(purchaseOrderData, null, 2));
@@ -284,10 +319,15 @@ const PurchaseOrderForm = ({ route, navigation }) => {
           onPress={() => toggleBottomSheet("Currency")}
         />
         <FormInput
+          label="Order Date"
+          editable={false}
+          value={formatDate(formData.orderDate)}
+        />
+        <FormInput
           label="Purchase Type"
           placeholder="Select Purchase Type"
           dropIcon="menu-down"
-          item={purchaseType}
+          items={purchaseType}
           editable={false}
           validate={errors.purchaseType}
           value={formData.purchaseType?.label}
@@ -303,11 +343,6 @@ const PurchaseOrderForm = ({ route, navigation }) => {
           value={formData.countryOfOrigin?.label}
           required
           onPress={() => toggleBottomSheet("Country Of Origin")}
-        />
-        <FormInput
-          label="Order Date"
-          editable={false}
-          value={formatDate(formData.orderDate)}
         />
         <FormInput
           label="Bill Date"
@@ -341,20 +376,21 @@ const PurchaseOrderForm = ({ route, navigation }) => {
           keyExtractor={(item, index) => index.toString()}
         />
 
-      <View style={styles.total}>
-        <View style={styles.totalSection}>
-          <Text style={styles.totalLabel}>Untaxed Amount : </Text>
-          <Text style={styles.totalValue}>{}</Text>
-        </View>
-        <View style={styles.totalSection}>
-          <Text style={styles.totalLabel}>Taxes : </Text>
-          <Text style={styles.totalValue}>{}</Text>
-        </View>
-        <View style={styles.totalSection}>
-          <Text style={styles.totalLabel}>Total : </Text>
-          <Text style={styles.totalValue}>{}</Text>
-        </View>
-      </View>  
+        {productLines.length > 0 && <>
+          <View style={styles.totalSection}>
+            <Text style={styles.totalLabel}>Untaxed Amount : </Text>
+            <Text style={styles.totalValue}>{formData.untaxedAmount.toFixed(2)}</Text>
+          </View>
+          <View style={styles.totalSection}>
+            <Text style={styles.totalLabel}>Taxes : </Text>
+            <Text style={styles.totalValue}>{(formData.totalAmount - formData.untaxedAmount).toFixed(2)}</Text>
+          </View>
+          <View style={styles.totalSection}>
+            <Text style={styles.totalLabel}>Total : </Text>
+            <Text style={styles.totalValue}>{formData.totalAmount.toFixed(2)}</Text>
+          </View>
+        </>
+        }
 
         {renderBottomSheet()}
         <LoadingButton
