@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity } from 'react-native';
 import Text from '@components/Text';
 import { FONT_FAMILY } from '@constants/theme';
+import { formatDate } from '@utils/common/date';
 
 const PurchaseOrderDetailList = ({ item, onPress }) => {
 
@@ -25,17 +26,19 @@ const PurchaseOrderDetailList = ({ item, onPress }) => {
       <View style={styles.leftColumn}>
         <Text style={styles.head}>{product.product_name.trim()}</Text>
         <View style={styles.rightColumn}> 
-          <Text style={styles.content}>{product.product_description}</Text>
-          <Text style={styles.content}>{scheduled_date}</Text>
+          <Text style={styles.content}>{formatDate(scheduled_date)}</Text>
+          <Text style={styles.contentRight}>{quantity}</Text>
           <Text style={styles.content}>{sub_total}</Text>
         </View>
       <View style={styles.rightColumn}>
-        <Text style={styles.contentRight}>{quantity}</Text>
+        <Text style={styles.content}>{product.product_description || '-'}</Text>
         <Text style={styles.content}>{recieved_quantity}</Text>
-        <Text style={styles.content}>{pendingQuantity}</Text>
       </View>
       <View style={styles.rightColumn}>
+        <Text style={styles.content}>{pendingQuantity}</Text>
         <Text style={styles.contentRight}>{product_unit_of_measure}</Text>
+      </View>
+      <View style={styles.rightColumn}>
         <Text style={styles.content}>{unit_price}</Text>
         <Text style={styles.content}>{taxes.taxes_name}</Text>
       </View>

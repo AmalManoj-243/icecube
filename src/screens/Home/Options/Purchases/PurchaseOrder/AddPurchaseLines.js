@@ -31,12 +31,13 @@ const AddPurchaseLines = ({ navigation }) => {
     productName: '',
     description: '',
     scheduledDate: new Date(),
+    company: 'Danat Mobiles LLC',
     quantity: '0',
     uom: '',
     unitPrice: '',
     taxes: 'vat 0%',
     subTotal: '',
-    total: ''
+    totalAmount: ''
   });
 
   useEffect(() => {
@@ -119,11 +120,11 @@ const AddPurchaseLines = ({ navigation }) => {
         tax = 0;
       }
 
-      const total = untaxedAmount + tax;
+      const totalAmount = untaxedAmount + tax;
       setFormData((prevFormData) => ({
         ...prevFormData,
         tax: tax.toFixed(2),
-        total: total.toFixed(2),
+        totalAmount: totalAmount.toFixed(2),
       }));
     };
 
@@ -184,6 +185,7 @@ const AddPurchaseLines = ({ navigation }) => {
         product_id: formData.productId,
         description: formData.description || '',
         scheduledDate: formatDate(formData.scheduledDate || ''),
+        comnpany:formData.company || '',
         quantity: formData.quantity || '',
         uom: formData.uom || '',
         unitPrice: formData.unitPrice || '',
@@ -191,7 +193,7 @@ const AddPurchaseLines = ({ navigation }) => {
         subTotal: formData.subTotal || '',
         untaxedAmount: formData.subTotal || '',
         tax: formData.tax || '',
-        total: formData.total || '',
+        totalAmount: formData.totalAmount || '',
       };
       console.log("🚀 ~ AddPurchaseLines ~ productLine:", JSON.stringify(productLine, null, 2));
       navigation.navigate("PurchaseOrderForm", { newProductLine: productLine });
@@ -271,6 +273,11 @@ const AddPurchaseLines = ({ navigation }) => {
           onPress={() => setIsDatePickerVisible(true)}
         />
         <FormInput
+          label="Company"
+          editable={false}
+          value={formData.company}
+        />
+        <FormInput
           label="Quantity"
           placeholder="Enter Quantity"
           keyboardType="numeric"
@@ -320,7 +327,7 @@ const AddPurchaseLines = ({ navigation }) => {
         <FormInput
           label="Total"
           editable={false}
-          value={formData.total}
+          value={formData.totalAmount}
         />
 
         {renderBottomSheet()}

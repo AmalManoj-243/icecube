@@ -24,7 +24,6 @@ const AuditForm = ({ navigation }) => {
   const [url, setUrl] = useState('')
   const [imageUrls, setImageUrls] = useState([])
   const [displayBillDetails, setDisplayBillDetails] = useState({})
-  console.log("Display Bill Details :", displayBillDetails);
   const [collectionType, setCollectionType] = useState(null);
   const [errors, setErrors] = useState({});
   const [ledger, setLedger] = useState({})
@@ -220,7 +219,6 @@ const AuditForm = ({ navigation }) => {
             billDetails?.ledger_id || '',
           isEstimation: billDetails?.is_estimation
         };
-        console.log("Transcation details :", transactionDetails)
         const collectionTypeResponse = await fetchBills.collectionTypeDetails(transactionDetails.businessType, transactionDetails.paymentMethod);
         const collectionResponseData = collectionTypeResponse[0];
 
@@ -240,7 +238,7 @@ const AuditForm = ({ navigation }) => {
           setLedger(ledgerTypeResponseData);
         }
         setDisplayBillDetails(transactionDetails);
-        
+
 
         // Clear errors for all fields if they are not empty
         for (const field in transactionDetails) {
@@ -263,73 +261,22 @@ const AuditForm = ({ navigation }) => {
     setErrors((prevState) => ({ ...prevState, [input]: error }));
   };
 
-//   const validate = () => {
-//     Keyboard.dismiss();
-//     let isValid = true;
-//     const errorMessages = {
-//       displayName: "Scanned Customer name is required",
-//       documentNumber: "Scanned Invoice no is required",
-//       totalAmount: "Scanned Total amount is required",
-//       // collectionType: "Scanned Collection type is required",
-//     };
+  const validate = () => { // Function to validate form
+    Keyboard.dismiss();
+    let isValid = true;
+    const errorMessages = {
+      displayName: "Scanned Customer name is required",
+      documentNumber: "Scanned Invoice no is required",
+      totalAmount: "Scanned Total amount is required",
+      // collectionType: "Scanned Collection type is required",
+    };
 
-//     // Ensure displayBillDetails is not undefined/null
-//     if (!displayBillDetails || typeof displayBillDetails !== 'object') {
-//         console.error("Error: displayBillDetails is undefined or not an object.");
-//         updateErrorState("Invalid bill details", "displayBillDetails");
-//         return false;
-//     }
-
-//     for (const field in errorMessages) {
-//         if ( field === "displayName" && (splittedBillName === "Spare Issue" || splittedBillName === "E/PPAY"))
-//           {
-//             continue; }
-
-//         if (!displayBillDetails[field]) {
-//             updateErrorState(errorMessages[field], field);
-//             isValid = false;
-//         }
-//     }
-
-//     if (scannedBillDetails?.job_registrations[0]?.warehouse_id || scannedBillDetails?.warehouse || scannedBillDetails?.from_warehouse_id) {
-//       const warehouses_id = scannedBillDetails?.warehouse?.warehouses_id || scannedBillDetails?.to_warehouse_id || scannedBillDetails?.job_registrations[0]?.warehouse_id;
-//       const from_warehouse_id = scannedBillDetails?.from_warehouse_id || null;
-//       const to_warehouse_id = scannedBillDetails?.to_warehouse_id || null;
-//       // Debugging logs to inspect the variables before the condition
-//       // Enhanced condition to handle potential undefined/null values
-//       if (warehouseId !== warehouses_id && warehouseId !== to_warehouse_id && warehouseId !== from_warehouse_id) {
-//         console.log("Condition triggered: Warehouse ID doesn't match either the warehouse or from_warehouse_id.");
-//         showToast({
-//           type: 'error',
-//           title: 'Error',
-//           message: "Warehouse doesn't match the logged-in user's warehouse.",
-//         });
-//         isValid = false;
-//       } else {
-//         console.log("Condition not triggered: Warehouse ID matches.");
-//       }
-//     }
-//     if (isValid) {
-//         handleSubmitAudit();
-//     }
-// };
-
-const validate = () => { // Function to validate form
-  Keyboard.dismiss();
-  let isValid = true;
-  const errorMessages = {
-    displayName: "Scanned Customer name is required",
-    documentNumber: "Scanned Invoice no is required",
-    totalAmount: "Scanned Total amount is required",
-    // collectionType: "Scanned Collection type is required",
-  };
-
-  // Ensure displayBillDetails is not undefined/null
-  if (!displayBillDetails || typeof displayBillDetails !== 'object') {
+    // Ensure displayBillDetails is not undefined/null
+    if (!displayBillDetails || typeof displayBillDetails !== 'object') {
       console.error("Error: displayBillDetails is undefined or not an object.");
       updateErrorState("Invalid bill details", "displayBillDetails");
       return false;
-  }
+    }
 
     for (const field in errorMessages) {
       // Skip validation for displayName field if bill name is "Spare Issue"
@@ -338,35 +285,35 @@ const validate = () => { // Function to validate form
       }
 
       if (!displayBillDetails[field]) {
-          updateErrorState(errorMessages[field], field);
-          isValid = false;
+        updateErrorState(errorMessages[field], field);
+        isValid = false;
       }
-  }
+    }
 
-  if ( scannedBillDetails?.job_registrations?.[0]?.warehouse_id || scannedBillDetails?.warehouse || scannedBillDetails?.from_warehouse_id) {
+    if (scannedBillDetails?.job_registrations?.[0]?.warehouse_id || scannedBillDetails?.warehouse || scannedBillDetails?.from_warehouse_id) {
       const warehouses_id = scannedBillDetails?.warehouse?.warehouses_id || scannedBillDetails?.to_warehouse_id || scannedBillDetails?.job_registrations?.[0]?.warehouse_id;
       const from_warehouse_id = scannedBillDetails?.from_warehouse_id || null;
       const to_warehouse_id = scannedBillDetails?.to_warehouse_id || null;
 
-      if (warehouseId !== warehouses_id && warehouseId !== to_warehouse_id && warehouseId !== from_warehouse_id ) {
+      if (warehouseId !== warehouses_id && warehouseId !== to_warehouse_id && warehouseId !== from_warehouse_id) {
         console.log("Condition triggered: Warehouse ID doesn't match either the warehouse or from_warehouse_id.");
         showToast({
-            type: "error",
-            title: "Error",
-            message: "Warehouse doesn't match the logged-in user's warehouse.",
+          type: "error",
+          title: "Error",
+          message: "Warehouse doesn't match the logged-in user's warehouse.",
         });
         isValid = false;
-    } else {
-       console.log("Condition not triggered: Warehouse ID matches.");
+      } else {
+        console.log("Condition not triggered: Warehouse ID matches.");
+      }
     }
-  }
 
-  if (isValid) {
+    if (isValid) {
       handleSubmitAudit();
-  }
-};
+    }
+  };
 
-const handleSubmitAudit = async () => {
+  const handleSubmitAudit = async () => {
     try {
       let auditingData = {
         date: format(new Date(), 'yyyy-MM-dd'),

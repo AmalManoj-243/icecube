@@ -140,8 +140,9 @@ const PurchaseOrderForm = ({ route, navigation }) => {
       subTotal: newProductLine.subTotal || 0,
       untaxedAmount: newProductLine.untaxedAmount || 0,
       tax: newProductLine.tax || 0,
-      total: newProductLine.total || 0,
+      totalAmount: newProductLine.totalAmount || 0,
     };
+    // console.log("Products :", productLineData)
     setProductLines((prevLines) => [...prevLines, productLineData]);
   };
 
@@ -232,12 +233,12 @@ const PurchaseOrderForm = ({ route, navigation }) => {
         untaxed_total_amount: formData?.untaxedAmount || null,
         total_amount: formData?.totalAmount || null,
         warehouse_id: formData?.warehouse?.id ?? null,
-        products_line: productLines.map((line) => ({
+        products_lines: productLines.map((line) => ({
           product: line?.product_id,
           description: line?.description,
           quantity: line?.quantity,
-          unit_price: line?.unit_price,
-          sub_total: line?.sub_total,
+          unit_price: line?.unitPrice,
+          sub_total: line?.untaxedAmount,
           tax_value: line?.tax,
           scheduled_date: line?.scheduledDate,
           recieved_quantity: 0,
@@ -249,8 +250,7 @@ const PurchaseOrderForm = ({ route, navigation }) => {
           tax_type_id: line?.taxes?.id,
         }))
       }
-      console.log("🚀 ~ ServiceFormTabs ~ purchaseOrderData:", JSON.stringify(purchaseOrderData, null, 2));
-
+      console.log("🚀 ~ PurchaseOrderForm ~ purchaseOrderData:", JSON.stringify(purchaseOrderData, null, 2));
       try {
         const response = await post("/createPurchaseOrder", purchaseOrderData);
         if (response.success) {
@@ -387,7 +387,7 @@ const PurchaseOrderForm = ({ route, navigation }) => {
           </View>
           <View style={styles.totalSection}>
             <Text style={styles.totalLabel}>Total : </Text>
-            <Text style={styles.totalValue}>{formData.totalAmount.toFixed(2)}</Text>
+            <Text style={styles.totalValue}>{formData.totalAmount}</Text>
           </View>
         </>
         }

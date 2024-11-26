@@ -18,6 +18,7 @@ import { ConfirmationModal, MenuModal } from '@components/Modal';
 const PurchaseOrderDetails = ({ navigation, route }) => {
     const { id: purchaseOrderId } = route?.params || {};
     const [details, setDetails] = useState({});
+    console.log("Purchase Order Details :", details)
     const [isLoading, setIsLoading] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [purchaseOrderLines, setPurchaseOrderLines] = useState([]);
@@ -130,10 +131,10 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
                 <DetailField label="Ordered Date" value={formatDate(details?.order_date)} />
                 <DetailField label="Bill Date" value={formatDate(details?.bill_date)} />
                 <DetailField label="Purchase Type" value={details?.purchase_type || '-'} />
-                <DetailField label="Company" value={details?.company?.company_name} />
-                <DetailField label="Country" value={details?.country?.country_name} />
-                <DetailField label="Currency" value={details?.currency?.currency_name} />
-                <DetailField label="TRN Number" value={details?.Trn_number} />
+                <DetailField label="Company" value={details?.company?.company_name || '-'} />
+                <DetailField label="Country" value={details?.country?.country_name || '-'} />
+                <DetailField label="Currency" value={details?.currency?.currency_name || '-'} />
+                <DetailField label="TRN Number" value={details?.Trn_number?.toString() || '-'} />
                 <FlatList
                     data={purchaseOrderLines}
                     renderItem={({ item }) => <PurchaseOrderDetailList item={item} />}
