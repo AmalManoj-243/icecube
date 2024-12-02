@@ -25,7 +25,8 @@ export const API_ENDPOINTS = {
     VIEW_PURCHASE_REQUISITION: '/viewPurchaseRequest',
     VIEW_PRICE: '/viewPriceEnquiry',
     VIEW_PURCHASE_ORDER: '/viewPurchaseOrder',
-    VIEW_DELIVERY_NOTE: '/viewPurchaseOrderDeliveryNote'
+    VIEW_DELIVERY_NOTE: '/viewPurchaseOrderDeliveryNote',
+    VIEW_VENDOR_BILL: '/viewVendorBill',
 };
 
 export const DROP_DOWN_API_ENDPOINTS = {

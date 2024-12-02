@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Platform, TouchableOpacity, TextInput } from 'react-native';
 import Text from '@components/Text';
-import { FONT_FAMILY } from '@constants/theme';
+import { FONT_FAMILY, COLORS } from '@constants/theme';
 
 const DeliveryNoteCreationDetailList = ({ item, onPress, onQuantityChange }) => {
   // Destructure the fields for easier access
@@ -32,12 +32,15 @@ const DeliveryNoteCreationDetailList = ({ item, onPress, onQuantityChange }) => 
         <Text style={styles.head}>{product.product_name.trim()}</Text>
         <View style={styles.rightColumn}>
           <Text style={styles.content}>{description || '-'}</Text>
-          <TextInput
-            style={[styles.contentRight, styles.quantityInput]}
-            value={editableQuantity}
-            onChangeText={handleQuantityChange}
-            keyboardType="numeric"
-          />
+          <View style={styles.quantityContainer}>
+            <Text style={styles.quantityLabel}>Edit Quantity</Text>
+            <TextInput
+              style={[styles.contentRight, styles.quantityInput]}
+              value={editableQuantity}
+              onChangeText={handleQuantityChange}
+              keyboardType="numeric"
+            />
+          </View>
         </View>
         <View style={styles.rightColumn}>
           <Text style={styles.content}>{scheduled_date}</Text>
@@ -96,10 +99,20 @@ const styles = StyleSheet.create({
     fontFamily: FONT_FAMILY.urbanistSemiBold,
     fontSize: 14,
   },
+  quantityLabel: {
+    fontSize: 14,
+    fontFamily: FONT_FAMILY.urbanistBold,
+    color: COLORS.primaryThemeColor,
+    marginBottom: 5,
+  },
   quantityInput: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#cccccc',
+    justifyContent: 'space-between',
+    padding: 2,
+    margin: 2,
     textAlign: 'right',
+    backgroundColor: 'beige',
+    borderWidth: 1,
+    width: "100%",
   },
 });
 

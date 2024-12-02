@@ -245,6 +245,22 @@ export const fetchDeliveryNote = async ({ offset, limit,searchText}) => {
   }
 }
 
+export const fetchVendorBill = async ({ offset, limit,searchText}) => {
+  try {
+    const queryParams = {
+      offset,
+      limit,
+      ...(searchText !== undefined && { sequence_no: searchText }),
+    };
+    const response = await get(API_ENDPOINTS.VIEW_VENDOR_BILL,queryParams);
+    return response.data;
+
+  } catch(error){
+    handleApiError(error);
+    throw error;
+  }
+}
+
 export const fetchLead = async ({ offset, limit, loginEmployeeId }) => {
   try {
     const queryParams = {

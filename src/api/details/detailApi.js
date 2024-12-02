@@ -223,3 +223,7 @@ export const fetchPurchaseOrderDetails = async (detailId) => {
 export const fetchDeliveryNoteDetails = async (detailId) => {
   return fetchDetails(API_ENDPOINTS.VIEW_DELIVERY_NOTE, detailId);
 };
+
+export const fetchVendorBillDetails = async (detailId) => {
+  return fetchDetails(API_ENDPOINTS.VIEW_VENDOR_BILL, detailId);
+};

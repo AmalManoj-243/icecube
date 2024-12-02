@@ -38,6 +38,12 @@ export const modeOfPayment = [
   { label: 'Cash and Credit', value: 'Cash and Credit' },
 ];
 
+export const paymentMode = [
+  { label: 'Cash', value: 'Cash' },
+  { label: 'Credit', value: 'Credit' },
+  { label: 'Cheque', value: 'Cheque' },
+]
+
 export const purchaseType = [
   { label: 'Local Purchase', value: 'Local Purchase' },
   { label: 'International Purchase', value: 'International Purchase' },

@@ -6,7 +6,6 @@ import { RoundedScrollContainer, SafeAreaView } from '@components/containers';
 import { DetailField } from '@components/common/Detail';
 import { formatDate } from '@utils/common/date';
 import { showToastMessage } from '@components/Toast';
-import { TextInput as FormInput } from "@components/common/TextInput";
 import { fetchPurchaseOrderDetails } from '@api/details/detailApi';
 import { OverlayLoader } from '@components/Loader';
 import { Button } from '@components/common/Button';
@@ -37,7 +36,6 @@ const DeliveryNoteCreation = ({ navigation, route }) => {
       setIsLoading(false);
     }
   };
-
 
   useFocusEffect(
     useCallback(() => {
@@ -128,8 +126,6 @@ const DeliveryNoteCreation = ({ navigation, route }) => {
         title="Delivery Note Creation"
         onBackPress={() => navigation.goBack()}
         logo={false}
-        // iconOneName='edit'
-        // iconOnePress={() => navigation.navigate('EditDeliveryNote', { id: deliveryNoteId })}
       />
       <RoundedScrollContainer>
         <DetailField label="Supplier Name" value={details?.supplier?.supplier_name || '-'} />

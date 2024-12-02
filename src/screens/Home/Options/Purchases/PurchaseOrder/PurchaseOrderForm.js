@@ -71,7 +71,6 @@ const PurchaseOrderForm = ({ route, navigation }) => {
     calculateTotals();
   }, [productLines]);
   
-
   useEffect(() => {
     const fetchSuppliers = async () => {
       if (selectedType === "Vendor Name") {
