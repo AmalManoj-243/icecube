@@ -11,6 +11,7 @@ import { validateFields } from '@utils/validation';
 import { formatDate } from '@utils/common/date';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useAuthStore } from "@stores/auth";
+import { showToastMessage } from "@components/Toast";
 
 const AddPurchaseLines = ({ navigation }) => {
   const currentUser = useAuthStore((state) => state.user);
@@ -178,6 +179,10 @@ const AddPurchaseLines = ({ navigation }) => {
 
   const handleAddProducts = () => {
     const fieldsToValidate = ['productName'];
+    if (Number(formData.quantity) === 0) {
+      showToastMessage('Quantity should be greater than 0');
+      return;
+    }
     if (validateForm(fieldsToValidate)) {
       const productLine = {
         product_name: formData.productName,

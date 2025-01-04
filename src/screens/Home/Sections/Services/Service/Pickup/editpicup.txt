@@ -24,7 +24,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { OverlayLoader } from '@components/Loader';
 import { COLORS, FONT_FAMILY } from '@constants/theme';
 
-const EditPickup = ({ navigation, route }) => {
+const EditPickupDetails = ({ navigation, route }) => {
   const { pickupId } = route?.params || {};
   const [isLoading, setIsLoading] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -340,7 +340,7 @@ const EditPickup = ({ navigation, route }) => {
 
       try {
         const response = await put("/updateJobBooking", pickupData);
-        console.log("🚀 ~ EditPickup ~ pickupData:", JSON.stringify(pickupData, null, 2));
+        console.log("🚀 ~ EditPickupDetails ~ pickupData:", JSON.stringify(pickupData, null, 2));
         if (response.success) {
           showToast({
             type: "success", title: "Success",
@@ -589,4 +589,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default EditPickup;
+export default EditPickupDetails;

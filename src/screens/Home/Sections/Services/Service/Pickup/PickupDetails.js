@@ -7,10 +7,10 @@ import { RoundedScrollContainer } from '@components/containers';
 import { DetailField } from '@components/common/Detail';
 import { showToastMessage } from '@components/Toast';
 import { formatDate } from '@utils/common/date';
-import { formatDateTime } from '@utils/common/date';
+import { formatDateandTime } from '@utils/common/date';
 import { fetchPickupDetails } from '@api/details/detailApi';
 import { OverlayLoader } from '@components/Loader';
-import { COLORS, FONT_FAMILY} from '@constants/theme';
+import { COLORS, FONT_FAMILY } from '@constants/theme';
 
 const PickupDetails = ({ navigation, route }) => {
     const { id: pickupId } = route?.params || {};
@@ -34,17 +34,17 @@ const PickupDetails = ({ navigation, route }) => {
         if (signature && (signature.startsWith('http') || signature.startsWith('data:image'))) {
             return (
                 <View style={styles.signatureContainer}>
-                <Text style={styles.signatureLabel}>{label}</Text>
-                <Image
-                    source={{ uri: signature }}
-                    style={styles.signatureImage}
-                />
-            </View>
+                    <Text style={styles.signatureLabel}>{label}</Text>
+                    <Image
+                        source={{ uri: signature }}
+                        style={styles.signatureImage}
+                    />
+                </View>
             );
         }
         return <DetailField label={label} value="No signature" />;
     };
-      
+
     useFocusEffect(
         useCallback(() => {
             if (pickupId) {
@@ -55,51 +55,48 @@ const PickupDetails = ({ navigation, route }) => {
 
     return (
         <SafeAreaView>
-        <NavigationHeader
-            title={details?.sequence_no || 'Pickup Details'}
-            onBackPress={() => navigation.goBack()}
-            logo={false}
-            iconOneName='edit'
-            iconOnePress={() => navigation.navigate('EditPickup', { id : pickupId})}
-        />
-        <RoundedScrollContainer>
-            <DetailField
-                label="Customer Name"
-                value={details?.customer_name ? details.customer_name.trim() : '-'}
-                multiline
-                numberOfLines={3}
-                textAlignVertical={'top'}
+            <NavigationHeader
+                title={details?.sequence_no || 'Pickup Details'}
+                onBackPress={() => navigation.goBack()}
+                logo={false}
+                iconOneName='edit'
+                iconOnePress={() => navigation.navigate('EditPickupDetails', { id: pickupId })}
             />
-            <DetailField label="Brand Name" value={details?.brand_name || '-'} />
-            <DetailField label="Device Name" value={details?.device_name || '-'} />
-            <DetailField label="Consumer Model" value={details?.consumer_model_name || '-'} />
-            <DetailField label="Sequence No" value={details?.sequence_no || '-'} />
-            <DetailField label="Date" value={formatDate(details?.date)} />
-            <DetailField label="Warehouse" value={details?.warehouse_name || '-'} />
-            <DetailField label="Contact Name" value={details?.customer_name || '-'} />
-            <DetailField label="Contact No" value={details?.customer_phone_no || '-'} />
-            <DetailField label="Contact Email" value={details?.customer_email || '-'} />
-            <DetailField label="Pickup Date & Time" value={formatDateTime(details?.pickup_schedule_time)} />
-            <DetailField label="Assignee Name" value={details?.assignee_name || '-'} />
-            <DetailField label="Serial No" value={details?.serial_no || '-'} />
-            <SignatureField label="Customer Signature" signature={details?.customer_signature} />
-            <SignatureField label="Driver Signature" signature={details?.driver_signature} />
-            <SignatureField label="Coordinator Signature" signature={details?.service_coordinator_signature} />
-            <DetailField label="Remarks"
-                value={details?.remarks || '-'}
-                multiline
-                numberOfLines={5}
-                textAlignVertical={'top'}
-            />
-            <DetailField
-                label="Customer Address"
-                value={details?.customer_address || '-'}
-                multiline
-                numberOfLines={5}
-                textAlignVertical={'top'}
-            />
-            <OverlayLoader visible={isLoading} />
-        </RoundedScrollContainer>
+            <RoundedScrollContainer>
+                <DetailField
+                    label="Customer Name"
+                    value={details?.customer_name ? details.customer_name.trim() : '-'}
+                    multiline={true}
+                    textAlignVertical={'top'}
+                />
+                <DetailField label="Brand Name" value={details?.brand_name || '-'} />
+                <DetailField label="Device Name" value={details?.device_name || '-'} />
+                <DetailField label="Consumer Model" value={details?.consumer_model_name || '-'} />
+                <DetailField label="Sequence No" value={details?.sequence_no || '-'} />
+                <DetailField label="Date" value={formatDate(details?.date)} />
+                <DetailField label="Warehouse" value={details?.warehouse_name || '-'} />
+                <DetailField label="Contact Name" value={details?.customer_name || '-'} />
+                <DetailField label="Contact No" value={details?.customer_phone_no || '-'} />
+                <DetailField label="Contact Email" value={details?.customer_email || '-'} />
+                <DetailField label="Pickup Date & Time" value={formatDateandTime(details?.pickup_schedule_time)} />
+                <DetailField label="Assignee Name" value={details?.assignee_name || '-'} />
+                <DetailField label="Serial No" value={details?.serial_no || '-'} />
+                <SignatureField label="Customer Signature" signature={details?.customer_signature} />
+                <SignatureField label="Driver Signature" signature={details?.driver_signature} />
+                <SignatureField label="Coordinator Signature" signature={details?.service_coordinator_signature} />
+                <DetailField label="Remarks"
+                    value={details?.remarks || '-'}
+                    multiline={true}
+                    textAlignVertical={'top'}
+                />
+                <DetailField
+                    label="Customer Address"
+                    value={details?.customer_address || '-'}
+                    multiline={true}
+                    textAlignVertical={'top'}
+                />
+                <OverlayLoader visible={isLoading} />
+            </RoundedScrollContainer>
         </SafeAreaView>
     );
 };
@@ -115,7 +112,7 @@ const styles = StyleSheet.create({
     signatureContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between', 
+        justifyContent: 'space-between',
         marginVertical: 10,
     },
     signatureLabel: {

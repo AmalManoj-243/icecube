@@ -34,12 +34,12 @@ import { SparePartsIssueCreation, SparePartsRequestDetails, SparePartsRequestScr
 import { AddSpareParts, QuickServiceDetails, QuickServiceScreen, QuickServiceUpdateDetails } from "@screens/Home/Sections/Services/Service/QuickService";
 import { SpareManagementsScreen } from "@screens/Home/Sections/Services/SpareManagements";
 import { QuickServiceFormTabs } from "@screens/Home/Sections/Services/Service/QuickService/QuickServiceFormTabs";
-import { EditPickup, PickupDetails, PickupScreen } from "@screens/Home/Sections/Services/Service/Pickup";
+import {  EditPickupDetails, PickupDetails, PickupScreen } from "@screens/Home/Sections/Services/Service/Pickup";
 import { VisitFormTabs } from "@screens/Home/Options/Visits/VisitFormTabs";
 import { PurchasesScreen } from "@screens/Home/Options/Purchases";
 import { AddPriceLines, EditPriceEnquiryDetails, PriceEnquiryDetails, PriceEnquiryForm, PriceEnquiryScreen } from "@screens/Home/Options/Purchases/PriceEnquiry";
 import { AddProductLines, EditPurchaseRequisitionDetails, PurchaseRequisitionDetails, PurchaseRequisitionForm, PurchaseRequisitionScreen } from "@screens/Home/Options/Purchases/PurchaseRequisition";
-import { AddEditPurchaseLines, AddPurchaseLines, EditPurchaseLines, EditPurchaseOrderDetails, PurchaseOrderDetails, PurchaseOrderForm, PurchaseOrderScreen } from "@screens/Home/Options/Purchases/PurchaseOrder";
+import { AddEditPurchaseLines, AddPurchaseLines, EditPoDetails, EditPurchaseLines, EditPurchaseOrderDetails, PurchaseOrderDetails, PurchaseOrderForm, PurchaseOrderScreen } from "@screens/Home/Options/Purchases/PurchaseOrder";
 import { DeliveryNoteCreation, DeliveryNoteDetails, DeliveryNoteScreen } from "@screens/Home/Options/Purchases/DeliveryNote";
 import { VendorBillDetails, VendorBillScreen } from "@screens/Home/Options/Purchases/VendorBill";
 import { AddVendorProducts, VendorBillFormTabs } from "@screens/Home/Options/Purchases/VendorBill/VendorBillFormTabs";
@@ -352,8 +352,13 @@ const StackNavigator = () => {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="EditPickup"
-        component={EditPickup}
+        name="EditPickupDetails"
+        component={EditPickupDetails}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditPoDetails"
+        component={EditPoDetails}
         options={{ headerShown: false }}
       />
 

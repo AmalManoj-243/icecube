@@ -22,7 +22,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { OverlayLoader } from '@components/Loader';
 import PickupScreen from './PickupScreen';
 
-const EditPickup = ({ navigation, route }) => {
+const EditPickupDetails = ({ navigation, route }) => {
   const { id: pickupId } = route?.params || {};
   const [isLoading, setIsLoading] = useState(false);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
@@ -47,7 +47,7 @@ const EditPickup = ({ navigation, route }) => {
     setIsLoading(true);
     try {
       const [detail] = await fetchPickupDetails(pickupId);
-      console.log("🚀 ~ EditPickup ~ detail:", JSON.stringify(detail, null, 2));
+      // console.log("🚀 ~ EditPickupDetails ~ detail:", JSON.stringify(detail, null, 2));
       setFormData((prevFormData) => ({
         ...prevFormData,
         date: detail?.date || new Date(),
@@ -67,7 +67,6 @@ const EditPickup = ({ navigation, route }) => {
         imageUrls: detail?.attachment_details || [],
       }));
     } catch (error) {
-      console.error('Error fetching pickup details:', error);
       showToast({ type: 'error', title: 'Error', message: 'Failed to fetch pickup details. Please try again.' });
     } finally {
       setIsLoading(false);
@@ -279,10 +278,10 @@ const EditPickup = ({ navigation, route }) => {
         // address: null,
         // tracking_no: null,
       };
-      console.log("🚀 ~ EditPickup ~ pickupData:", JSON.stringify(pickupData, null, 2));
+      console.log("🚀 ~ EditPickupDetails ~ pickupData:", JSON.stringify(pickupData, null, 2));
       try {
         const response = await put("/updateJobBooking", pickupData);
-        console.log("🚀 ~ file: EditPickup.js:286 ~ handleSubmit ~ response:", response.data)
+        // console.log("🚀 ~ file: EditPickupDetails.js:286 ~ handleSubmit ~ response:", response.data)
         if (response.message) {
           showToast({
             type: "success", title: "Success",
@@ -429,13 +428,13 @@ const EditPickup = ({ navigation, route }) => {
         />
         <SignaturePad
           setScrollEnabled={setScrollEnabled}
-          title={'Driver Signature'}
-          previousSignature={formData.driverSignatureUrl}
+          title={'Customer Signature'}
+          previousSignature={formData.customerSignatureUrl}
         />
         <SignaturePad
           setScrollEnabled={setScrollEnabled}
-          title={'Customer Signature'}
-          previousSignature={formData.customerSignatureUrl}
+          title={'Driver Signature'}
+          previousSignature={formData.driverSignatureUrl}
         />
         {formData?.isShowCoordinatorSignaturePad
           && <SignaturePad
@@ -449,7 +448,6 @@ const EditPickup = ({ navigation, route }) => {
           placeholder={"Enter Remarks"}
           editable={true}
           multiline={true}
-          numberOfLines={5}
           onChangeText={(value) => handleFieldChange('remarks', value)}
         />
         <ActionModal
@@ -472,4 +470,4 @@ const EditPickup = ({ navigation, route }) => {
   );
 };
 
-export default EditPickup;
+export default EditPickupDetails;

@@ -17,6 +17,7 @@ import DeliveryNoteCreationDetailList from './DeliveryNoteCreationDetailList';
 const DeliveryNoteCreation = ({ navigation, route }) => {
   const { id: deliveryNoteId } = route?.params || {};
   const [details, setDetails] = useState({});
+  console.log("🚀 ~ DeliveryNoteCreation ~ details:", JSON.stringify(details, null, 3));
   const [isLoading, setIsLoading] = useState(false);
   const [deliveryNotes, setDeliveryNotes] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -91,7 +92,7 @@ const DeliveryNoteCreation = ({ navigation, route }) => {
           sub_total: line?.sub_total
         }))
       }
-      // console.log("🚀 ~ DeliveryNoteCreation ~ deliveryNoteData:", JSON.stringify(deliveryNoteData, null, 2));
+      console.log("🚀 ~ DeliveryNoteCreation ~ deliveryNoteData:", JSON.stringify(deliveryNoteData, null, 2));
       try {
         const response = await post("/createPurchaseOrderDeliveryNote", deliveryNoteData);
         if (response.success) {

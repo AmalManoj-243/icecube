@@ -7,20 +7,27 @@ import { formatDate } from '@utils/common/date';
 const PickupList = ({ item, onPress }) => {
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={onPress} style={styles.itemContainer}>
-      <View style={styles.leftColumn}>
+      <View style={styles.rightColumn}>
         <Text style={styles.head}>{item?.sequence_no || '-'}</Text>
-        <Text style={styles.content}>{item?.customer_name?.trim() || '-'}</Text>
       </View>
       <View style={styles.rightColumn}>
+        <Text style={[styles.contentRight]}>{formatDate(item?.date_time) || '-'}</Text>
         <Text style={styles.content}>{item?.device_name}</Text>
-        <Text style={styles.content}>{item?.warehouse_name}</Text>
-        <Text style={[styles.contentRight]}>{formatDate(item?.date_time, 'dd MMM yyyy') || '-'}</Text>
       </View>
       <View style={styles.rightColumn}>
         <Text style={styles.content}>{item?.sales_person_name}</Text>
-        {item?.job_registration?.map((job, index) => (
-        <Text key={index} style={[styles.contentRight, { color: 'red' }]}>{job?.job_stage || '-'}</Text> ))}
+        <Text style={styles.content}>{item?.warehouse_name}</Text>
       </View>
+      <View style={styles.rightColumn}>
+        <Text style={[styles.content, { color: 'red' }]}>{item?.job_stage || '-'}</Text>
+      </View>
+      <View style={styles.rightColumn}>
+        <Text style={styles.content}>{item?.customer_name?.trim() || '-'}</Text>
+      </View>
+      {/* <View style={styles.rightColumn}>
+        {item?.job_registration?.map((job, index) => (
+          <Text key={index} style={[styles.contentRight, { color: 'red' }]}>{job?.job_stage || '-'}</Text> ))}
+      </View> */}
     </TouchableOpacity>
   );
 };
@@ -42,9 +49,6 @@ const styles = StyleSheet.create({
       },
     }),
     padding: 20,
-  },
-  leftColumn: {
-    flex: 1,
   },
   rightColumn: {
     justifyContent: 'space-between', 

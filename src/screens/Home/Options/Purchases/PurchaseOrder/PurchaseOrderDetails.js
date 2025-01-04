@@ -118,7 +118,7 @@ const PurchaseOrderDetails = ({ navigation, route }) => {
                 onBackPress={() => navigation.goBack()}
                 logo={false}
                 iconOneName='edit'
-                iconOnePress={() => navigation.navigate('EditPurchaseOrderDetails', { id: purchaseOrderId })}
+                iconOnePress={() => navigation.navigate('EditPoDetails', { id: purchaseOrderId })}
                 iconTwoName='menu-fold'
                 iconTwoPress={() => setIsMenuModalVisible(true)}
             />
