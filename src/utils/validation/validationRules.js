@@ -150,6 +150,10 @@ export const allValidationRules = {
         message: 'Please select Vendor Name',
         validate: validateRequired,
     },
+    paymentMode : {
+        message: 'Please select Payment Mode',
+        validate: validateRequired,
+    },
     trnNumber: {
         message: 'Please select TRN Number',
         validate: validateRequired,
@@ -168,6 +172,10 @@ export const allValidationRules = {
     },
     billDate: {
         message: 'Please select Bill Date',
+        validate: validateRequired,
+    },
+    reference: {
+        message: 'Please select Reference',
         validate: validateRequired,
     },
 

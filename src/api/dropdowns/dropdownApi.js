@@ -179,6 +179,10 @@ export const fetchPaymentModeDropdown = async () => {
   return fetchData(DROP_DOWN_API_ENDPOINTS.PAYMENT_MODE);
 }
 
+export const fetchBankChequeDropdown = async () => {
+  return fetchData(DROP_DOWN_API_ENDPOINTS.BANK_CHEQUE);
+}
+
 export const fetchSupplierDropdown = async (searchText = '') => {
   return fetchData(`${DROP_DOWN_API_ENDPOINTS.SUPPLIERS}?name=${searchText}`);
 }

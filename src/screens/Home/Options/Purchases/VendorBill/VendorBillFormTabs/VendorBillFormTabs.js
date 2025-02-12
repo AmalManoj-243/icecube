@@ -37,6 +37,13 @@ const VendorBillFormTabs = ({ route, navigation }) => {
     currency: "",
     amountPaid: "",
     paymentMode: "",
+    chequeBank: "",
+    chequeType: "",
+    chequeNo: "",
+    creditBalance: "",
+    creditAmount: "",
+    outstandingBalance: "",
+    creditDays: "",
     date: new Date(),
     trnnumber: "",
     orderDate: new Date(),
@@ -45,7 +52,7 @@ const VendorBillFormTabs = ({ route, navigation }) => {
     warehouse: { id: currentUser?.warehouse?.warehouse_id || '', label: currentUser?.warehouse?.warehouse_name },
     reference: "",
   });
-  console.log("🚀 ~ VendorBillFormTabs ~ formData:", JSON.stringify(formData, null, 2));
+  // console.log("🚀 ~ VendorBillFormTabs ~ formData:", JSON.stringify(formData, null, 2));
 
   const handleFieldChange = (field, value) => {
     setFormData(prevFormData => ({
@@ -126,7 +133,7 @@ const VendorBillFormTabs = ({ route, navigation }) => {
   const isSubmitDisabled = productLines.length < 0;
 
   const handleSubmit = async () => {
-    const fieldsToValidate = ['vendor', 'purchaseType', 'countryOfOrigin', 'currency', 'amountPaid', 'paymentMode', 'salesPerson', 'warehouse'];
+    const fieldsToValidate = ['vendorName', 'purchaseType', 'countryOfOrigin', 'currency', 'amountPaid', 'paymentMode', 'salesPerson', 'warehouse'];
     if (validateForm(fieldsToValidate)) {
       setIsSubmitting(true);
       const vendorData = {
@@ -212,7 +219,7 @@ const VendorBillFormTabs = ({ route, navigation }) => {
           processed: false
         })),
       }
-      console.log("🚀 ~ submit ~ vendorData:", JSON.stringify(vendorData, null, 2));
+      // console.log("🚀 ~ submit ~ vendorData:", JSON.stringify(vendorData, null, 2));
       try {
         const response = await post("/createCombinedVendorBillPaymentMade", vendorData);
         if (response.success === 'true') {

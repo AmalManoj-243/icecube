@@ -70,6 +70,7 @@ export const DROP_DOWN_API_ENDPOINTS = {
     TAXES: "/viewTaxType/tax_type_list/tax_type_dropdown",
     PAYMENT_MODE: "/viewPaymentMethod/payment_method_list/payment_method_dropdown",
     SUPPLIERS: "/viewsupplier",
+    BANK_CHEQUE: "/viewChequeBank/cheq_bank_list/cheq_bank_dropdown",
 };
 
 

@@ -3,7 +3,7 @@ import { RoundedScrollContainer } from '@components/containers';
 import { TextInput as FormInput } from '@components/common/TextInput';
 import { DropdownSheet } from '@components/common/BottomSheets';
 import { fetchCurrencyDropdown, fetchCountryDropdown, fetchSupplierDropdown, fetchPaymentModeDropdown } from '@api/dropdowns/dropdownApi';
-import { purchaseType } from '@constants/dropdownConst';
+import { purchaseType, chequeType } from '@constants/dropdownConst';
 
 const VendorDetails = ({ formData, onFieldChange, errors }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -15,6 +15,7 @@ const VendorDetails = ({ formData, onFieldChange, errors }) => {
     countryOfOrigin: [],
     currency: [],
     paymentMode: [],
+    chequeType: [],
   });
 
   useEffect(() => {
@@ -48,7 +49,7 @@ const VendorDetails = ({ formData, onFieldChange, errors }) => {
           fetchPaymentModeDropdown(),
         ]);
 
-        const filteredPaymentModes = paymentModeData.filter(data => 
+        const filteredPaymentModes = paymentModeData.filter(data =>
           ["cheque", "credit", "cash"].includes(data.payment_method_name.toLowerCase())
         );
 
@@ -92,6 +93,10 @@ const VendorDetails = ({ formData, onFieldChange, errors }) => {
         items = purchaseType;
         fieldName = "purchaseType";
         break;
+      case "Cheque Type":
+        items = chequeType;
+        fieldName = "chequeType";
+        break;  
       case "Country Of Origin":
         items = dropdown.countryOfOrigin;
         fieldName = "countryOfOrigin";
@@ -181,6 +186,85 @@ const VendorDetails = ({ formData, onFieldChange, errors }) => {
         required
         onPress={() => toggleBottomSheet("Payment Mode")}
       />
+      {formData.paymentMode?.label === "cheque" && (
+        <>
+          <FormInput
+            label="Cheque Bank"
+            placeholder="Select Bank Cheque"
+            dropIcon="menu-down"
+            editable={false}
+            validate={errors.chequeBank}
+            value={formData.chequeBank?.label}
+            required
+            onPress={() => toggleBottomSheet("Cheque Bank")}
+          />
+          <FormInput
+            label="Cheque Date"
+            dropIcon="calendar"
+            placeholder="dd-mm-yyyy"
+            editable={false}
+            required
+            // value={formatDateandTime(formData.chequeDate)}
+            onPress={() => setIsDatePickerVisible(true)}
+          />
+          <FormInput
+            label="Cheque Type"
+            placeholder="Select Cheque Type"
+            dropIcon="menu-down"
+            editable={false}
+            validate={errors.chequeType}
+            value={formData.chequeType?.label}
+            required
+            onPress={() => toggleBottomSheet("Cheque Type")}
+          />
+          <FormInput
+            label="Cheque No"
+            placeholder="Select Cheque No"
+            dropIcon="menu-down"
+            editable={false}
+            validate={errors.chequeNo}
+            value={formData.chequeNo?.label}
+            required
+            onPress={() => toggleBottomSheet("Cheque No")}
+          />
+        </>
+      )}
+      {formData.paymentMode?.label === "credit" && (
+        <>
+          <FormInput
+            label="Credit Balance"
+            editable={false}
+            validate={errors.creditBalance}
+            value={formData.creditBalance}
+            required
+            onChangeText={(value) => onFieldChange("creditBalance", value)}
+          />
+          <FormInput
+            label="Credit Amount"
+            editable={false}
+            validate={errors.creditAmount}
+            value={formData.creditAmount}
+            required
+            onChangeText={(value) => onFieldChange("creditAmount", value)}
+          />
+          <FormInput
+            label="Outstanding Balance"
+            editable={false}
+            validate={errors.outstandingBalance}
+            value={formData.outstandingBalance}
+            required
+            onChangeText={(value) => onFieldChange("outstandingBalance", value)}
+          />
+          <FormInput
+            label="Credit Days"
+            editable={false}
+            validate={errors.creditDays}
+            value={formData.creditDays}
+            required
+            onChangeText={(value) => onFieldChange("creditDays", value)}
+          />
+        </>
+      )}
       {renderBottomSheet()}
     </RoundedScrollContainer>
   );

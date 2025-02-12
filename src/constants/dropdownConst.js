@@ -49,6 +49,11 @@ export const purchaseType = [
   { label: 'International Purchase', value: 'International Purchase' },
 ];
 
+export const chequeType = [
+  { label: 'Regular', value: 'Regular' },
+  { label: 'PDC', value: 'PDC' },
+];
+
 export const customerBehaviour = [
   { label: 'Fast Payment', value: 'Fast Payment' },
   { label: 'Normal Payment', value: 'Normal Payment' },

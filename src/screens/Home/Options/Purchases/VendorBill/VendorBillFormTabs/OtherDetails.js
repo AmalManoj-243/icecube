@@ -9,7 +9,7 @@ const OtherDetails = ({ onFieldChange }) => {
     <RoundedScrollContainer>
       <FormInput
         label={"Reference"}
-        placeholder={"Enter TRN Number"}
+        placeholder={"Enter Reference"}
         editable={true}
         onChangeText={(value) => onFieldChange('reference', value)}
       />
