@@ -234,10 +234,7 @@ const InventoryForm = ({ navigation, route }) => {
       warehouse_id: currentUser?.warehouse?.warehouse_id,
     };
     try {
-      const response = await post(
-        "/createInventoryBoxRequest",
-        inventoryRequestData
-      );
+      const response = await post("/createInventoryBoxRequest",inventoryRequestData);
       if (response.success === true) {
         Toast.show({
           type: "success",
