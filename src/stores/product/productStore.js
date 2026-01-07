@@ -19,31 +19,53 @@ const useProductStore = create((set, get) => ({
   },
   
   addProduct: (product) => set((state) => {
-    const { currentCustomerId } = state;
-    if (!currentCustomerId) return state;
+    // Ensure we have a customer context; fall back to a guest cart
+    const customerId = state.currentCustomerId || 'pos_guest';
 
-    // Enforce single-item cart: replace any existing items with the new one
-    const newPriceUnit = typeof product.price_unit !== 'undefined'
-      ? product.price_unit
-      : (typeof product.price !== 'undefined' ? product.price : (product.price_unit ?? product.price ?? 0));
-    const newPrice = typeof product.price !== 'undefined' ? product.price : (product.price ?? newPriceUnit);
-    const subtotal = 1 * Number(newPriceUnit);
+    const currentCart = Array.isArray(state.cartItems[customerId]) ? state.cartItems[customerId].slice() : [];
 
-    const prod = {
-      ...product,
-      quantity: 1,
-      qty: 1,
-      price: newPrice,
-      price_unit: newPriceUnit,
-      price_subtotal: subtotal,
-      price_subtotal_incl: subtotal,
-    };
+    // Normalize incoming product fields
+    const incomingId = product.id ?? product.remoteId ?? null;
+    const priceUnit = typeof product.price_unit !== 'undefined' ? Number(product.price_unit) : (typeof product.price !== 'undefined' ? Number(product.price) : Number(product.price_unit ?? product.price ?? 0));
+    const qty = Number(product.quantity ?? product.qty ?? 1);
+
+    // Find existing item by id
+    const idx = currentCart.findIndex(p => String(p.id) === String(incomingId));
+    if (idx >= 0) {
+      // Update existing item
+      const existing = { ...currentCart[idx] };
+      existing.quantity = qty;
+      existing.qty = qty;
+      if (typeof product.price !== 'undefined') existing.price = Number(product.price);
+      if (typeof product.price_unit !== 'undefined') existing.price_unit = Number(product.price_unit);
+      // Recalculate subtotals
+      const unitPrice = Number(existing.price_unit ?? existing.price ?? 0);
+      const subtotal = unitPrice * (existing.quantity || existing.qty || 1);
+      existing.price_subtotal = subtotal;
+      existing.price_subtotal_incl = subtotal;
+      currentCart[idx] = existing;
+    } else {
+      // Add new item
+      const newPrice = typeof product.price !== 'undefined' ? Number(product.price) : priceUnit;
+      const prod = {
+        ...product,
+        id: incomingId,
+        quantity: qty,
+        qty: qty,
+        price: newPrice,
+        price_unit: priceUnit,
+        price_subtotal: priceUnit * qty,
+        price_subtotal_incl: priceUnit * qty,
+      };
+      currentCart.push(prod);
+    }
 
     return {
       ...state,
+      currentCustomerId: state.currentCustomerId || 'pos_guest',
       cartItems: {
         ...state.cartItems,
-        [currentCustomerId]: [prod]
+        [customerId]: currentCart
       }
     };
   }),

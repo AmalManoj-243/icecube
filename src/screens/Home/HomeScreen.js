@@ -128,12 +128,11 @@ const HomeScreen = ({ navigation }) => {
 
   const handleProductPress = (item) => {
     try {
-      try { setCurrentCustomer('pos_guest'); } catch (e) { /* ignore */ }
-      const storeItem = mapToStoreProduct(item);
-      const { image_url, ...logSafeItem } = storeItem;
-      console.log('[Home] Adding product to cart and opening cart:', logSafeItem);
-      addProduct(storeItem);
-      navigation.navigate('CartScreen');
+      // When pressing a product on the Home screen, show only product details
+      // (do not auto-add to cart or open checkout from Home)
+      const details = item;
+      console.log('[Home] Opening product details from Home:', { id: item.id, name: item.name });
+      navigation.navigate('ProductDetail', { detail: details, fromHome: true });
     } catch (e) {
       console.error('Error adding product from Home to cart', e);
     }
@@ -212,7 +211,7 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
 
-          <BottomSheet snapPoints={snapPoints}>
+          <BottomSheet snapPoints={snapPoints} style={{ marginTop: 48 }}>
             <ListHeader title="Products" />
             <BottomSheetFlatList
               data={formatData(data, 3)}
