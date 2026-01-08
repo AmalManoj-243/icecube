@@ -229,7 +229,7 @@ const TakeoutDelivery = ({ navigation, route }) => {
         />
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 4 }}>{item.name}</Text>
-          <Text style={{ fontSize: 14, color: '#666' }}>${item.unit.toFixed(3)} each</Text>
+          <Text style={{ fontSize: 14, color: '#666' }}>OMR {item.unit.toFixed(3)} each</Text>
           {item.discount_percent > 0 ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
               <Text style={{ fontSize:12, color:'#ff5722', fontWeight:'700' }}>{item.discount_percent}% discount applied</Text>
@@ -250,7 +250,7 @@ const TakeoutDelivery = ({ navigation, route }) => {
         </View>
       </View>
       <View style={{ alignItems: 'flex-end', maxWidth: 140 }}>
-        <Text style={{ fontWeight: '800', marginLeft: 12 }}>${(item.subtotal || item.price_subtotal || (item.unit * item.qty)).toFixed(3)}</Text>
+        <Text style={{ fontWeight: '800', marginLeft: 12 }}>OMR {(item.subtotal || item.price_subtotal || (item.unit * item.qty)).toFixed(3)}</Text>
       </View>
     </TouchableOpacity>
     );
@@ -273,10 +273,10 @@ const TakeoutDelivery = ({ navigation, route }) => {
             <View>
               <Text style={{ fontSize: 18, fontWeight: '800' }}>Total</Text>
               {discountApplied > 0 ? (
-                <Text style={{ fontSize: 12, color: '#666' }}>Discount: ${discountApplied.toFixed(3)}</Text>
+                <Text style={{ fontSize: 12, color: '#666' }}>Discount: OMR {discountApplied.toFixed(3)}</Text>
               ) : null}
             </View>
-            <Text style={{ fontSize: 20, fontWeight: '900' }}>${finalTotal.toFixed(3)}</Text>
+            <Text style={{ fontSize: 20, fontWeight: '900' }}>OMR {finalTotal.toFixed(3)}</Text>
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap', marginBottom: 12 }}>
@@ -287,17 +287,11 @@ const TakeoutDelivery = ({ navigation, route }) => {
               <Text style={{ fontWeight: '800', color: '#111' }}>Note</Text>
             </TouchableOpacity>
             <View style={{ marginRight: 8, marginBottom: 8, alignItems: 'flex-start' }}>
-                <TouchableOpacity onPress={() => {
-                    if (selectedLine) {
-                      // apply to selected line
-                      setLineDiscountModalVisible(true);
-                    } else {
-                      // apply order-level discount
-                      setDiscountModalVisible(true);
-                    }
-                  }} style={{ backgroundColor: '#fef3c7', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#f59e0b' }}>
-                  <Text style={{ fontWeight: '800', color: '#92400e' }}>{selectedLine ? 'Discount (selected)' : 'Discount'}</Text>
-                </TouchableOpacity>
+                {selectedLine ? (
+                  <TouchableOpacity onPress={() => setLineDiscountModalVisible(true)} style={{ backgroundColor: '#fef3c7', paddingVertical: 10, paddingHorizontal: 16, borderRadius: 8, borderWidth: 1, borderColor: '#f59e0b' }}>
+                    <Text style={{ fontWeight: '800', color: '#92400e' }}>Select Discount</Text>
+                  </TouchableOpacity>
+                ) : null}
                 <TouchableOpacity onPress={() => setManageModalVisible(true)} style={{ marginTop: 8, backgroundColor: '#06b6d4', paddingVertical: 8, paddingHorizontal: 12, borderRadius: 8 }}>
                   <Text style={{ color: '#fff', fontWeight: '800' }}>Manage</Text>
                 </TouchableOpacity>
