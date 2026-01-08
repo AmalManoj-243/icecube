@@ -1279,7 +1279,7 @@ export const linkInvoiceToPosOrderOdoo = async ({ orderId, invoiceId, setState =
 };
 
 // Create POS order in Odoo via JSON-RPC
-export const createPosOrderOdoo = async ({ partnerId = null, lines = [], sessionId = null, posConfigId = null, companyId = null, orderName = null, preset_id = null } = {}) => {
+export const createPosOrderOdoo = async ({ partnerId = null, lines = [], sessionId = null, posConfigId = null, companyId = null, orderName = null, preset_id = null, amount_total: override_amount_total = null, discount = 0 } = {}) => {
   try {
     if (!lines || !Array.isArray(lines) || lines.length === 0) {
       throw new Error('lines are required to create pos order');
@@ -1289,19 +1289,23 @@ export const createPosOrderOdoo = async ({ partnerId = null, lines = [], session
     const line_items = lines.map(l => {
       const price_unit = l.price || l.price_unit || l.list_price || 0;
       const qty = l.qty || l.quantity || 1;
-      const subtotal = price_unit * qty;
+      // prefer client-provided subtotal (already discounted) if present
+      const subtotal = (typeof l.price_subtotal !== 'undefined' && l.price_subtotal !== null) ? Number(l.price_subtotal) : (price_unit * qty);
+      const discount_pct = Number(l.discount || l.discount_percent || 0);
       return [0, 0, {
         product_id: l.product_id || l.id,
         qty,
         price_unit,
         name: l.name || l.product_name || '',
+        discount: discount_pct,
         price_subtotal: subtotal,
-        price_subtotal_incl: subtotal, // Quick fix: set equal to price_subtotal
+        price_subtotal_incl: subtotal,
       }];
     });
 
-    // Calculate total
-    const amount_total = lines.reduce((sum, l) => sum + (l.price || l.price_unit || l.list_price || 0) * (l.qty || l.quantity || 1), 0);
+    // Calculate total (allow override when discount applied by client)
+    const calculated_total = lines.reduce((sum, l) => sum + (l.price || l.price_unit || l.list_price || 0) * (l.qty || l.quantity || 1), 0);
+    const amount_total = (override_amount_total !== null && override_amount_total !== undefined) ? Number(override_amount_total) : calculated_total;
     const vals = {
       company_id: companyId || 1, // Default to 1 if not provided
       name: orderName || '/', // Use '/' for auto-generated name if not provided
@@ -1313,6 +1317,7 @@ export const createPosOrderOdoo = async ({ partnerId = null, lines = [], session
       amount_return: 0,
       state: 'draft', // Start in draft state, will be paid after payment
     };
+    // Note: do not set a top-level `discount` on pos.order — not a valid field on the model
     if (sessionId) vals.session_id = sessionId;
     if (posConfigId) vals.config_id = posConfigId;
     if (preset_id !== null && preset_id !== undefined) vals.preset_id = preset_id;
@@ -2023,5 +2028,102 @@ export const fetchProductImageBase64 = async (productId) => {
   } catch (err) {
     console.error('fetchProductImageBase64 error:', err?.message || err);
     return null;
+  }
+};
+
+// Fetch discount presets from Odoo (attempts common POS discount model)
+export const fetchDiscountsOdoo = async () => {
+  try {
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.discount',
+        method: 'search_read',
+        args: [[]],
+        kwargs: { fields: ['id', 'name', 'amount', 'is_percentage'], limit: 50 },
+      },
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    const results = response.data?.result || [];
+    if (results.length === 0) {
+      // If pos.discount not present, return empty — caller may fallback to presets
+      console.log('fetchDiscountsOdoo: no pos.discount records found');
+    }
+    return results;
+  } catch (error) {
+    console.warn('fetchDiscountsOdoo error:', error?.message || error);
+    return [];
+  }
+};
+
+// Create a discount record in Odoo (pos.discount)
+export const createDiscountOdoo = async ({ name, amount = 0, is_percentage = false } = {}) => {
+  try {
+    const payload = {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.discount',
+        method: 'create',
+        args: [{ name, amount, is_percentage }],
+        kwargs: {},
+      },
+      id: new Date().getTime(),
+    };
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, payload, { headers: { 'Content-Type': 'application/json' } });
+    return response.data?.result ? { id: response.data.result } : { error: 'no_result' };
+  } catch (error) {
+    console.error('createDiscountOdoo error:', error);
+    return { error };
+  }
+};
+
+// Update a discount record in Odoo
+export const updateDiscountOdoo = async ({ id, values = {} } = {}) => {
+  try {
+    if (!id) throw new Error('id required');
+    const payload = {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.discount',
+        method: 'write',
+        args: [[id], values],
+        kwargs: {},
+      },
+      id: new Date().getTime(),
+    };
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, payload, { headers: { 'Content-Type': 'application/json' } });
+    return response.data?.result ? { success: true } : { error: 'no_result' };
+  } catch (error) {
+    console.error('updateDiscountOdoo error:', error);
+    return { error };
+  }
+};
+
+// Delete a discount record in Odoo
+export const deleteDiscountOdoo = async ({ id } = {}) => {
+  try {
+    if (!id) throw new Error('id required');
+    const payload = {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.discount',
+        method: 'unlink',
+        args: [[id]],
+        kwargs: {},
+      },
+      id: new Date().getTime(),
+    };
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, payload, { headers: { 'Content-Type': 'application/json' } });
+    return response.data?.result ? { success: true } : { error: 'no_result' };
+  } catch (error) {
+    console.error('deleteDiscountOdoo error:', error);
+    return { error };
   }
 };

@@ -20,12 +20,22 @@ const POSRegister = ({ navigation }) => {
           fetchPOSRegisters(),
           fetchPOSSessions({ state: 'opened' })
         ]);
-        // Show all registers returned by the API (no name-based filtering)
+        // Only show the Icecube Factory register(s)
+        const isIcecube = (name) => {
+          if (!name) return false;
+          return /ice\s*cube|icecube/i.test(String(name));
+        };
+
         const allRegs = Array.isArray(regs) ? regs : [];
-        setRegisters(allRegs);
-        // Show all open sessions (no name-based filtering)
+        const filteredRegs = allRegs.filter(r => isIcecube(r.name || r.display_name || r.config_name || ''));
+        setRegisters(filteredRegs);
+
         const allSessions = Array.isArray(sessions) ? sessions : [];
-        setOpenSessions(allSessions);
+        const filteredSessions = allSessions.filter(s => {
+          const cfgName = s.config_id?.[1] || s.config_id?.[0] || s.name || '';
+          return isIcecube(cfgName);
+        });
+        setOpenSessions(filteredSessions);
       } catch (err) {
         setError('Failed to load POS registers or sessions');
       } finally {

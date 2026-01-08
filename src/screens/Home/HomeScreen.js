@@ -158,14 +158,15 @@ const HomeScreen = ({ navigation }) => {
   // Define different snap points based on screen height
   const snapPoints = useMemo(() => {
     // Increase the default (first) snap point so more product rows are visible
+    // Use smaller initial snap so sheet starts lower (shows POS tile above)
     if (height < 700) {
-      return ["45%", "79%"];
+      return ["28%", "70%"];
     } else if (height < 800) {
-      return ["60%", "88%"];
-    } else if (height < 810) {
-      return ["60%", "88%"];
+      return ["30%", "75%"];
+    } else if (height < 900) {
+      return ["35%", "80%"];
     } else {
-      return ["65%", "90%"];
+      return ["40%", "85%"];
     }
   }, [height]);
 
@@ -211,7 +212,7 @@ const HomeScreen = ({ navigation }) => {
             />
           </View>
 
-          <BottomSheet snapPoints={snapPoints} style={{ marginTop: 48 }}>
+          <BottomSheet snapPoints={snapPoints} style={{ marginTop: 12 }}>
             <ListHeader title="Products" />
             <BottomSheetFlatList
               data={formatData(data, 3)}

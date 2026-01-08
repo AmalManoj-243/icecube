@@ -24,8 +24,7 @@ const CreateInvoicePreview = ({ navigation, route }) => {
   const total = typeof params.total !== 'undefined' ? Number(params.total) : subtotal + tax + service;
   const orderId = params.orderId || params.id || params.invoiceId || null;
 
-  const discount = 0; // Add discount logic if needed
-  const grandTotal = total - discount;
+  const grandTotal = total;
   const totalQty = items.reduce((sum, item) => sum + (item.qty || item.quantity || 0), 0);
   // Payment amounts: accept multiple param names used across screens
   const paidAmount = typeof params.amount !== 'undefined' ? Number(params.amount) : (typeof params.paid !== 'undefined' ? Number(params.paid) : (typeof params.paymentAmount !== 'undefined' ? Number(params.paymentAmount) : 0));
@@ -77,11 +76,6 @@ const CreateInvoicePreview = ({ navigation, route }) => {
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Subtotal / المجموع الفرعي</Text>
             <Text style={styles.totalValue}>{Number(subtotal || total).toFixed(3)} ر.ع.</Text>
-          </View>
-          
-          <View style={styles.totalRow}>
-            <Text style={styles.totalLabel}>Discount / خصم:</Text>
-            <Text style={styles.totalValue}>{discount.toFixed(3)} ر.ع.</Text>
           </View>
           
           <View style={styles.dividerThick} />
@@ -218,7 +212,6 @@ const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, t
 
       <div class="totals">
         <div class="line"><div class="label">Subtotal / المجموع الفرعي</div><div class="value">${Number(subtotal || total).toFixed(3)} ر.ع.</div></div>
-        <div class="line"><div class="label">Discount / الخصم</div><div class="value">0.000 ر.ع.</div></div>
         <div style="height:6px; border-bottom:2px solid #000; margin-top:6px;"></div>
         <div class="line" style="font-size:13px; font-weight:700;"><div class="label">Grand Total / الإجمالي</div><div class="value">${Number(total || subtotal).toFixed(3)} ر.ع.</div></div>
       </div>
