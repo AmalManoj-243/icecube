@@ -2221,3 +2221,96 @@ export const deleteDiscountOdoo = async ({ id } = {}) => {
     return { error };
   }
 };
+
+// Create a new user in Odoo
+export const createUserOdoo = async ({ name, login, password, email = '', phone = '', groups = [] } = {}) => {
+  try {
+    if (!name) throw new Error('name is required');
+    if (!login) throw new Error('login is required');
+    if (!password) throw new Error('password is required');
+
+    const userVals = {
+      name,
+      login,
+      password,
+      email: email || '',
+      phone: phone || '',
+    };
+
+    // Add groups if provided (e.g., [1, 2, 3] for group IDs)
+    if (Array.isArray(groups) && groups.length > 0) {
+      userVals.groups_id = [[6, 0, groups]];
+    }
+
+    console.log('[CREATE USER] Creating user with payload:', userVals);
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'res.users',
+        method: 'create',
+        args: [userVals],
+        kwargs: {},
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[CREATE USER] Odoo error:', response.data.error);
+      return { error: response.data.error };
+    }
+
+    const userId = response.data.result;
+    console.log('[CREATE USER] User created successfully with ID:', userId);
+    return { result: userId };
+  } catch (error) {
+    console.error('createUserOdoo error:', error);
+    return { error };
+  }
+};
+
+// Fetch users from Odoo
+export const fetchUsersOdoo = async ({ offset = 0, limit = 50, searchText = '' } = {}) => {
+  try {
+    let domain = [];
+
+    if (searchText && searchText.trim() !== '') {
+      const term = searchText.trim();
+      domain = [
+        '|',
+        ['name', 'ilike', term],
+        ['login', 'ilike', term],
+      ];
+    }
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'res.users',
+        method: 'search_read',
+        args: [domain],
+        kwargs: {
+          fields: ['id', 'name', 'login', 'email', 'phone', 'active'],
+          offset,
+          limit,
+          order: 'name asc',
+        },
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[FETCH USERS] Odoo error:', response.data.error);
+      return { error: response.data.error };
+    }
+
+    const users = response.data.result || [];
+    console.log('[FETCH USERS] Retrieved users count:', users.length);
+    return users;
+  } catch (error) {
+    console.error('fetchUsersOdoo error:', error);
+    throw error;
+  }
+};

@@ -69,6 +69,14 @@ const HomeScreen = ({ navigation }) => {
   }, [authUser]);
 
   const navigateToScreen = (screenName) => {
+    // Check if user is admin for UsersScreen
+    if (screenName === 'UsersScreen') {
+      const isAdmin = authUser?.uid === 2 || authUser?.is_admin === true || authUser?.is_superuser === true;
+      if (!isAdmin) {
+        showToastMessage("Only administrators can access this feature");
+        return;
+      }
+    }
     navigation.navigate(screenName);
   };
 
@@ -138,6 +146,26 @@ const HomeScreen = ({ navigation }) => {
         </View>
       </TouchableOpacity>
       <Text style={styles.buttonLabel}>Products</Text>
+    </View>
+  </View>
+
+  {/* Second Row */}
+  <View style={[styles.posContainer, { marginTop: 20 }]}>
+    <View style={styles.buttonWrapper}>
+      <TouchableOpacity
+        onPress={() => navigateToScreen('UsersScreen')}
+        activeOpacity={0.8}
+        style={styles.usersButton}
+      >
+        <View style={styles.iconCircle}>
+          <Image
+            source={require('@assets/images/Home/section/userbtnhome.png')}
+            style={styles.posImage}
+            resizeMode="contain"
+          />
+        </View>
+      </TouchableOpacity>
+      <Text style={styles.buttonLabel}>Users</Text>
     </View>
   </View>
 </View>
@@ -211,6 +239,24 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   productsButton: {
+    width: 90,
+    height: 90,
+    borderRadius: 22,
+    backgroundColor: "#fff",
+    borderWidth: 2.5,
+    borderColor: "#461c8aff",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#461c8aff",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  usersButton: {
     width: 90,
     height: 90,
     borderRadius: 22,

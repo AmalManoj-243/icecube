@@ -62,7 +62,7 @@ import { SupplierPaymentCreation, SupplierPaymentScreen } from "@screens/Home/Op
 // Use the old Icecube invoice/receipt preview as the POS receipt screen
 const POSReceiptScreen = CreateInvoicePreview;
 import VendingPaymentGateway from '@screens/Home/Sections/Customer/VendingPaymentGateway';
-
+import { UsersScreen } from '@screens/Users';
 
 
 
@@ -649,6 +649,12 @@ const StackNavigator = () => {
       <Stack.Screen
         name="SupplierPaymentCreation"
         component={SupplierPaymentCreation}
+        options={{ headerShown: false }}
+      />
+      {/* Users */}
+      <Stack.Screen
+        name="UsersScreen"
+        component={UsersScreen}
         options={{ headerShown: false }}
       />
       {/* Tables screen removed for ice cream shop (no table seating) */}
