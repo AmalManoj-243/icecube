@@ -63,6 +63,7 @@ import { SupplierPaymentCreation, SupplierPaymentScreen } from "@screens/Home/Op
 const POSReceiptScreen = CreateInvoicePreview;
 import VendingPaymentGateway from '@screens/Home/Sections/Customer/VendingPaymentGateway';
 import { UsersScreen } from '@screens/Users';
+import { MyOrdersScreen } from '@screens/MyOrders';
 
 
 
@@ -655,6 +656,12 @@ const StackNavigator = () => {
       <Stack.Screen
         name="UsersScreen"
         component={UsersScreen}
+        options={{ headerShown: false }}
+      />
+      {/* Orders */}
+      <Stack.Screen
+        name="MyOrdersScreen"
+        component={MyOrdersScreen}
         options={{ headerShown: false }}
       />
       {/* Tables screen removed for ice cream shop (no table seating) */}

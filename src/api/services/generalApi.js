@@ -260,6 +260,39 @@ export const fetchPOSSessions = async ({ limit = 20, offset = 0, state = '' } = 
     throw error;
   }
 };
+
+// Close a POS session in Odoo
+export const closePOSSesionOdoo = async ({ sessionId } = {}) => {
+  try {
+    if (!sessionId) throw new Error('sessionId is required');
+
+    console.log('[CLOSE POS SESSION] Closing session ID:', sessionId);
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.session',
+        method: 'action_pos_session_close',
+        args: [[sessionId]],
+        kwargs: {},
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[CLOSE POS SESSION] Odoo error:', response.data.error);
+      return { error: response.data.error };
+    }
+
+    console.log('[CLOSE POS SESSION] Session closed successfully');
+    return { success: true, result: response.data.result };
+  } catch (error) {
+    console.error('closePOSSesionOdoo error:', error);
+    return { error };
+  }
+};
+
 // api/services/generalApi.js
 import axios from "axios";
 import ODOO_BASE_URL from '@api/config/odooConfig';
@@ -2311,6 +2344,53 @@ export const fetchUsersOdoo = async ({ offset = 0, limit = 50, searchText = '' }
     return users;
   } catch (error) {
     console.error('fetchUsersOdoo error:', error);
+    throw error;
+  }
+};
+
+// Fetch POS orders from Odoo
+export const fetchOrdersOdoo = async ({ offset = 0, limit = 50, searchText = '' } = {}) => {
+  try {
+    let domain = [];
+
+    if (searchText && searchText.trim() !== '') {
+      const term = searchText.trim();
+      domain = [
+        '|',
+        '|',
+        ['name', 'ilike', term],
+        ['partner_id', 'ilike', term],
+        ['user_id', 'ilike', term],
+      ];
+    }
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.order',
+        method: 'search_read',
+        args: [domain],
+        kwargs: {
+          fields: ['id', 'name', 'partner_id', 'user_id', 'date_order', 'amount_total', 'state'],
+          offset,
+          limit,
+          order: 'date_order desc',
+        },
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[FETCH POS ORDERS] Odoo error:', response.data.error);
+      return { error: response.data.error };
+    }
+
+    const orders = response.data.result || [];
+    console.log('[FETCH POS ORDERS] Retrieved orders count:', orders.length);
+    return orders;
+  } catch (error) {
+    console.error('fetchOrdersOdoo error:', error);
     throw error;
   }
 };

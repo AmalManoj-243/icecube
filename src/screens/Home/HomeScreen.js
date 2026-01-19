@@ -167,6 +167,23 @@ const HomeScreen = ({ navigation }) => {
       </TouchableOpacity>
       <Text style={styles.buttonLabel}>Users</Text>
     </View>
+
+    <View style={styles.buttonWrapper}>
+      <TouchableOpacity
+        onPress={() => navigateToScreen('MyOrdersScreen')}
+        activeOpacity={0.8}
+        style={styles.ordersButton}
+      >
+        <View style={styles.iconCircle}>
+          <Image
+            source={require('@assets/images/Home/section/ordersbtnhome.png')}
+            style={styles.posImage}
+            resizeMode="contain"
+          />
+        </View>
+      </TouchableOpacity>
+      <Text style={styles.buttonLabel}>Orders</Text>
+    </View>
   </View>
 </View>
         <OverlayLoader visible={detailLoading} />
@@ -257,6 +274,24 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   usersButton: {
+    width: 90,
+    height: 90,
+    borderRadius: 22,
+    backgroundColor: "#fff",
+    borderWidth: 2.5,
+    borderColor: "#461c8aff",
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#461c8aff",
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  ordersButton: {
     width: 90,
     height: 90,
     borderRadius: 22,
