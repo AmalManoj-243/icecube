@@ -44,10 +44,10 @@
     "plugins": [
       "./plugins/android-cleartext-traffic.js"
     ],
-    "owner": "alfiya2003",
+    "owner": "mightyraju",
     "extra": {
       "eas": {
-        "projectId": "7a8c6442-5d6b-4bce-a72a-f7ed3855d3cb"
+        "projectId": "672318f3-54a2-429d-bf40-18e9900d1fb0"
       }
     }
   }

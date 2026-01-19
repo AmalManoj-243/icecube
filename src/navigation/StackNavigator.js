@@ -1,7 +1,8 @@
 // src/navigation/StackNavigator.js
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useAuthStore } from "@stores/auth";
 import AppNavigator from "./AppNavigator";
 import { ProductsScreen, SplashScreen, VendingCart, CartScreen } from "@screens";
 import { OptionsScreen } from "@screens/Home/Options";
@@ -71,8 +72,20 @@ import { MyOrdersScreen } from '@screens/MyOrders';
 const Stack = createNativeStackNavigator();
 
 const StackNavigator = () => {
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+  const [initialRoute, setInitialRoute] = useState("LoginScreenOdoo");
+
+  useEffect(() => {
+    // Determine initial route based on login status
+    if (isLoggedIn) {
+      setInitialRoute("AppNavigator");
+    } else {
+      setInitialRoute("LoginScreenOdoo");
+    }
+  }, [isLoggedIn]);
+
   return (
-    <Stack.Navigator initialRouteName="LoginScreenOdoo">
+    <Stack.Navigator initialRouteName={initialRoute}>
       <Stack.Screen
         name="SalesOrderChoice"
         component={SalesOrderChoice}

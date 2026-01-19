@@ -9,9 +9,12 @@ import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { GestureHandlerRootView } from 'react-native-gesture-handler'; // Import GestureHandlerRootView
 import StackNavigator from '@navigation/StackNavigator';
 import { Provider } from 'react-native-paper';
+import { useAuthStore } from '@stores/auth';
+
 export default function App() {
 
   const [fontsLoaded, setFontsLoaded] = useState(false);
+  const initializeAuth = useAuthStore((state) => state.initializeAuth);
 
   useEffect(() => {
     LogBox.ignoreLogs(["new NativeEventEmitter"]);
@@ -38,6 +41,9 @@ export default function App() {
       }
     }
     loadFonts();
+
+    // Initialize auth state from AsyncStorage
+    initializeAuth();
   }, []);
 
   if (!fontsLoaded) return null;

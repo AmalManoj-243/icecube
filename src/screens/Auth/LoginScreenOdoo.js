@@ -248,6 +248,7 @@ const LoginScreenOdoo = () => {
 
               {/* Server URL */}
               <TextInput
+                value={inputs.baseUrl}
                 onChangeText={(text) => handleOnchange(text, "baseUrl")}
                 onFocus={() => handleError(null, "baseUrl")}
                 label="Server URL"
@@ -258,6 +259,7 @@ const LoginScreenOdoo = () => {
 
               {/* Username */}
               <TextInput
+                value={inputs.username}
                 onChangeText={(text) => handleOnchange(text, "username")}
                 onFocus={() => handleError(null, "username")}
                 iconName="account-outline"
@@ -270,6 +272,7 @@ const LoginScreenOdoo = () => {
 
               {/* Password */}
               <TextInput
+                value={inputs.password}
                 onChangeText={(text) => handleOnchange(text, "password")}
                 onFocus={() => handleError(null, "password")}
                 error={errors.password}
