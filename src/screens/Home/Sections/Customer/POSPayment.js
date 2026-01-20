@@ -8,6 +8,8 @@ import { fetchPaymentJournalsOdoo, createAccountPaymentOdoo, fetchPOSSessions, v
 import { createPosOrderOdoo, createPosPaymentOdoo } from '@api/services/generalApi';
 import axios from 'axios';
 import ODOO_BASE_URL from '@api/config/odooConfig';
+import useAuthStore from '@stores/auth/useAuthStore';
+import { formatCurrency } from '@utils/currency';
 
 // Helper to fetch all payment methods from Odoo
 const fetchAllPaymentMethods = async () => {
@@ -63,6 +65,7 @@ import { useProductStore } from '@stores/product';
 import Toast from 'react-native-toast-message';
 
 const POSPayment = ({ navigation, route }) => {
+    const currency = useAuthStore((state) => state.currency);
     const [invoiceChecked, setInvoiceChecked] = useState(false);
   const {
     products = [],
@@ -388,7 +391,7 @@ const POSPayment = ({ navigation, route }) => {
         {/* Large Amount Display */}
         <View style={{ alignItems: 'center', marginTop: 32, marginBottom: 12 }}>
           <View style={{ backgroundColor: '#111827', paddingVertical: 16, paddingHorizontal: 28, borderRadius: 12 }}>
-            <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#fff' }}>{computeTotal().toFixed(3)} ج.ع.</Text>
+            <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#fff' }}>{formatCurrency(computeTotal(), currency || { symbol: '$', position: 'before' })}</Text>
           </View>
         </View>
 
@@ -515,7 +518,7 @@ const POSPayment = ({ navigation, route }) => {
             {paymentMode === 'account' ? (
               <>
                 <Text style={{ color: '#2b6cb0', fontSize: 22, marginTop: 6 }}>Amount to be charged to account</Text>
-                <Text style={{ color: '#2b6cb0', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{total.toFixed(3)} ج.ع.</Text>
+                <Text style={{ color: '#2b6cb0', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{formatCurrency(total, currency || { symbol: '$', position: 'before' })}</Text>
               </>
             ) : (
               <>
@@ -523,7 +526,7 @@ const POSPayment = ({ navigation, route }) => {
                   {paymentMode === 'card' ? 'Card' : 'Cash'}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-                  <Text style={{ fontSize: 36, color: '#222', textAlign: 'center', flex: 1, fontWeight: 'bold' }}>{inputAmount || '0.000'} ج.ع.</Text>
+                  <Text style={{ fontSize: 36, color: '#222', textAlign: 'center', flex: 1, fontWeight: 'bold' }}>{inputAmount ? formatCurrency(parseFloat(inputAmount), currency || { symbol: '$', position: 'before' }) : formatCurrency(0, currency || { symbol: '$', position: 'before' })}</Text>
                   {inputAmount ? (
                     <TouchableOpacity onPress={() => setInputAmount('')} style={{ marginLeft: 8 }}>
                       <Text style={{ fontSize: 28, color: '#c00', fontWeight: 'bold' }}>✕</Text>
@@ -533,12 +536,12 @@ const POSPayment = ({ navigation, route }) => {
                 {remaining < 0 ? (
                   <>
                     <Text style={{ color: 'green', fontSize: 22, marginTop: 6 }}>Change</Text>
-                    <Text style={{ color: 'green', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{Math.abs(remaining).toFixed(3)} ج.ع.</Text>
+                    <Text style={{ color: 'green', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{formatCurrency(Math.abs(remaining), currency || { symbol: '$', position: 'before' })}</Text>
                   </>
                 ) : (
                   <>
                     <Text style={{ color: '#c00', fontSize: 22, marginTop: 6 }}>Remaining</Text>
-                    <Text style={{ color: '#c00', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{remaining.toFixed(3)} ج.ع.</Text>
+                    <Text style={{ color: '#c00', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{formatCurrency(remaining, currency || { symbol: '$', position: 'before' })}</Text>
                   </>
                 )}
               </>

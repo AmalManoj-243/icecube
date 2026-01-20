@@ -2394,3 +2394,396 @@ export const fetchOrdersOdoo = async ({ offset = 0, limit = 50, searchText = '' 
     throw error;
   }
 };
+
+// Fetch sales report data from Odoo
+export const fetchSalesReportData = async ({ startDate = null, endDate = null } = {}) => {
+  try {
+    let domain = [];
+
+    // Filter by date range if provided
+    if (startDate && endDate) {
+      domain = [
+        ['date_order', '>=', startDate],
+        ['date_order', '<=', endDate],
+        ['state', '!=', 'cancel'] // Exclude only cancelled orders
+      ];
+    } else {
+      domain = [['state', '!=', 'cancel']];
+    }
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.order',
+        method: 'search_read',
+        args: [domain],
+        kwargs: {
+          fields: ['id', 'name', 'partner_id', 'user_id', 'date_order', 'amount_total', 'amount_tax', 'state', 'lines', 'session_id', 'payment_ids'],
+          order: 'date_order desc',
+        },
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[FETCH SALES REPORT] Odoo error:', response.data.error);
+      return { error: response.data.error };
+    }
+
+    const orders = response.data.result || [];
+    console.log('[FETCH SALES REPORT] Retrieved orders count:', orders.length);
+    console.log('[FETCH SALES REPORT] Orders with states:', orders.map(o => ({ name: o.name, state: o.state, amount: o.amount_total })));
+
+    // Calculate summary statistics
+    const totalSales = orders.reduce((sum, order) => sum + (order.amount_total || 0), 0);
+    const totalOrders = orders.length;
+    const averageOrder = totalOrders > 0 ? totalSales / totalOrders : 0;
+    const totalTax = orders.reduce((sum, order) => sum + (order.amount_tax || 0), 0);
+
+    return {
+      orders,
+      summary: {
+        totalSales,
+        totalOrders,
+        averageOrder,
+        totalTax,
+      }
+    };
+  } catch (error) {
+    console.error('fetchSalesReportData error:', error);
+    throw error;
+  }
+};
+
+// Fetch top selling products
+export const fetchTopProducts = async ({ startDate = null, endDate = null, limit = 10 } = {}) => {
+  try {
+    let domain = [];
+
+    if (startDate && endDate) {
+      domain = [
+        ['order_id.date_order', '>=', startDate],
+        ['order_id.date_order', '<=', endDate],
+        ['order_id.state', '!=', 'cancel']
+      ];
+    } else {
+      domain = [['order_id.state', '!=', 'cancel']];
+    }
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.order.line',
+        method: 'search_read',
+        args: [domain],
+        kwargs: {
+          fields: ['product_id', 'qty', 'price_subtotal', 'price_subtotal_incl'],
+          limit: 1000, // Get many lines to aggregate
+        },
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[FETCH TOP PRODUCTS] Odoo error:', response.data.error);
+      return { error: response.data.error };
+    }
+
+    const orderLines = response.data.result || [];
+
+    // Aggregate by product
+    const productMap = {};
+    orderLines.forEach(line => {
+      const productId = Array.isArray(line.product_id) ? line.product_id[0] : line.product_id;
+      const productName = Array.isArray(line.product_id) ? line.product_id[1] : 'Unknown Product';
+
+      if (!productMap[productId]) {
+        productMap[productId] = {
+          id: productId,
+          name: productName,
+          quantity: 0,
+          revenue: 0,
+        };
+      }
+
+      productMap[productId].quantity += line.qty || 0;
+      productMap[productId].revenue += line.price_subtotal_incl || 0;
+    });
+
+    // Convert to array and sort by revenue
+    const topProducts = Object.values(productMap)
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, limit);
+
+    console.log('[FETCH TOP PRODUCTS] Top products count:', topProducts.length);
+    return topProducts;
+  } catch (error) {
+    console.error('fetchTopProducts error:', error);
+    throw error;
+  }
+};
+
+// Fetch sales by salesperson
+export const fetchSalesByUser = async ({ startDate = null, endDate = null } = {}) => {
+  try {
+    let domain = [];
+
+    if (startDate && endDate) {
+      domain = [
+        ['date_order', '>=', startDate],
+        ['date_order', '<=', endDate],
+        ['state', '!=', 'cancel']
+      ];
+    } else {
+      domain = [['state', '!=', 'cancel']];
+    }
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.order',
+        method: 'search_read',
+        args: [domain],
+        kwargs: {
+          fields: ['user_id', 'amount_total'],
+        },
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[FETCH SALES BY USER] Odoo error:', response.data.error);
+      return { error: response.data.error };
+    }
+
+    const orders = response.data.result || [];
+
+    // Aggregate by user
+    const userMap = {};
+    orders.forEach(order => {
+      const userId = Array.isArray(order.user_id) ? order.user_id[0] : order.user_id;
+      const userName = Array.isArray(order.user_id) ? order.user_id[1] : 'Unknown User';
+
+      if (!userMap[userId]) {
+        userMap[userId] = {
+          id: userId,
+          name: userName,
+          totalSales: 0,
+          orderCount: 0,
+        };
+      }
+
+      userMap[userId].totalSales += order.amount_total || 0;
+      userMap[userId].orderCount += 1;
+    });
+
+    // Convert to array and sort by sales
+    const salesByUser = Object.values(userMap)
+      .sort((a, b) => b.totalSales - a.totalSales);
+
+    console.log('[FETCH SALES BY USER] Users count:', salesByUser.length);
+    return salesByUser;
+  } catch (error) {
+    console.error('fetchSalesByUser error:', error);
+    throw error;
+  }
+};
+
+// Fetch sales by category (like Odoo 19 Category Report)
+export const fetchSalesByCategory = async ({ startDate = null, endDate = null } = {}) => {
+  try {
+    let domain = [];
+
+    if (startDate && endDate) {
+      domain = [
+        ['order_id.date_order', '>=', startDate],
+        ['order_id.date_order', '<=', endDate],
+        ['order_id.state', '!=', 'cancel']
+      ];
+    } else {
+      domain = [['order_id.state', '!=', 'cancel']];
+    }
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.order.line',
+        method: 'search_read',
+        args: [domain],
+        kwargs: {
+          fields: ['product_id', 'qty', 'price_subtotal', 'price_subtotal_incl'],
+          limit: 2000,
+        },
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[FETCH SALES BY CATEGORY] Odoo error:', response.data.error);
+      return { error: response.data.error };
+    }
+
+    const orderLines = response.data.result || [];
+
+    // For now, we'll group by product since category requires additional API call
+    // In a full implementation, you'd fetch product.template with categ_id
+    const categoryMap = {
+      'All Products': {
+        name: 'All Products',
+        quantity: 0,
+        revenue: 0,
+      }
+    };
+
+    orderLines.forEach(line => {
+      categoryMap['All Products'].quantity += line.qty || 0;
+      categoryMap['All Products'].revenue += line.price_subtotal_incl || 0;
+    });
+
+    const categorySales = Object.values(categoryMap);
+    console.log('[FETCH SALES BY CATEGORY] Categories:', categorySales.length);
+    return categorySales;
+  } catch (error) {
+    console.error('fetchSalesByCategory error:', error);
+    throw error;
+  }
+};
+
+// Fetch payment methods breakdown (like Odoo 19 Payment Report)
+export const fetchPaymentMethods = async ({ startDate = null, endDate = null } = {}) => {
+  try {
+    let domain = [];
+
+    if (startDate && endDate) {
+      domain = [
+        ['payment_date', '>=', startDate],
+        ['payment_date', '<=', endDate],
+      ];
+    }
+
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'pos.payment',
+        method: 'search_read',
+        args: [domain],
+        kwargs: {
+          fields: ['payment_method_id', 'amount'],
+          limit: 1000,
+        },
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[FETCH PAYMENT METHODS] Odoo error:', response.data.error);
+      return { error: response.data.error };
+    }
+
+    const payments = response.data.result || [];
+
+    // Aggregate by payment method
+    const paymentMap = {};
+    payments.forEach(payment => {
+      const methodId = Array.isArray(payment.payment_method_id) ? payment.payment_method_id[0] : payment.payment_method_id;
+      const methodName = Array.isArray(payment.payment_method_id) ? payment.payment_method_id[1] : 'Unknown Method';
+
+      if (!paymentMap[methodId]) {
+        paymentMap[methodId] = {
+          id: methodId,
+          name: methodName,
+          total: 0,
+          count: 0,
+        };
+      }
+
+      paymentMap[methodId].total += payment.amount || 0;
+      paymentMap[methodId].count += 1;
+    });
+
+    const paymentMethods = Object.values(paymentMap)
+      .sort((a, b) => b.total - a.total);
+
+    console.log('[FETCH PAYMENT METHODS] Methods count:', paymentMethods.length);
+    return paymentMethods;
+  } catch (error) {
+    console.error('fetchPaymentMethods error:', error);
+    throw error;
+  }
+};
+
+// Fetch company currency symbol
+export const fetchCompanyCurrency = async () => {
+  try {
+    console.log('[FETCH CURRENCY] Fetching company currency...');
+
+    // Get the main company (usually ID 1, but we'll fetch it properly)
+    const response = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'res.company',
+        method: 'search_read',
+        args: [[]],
+        kwargs: {
+          fields: ['currency_id'],
+          limit: 1,
+        },
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (response.data && response.data.error) {
+      console.error('[FETCH CURRENCY] Odoo error:', response.data.error);
+      return { symbol: '$', name: 'USD' }; // Fallback
+    }
+
+    const companies = response.data.result || [];
+    if (companies.length === 0) {
+      console.warn('[FETCH CURRENCY] No company found, using fallback');
+      return { symbol: '$', name: 'USD' };
+    }
+
+    const currencyId = Array.isArray(companies[0].currency_id)
+      ? companies[0].currency_id[0]
+      : companies[0].currency_id;
+
+    // Now fetch currency details
+    const currencyResponse = await axios.post(`${ODOO_BASE_URL}/web/dataset/call_kw`, {
+      jsonrpc: '2.0',
+      method: 'call',
+      params: {
+        model: 'res.currency',
+        method: 'read',
+        args: [[currencyId]],
+        kwargs: {
+          fields: ['symbol', 'name', 'position'],
+        },
+      },
+      id: new Date().getTime(),
+    }, { headers: { 'Content-Type': 'application/json' } });
+
+    if (currencyResponse.data && currencyResponse.data.error) {
+      console.error('[FETCH CURRENCY] Currency read error:', currencyResponse.data.error);
+      return { symbol: '$', name: 'USD' };
+    }
+
+    const currencyData = currencyResponse.data.result[0];
+    const currencyInfo = {
+      symbol: currencyData.symbol || '$',
+      name: currencyData.name || 'USD',
+      position: currencyData.position || 'before', // 'before' or 'after'
+    };
+
+    console.log('[FETCH CURRENCY] Currency fetched:', currencyInfo);
+    return currencyInfo;
+  } catch (error) {
+    console.error('fetchCompanyCurrency error:', error);
+    return { symbol: '$', name: 'USD', position: 'before' }; // Fallback
+  }
+};

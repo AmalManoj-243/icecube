@@ -14,7 +14,7 @@ import { reasons } from '@constants/dropdownConst';
 import { fetchEmployeesDropdown } from '@api/dropdowns/dropdownApi';
 import { Button } from '../Button';
 import { useProductStore } from '@stores/product';
-import { useCurrencyStore } from '@stores/currency';
+import { formatCurrency } from '@utils/currency';
 
 const ProductDetail = ({ navigation, route }) => {
   const { detail = {}, fromCustomerDetails = {} } = route?.params || {};
@@ -29,7 +29,7 @@ const ProductDetail = ({ navigation, route }) => {
   const [isVisibleEmployeeListModal, setIsVisibleEmployeeListModal] = useState(false);
   const [employee, setEmployee] = useState([]);
   const currentUser = useAuthStore(state => state.user);
-  const currency = useCurrencyStore((state) => state.currency);
+  const currency = useAuthStore((state) => state.currency);
 
   const addProductStore = useProductStore((state) => state.addProduct);
 
@@ -456,7 +456,7 @@ const ProductDetail = ({ navigation, route }) => {
                       Price:
                     </Text>
                     <Text style={{ width: '50%', fontFamily: FONT_FAMILY.urbanistSemiBold, fontSize: 18 }}>
-                      {(details.cost ?? details.price ?? 0).toString()} {currency || ''}
+                      {formatCurrency((details.cost ?? details.price ?? 0), currency || { symbol: '$', position: 'before' })}
                     </Text>
                   </View>
 
@@ -465,7 +465,7 @@ const ProductDetail = ({ navigation, route }) => {
                       Minimum Sales Price:
                     </Text>
                     <Text style={{ width: '50%', fontFamily: FONT_FAMILY.urbanistSemiBold, fontSize: 18 }}>
-                      {(details.minimal_sales_price ?? 'N/A').toString()} {currency || ''}
+                      {details.minimal_sales_price ? formatCurrency(details.minimal_sales_price, currency || { symbol: '$', position: 'before' }) : 'N/A'}
                     </Text>
                   </View>
 
@@ -492,7 +492,7 @@ const ProductDetail = ({ navigation, route }) => {
                       || 'N/A'}
                   </Text>
                   <Text style={{ fontFamily: FONT_FAMILY.urbanistSemiBold, fontSize: 18, marginTop: 4 }}>
-                    Price: {(details.cost ?? details.price ?? 0).toString()} {currency || ''}
+                    Price: {formatCurrency((details.cost ?? details.price ?? 0), currency || { symbol: '$', position: 'before' })}
                   </Text>
                 </View>
               )}

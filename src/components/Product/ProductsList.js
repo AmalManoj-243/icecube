@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Image, ActivityIndicator, TouchableOpacity } from 'react-native';
 import Text from '@components/Text';
 import { FONT_FAMILY, COLORS } from '@constants/theme';
-import { useCurrencyStore } from '@stores/currency';
+import useAuthStore from '@stores/auth/useAuthStore';
+import { formatCurrency } from '@utils/currency';
 
 const ProductsList = ({ item, onPress, showQuickAdd, onQuickAdd }) => {
     const errorImage = require('@assets/images/error/error.png');
@@ -18,8 +19,8 @@ const ProductsList = ({ item, onPress, showQuickAdd, onQuickAdd }) => {
     const truncatedName =
         item?.product_name?.length > 35 ? item?.product_name?.substring(0, 60) + '...' : item?.product_name;
 
-    const currency = useCurrencyStore((state) => state.currency);
-    const priceValue = (item?.price ?? item?.list_price ?? 0);
+    const currency = useAuthStore((state) => state.currency);
+    const priceValue = (item?.price ?? item?.list_price ?? item?.lst_price ?? 0);
 
     return (
         <TouchableOpacity
@@ -42,7 +43,7 @@ const ProductsList = ({ item, onPress, showQuickAdd, onQuickAdd }) => {
                 />
                 <View style={styles.textContainer}>
                     <Text style={styles.name}>{truncatedName?.trim()}</Text>
-                    <Text style={styles.price}>{priceValue?.toString ? Number(priceValue).toFixed(3) : priceValue} OMR</Text>
+                    <Text style={styles.price}>{formatCurrency(priceValue, currency || { symbol: '$', position: 'before' })}</Text>
                     <Text style={styles.code}>{item.product_code ?? item.code ?? item.default_code ?? ''}</Text>
                     <Text style={styles.category}>
                         {item?.category?.category_name

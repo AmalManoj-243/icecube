@@ -5,8 +5,11 @@ import { NavigationHeader } from '@components/Header';
 import { Button } from '@components/common/Button';
 import { useProductStore } from '@stores/product';
 import { fetchCustomersOdoo, fetchCustomerDetailsOdoo } from '@api/services/generalApi';
+import useAuthStore from '@stores/auth/useAuthStore';
+import { formatCurrency } from '@utils/currency';
 
 const POSCartSummary = ({ navigation, route }) => {
+  const currency = useAuthStore((state) => state.currency);
   const {
     openingAmount,
     sessionId,
@@ -132,7 +135,7 @@ const POSCartSummary = ({ navigation, route }) => {
                     />
                   <View style={{ flex: 1 }}>
                     <Text style={styles.name}>{item.name}</Text>
-                    <Text style={styles.qty}>{qty} × {price.toFixed(2)}</Text>
+                    <Text style={styles.qty}>{qty} × {formatCurrency(price, currency || { symbol: '$', position: 'before' })}</Text>
                   </View>
                   <View style={styles.controls}>
                     <TouchableOpacity style={styles.qtyBtn} onPress={decrease}>
@@ -143,7 +146,7 @@ const POSCartSummary = ({ navigation, route }) => {
                       <Text style={styles.qtyBtnText}>+</Text>
                     </TouchableOpacity>
                   </View>
-                  <Text style={styles.lineTotal}>{lineTotal}</Text>
+                  <Text style={styles.lineTotal}>{formatCurrency(lineTotal, currency || { symbol: '$', position: 'before' })}</Text>
                 </View>
               );
             }}
@@ -154,7 +157,7 @@ const POSCartSummary = ({ navigation, route }) => {
 
         <View style={styles.totalRow}>
           <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>{computeTotal().toFixed(2)}</Text>
+          <Text style={styles.totalValue}>{formatCurrency(computeTotal(), currency || { symbol: '$', position: 'before' })}</Text>
         </View>
 
         {/* Customer selection removed from cart page. Now only available in payment page. */}

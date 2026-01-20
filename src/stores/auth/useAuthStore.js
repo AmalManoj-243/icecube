@@ -1,19 +1,25 @@
 // stores/auth/login
 import { create } from 'zustand';
-import { fetchUserApiToken } from '@api/services/generalApi';
+import { fetchUserApiToken, fetchCompanyCurrency } from '@api/services/generalApi';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { saveCurrencyConfig } from '@utils/currency';
 
 const useAuthStore = create((set) => ({
     isLoggedIn: false,
     user: null,
+    currency: null,
     // Initialize store by loading persisted user data
     initializeAuth: async () => {
         try {
             const userData = await AsyncStorage.getItem('userData');
+            const currencyData = await AsyncStorage.getItem('currencyConfig');
+
             if (userData) {
                 const user = JSON.parse(userData);
-                set({ isLoggedIn: true, user });
+                const currency = currencyData ? JSON.parse(currencyData) : null;
+                set({ isLoggedIn: true, user, currency });
                 console.log('[AUTH] Restored user session:', user.uid || user.id);
+                console.log('[AUTH] Restored currency:', currency);
             }
         } catch (error) {
             console.error('[AUTH] Failed to restore session:', error);
@@ -26,6 +32,17 @@ const useAuthStore = create((set) => ({
             set({ isLoggedIn: true, user: userData });
             const enrichedUser = { ...userData };
             set({ user: enrichedUser });
+
+            // Fetch and store currency configuration
+            try {
+                const currencyConfig = await fetchCompanyCurrency();
+                set({ currency: currencyConfig });
+                await saveCurrencyConfig(currencyConfig);
+                console.log('[AUTH] Currency fetched and saved:', currencyConfig);
+            } catch (currencyError) {
+                console.warn('[AUTH] Failed to fetch currency, using default:', currencyError);
+            }
+
             try {
                 await AsyncStorage.setItem('userData', JSON.stringify(enrichedUser));
                 await AsyncStorage.setItem('isLoggedIn', 'true');

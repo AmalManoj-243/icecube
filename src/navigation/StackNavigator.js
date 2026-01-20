@@ -65,6 +65,8 @@ const POSReceiptScreen = CreateInvoicePreview;
 import VendingPaymentGateway from '@screens/Home/Sections/Customer/VendingPaymentGateway';
 import { UsersScreen } from '@screens/Users';
 import { MyOrdersScreen } from '@screens/MyOrders';
+import { SalesReportScreen } from '@screens/SalesReport';
+import OrdersAnalysisScreen from '@screens/OrdersAnalysis/OrdersAnalysisScreen';
 
 
 
@@ -675,6 +677,18 @@ const StackNavigator = () => {
       <Stack.Screen
         name="MyOrdersScreen"
         component={MyOrdersScreen}
+        options={{ headerShown: false }}
+      />
+      {/* Sales Report */}
+      <Stack.Screen
+        name="SalesReport"
+        component={SalesReportScreen}
+        options={{ headerShown: false }}
+      />
+      {/* Orders Analysis */}
+      <Stack.Screen
+        name="OrdersAnalysis"
+        component={OrdersAnalysisScreen}
         options={{ headerShown: false }}
       />
       {/* Tables screen removed for ice cream shop (no table seating) */}

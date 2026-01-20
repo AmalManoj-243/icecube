@@ -10,8 +10,11 @@ import { EmptyState } from '@components/common/empty';
 import useDataFetching from '@hooks/useDataFetching';
 import useDebouncedSearch from '@hooks/useDebouncedSearch';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import useAuthStore from '@stores/auth/useAuthStore';
+import { formatCurrency } from '@utils/currency';
 
 const MyOrdersScreen = ({ navigation }) => {
+  const currency = useAuthStore((state) => state.currency);
   const { data, loading, fetchData, fetchMoreData } = useDataFetching(fetchOrdersOdoo);
 
   const { searchText, handleSearchTextChange } = useDebouncedSearch(
@@ -84,11 +87,6 @@ const MyOrdersScreen = ({ navigation }) => {
     });
   };
 
-  const formatAmount = (amount) => {
-    if (amount === null || amount === undefined) return '0.00';
-    return parseFloat(amount).toFixed(2);
-  };
-
   const renderOrderItem = useCallback(({ item }) => {
     const partnerName = Array.isArray(item.partner_id) ? item.partner_id[1] : item.partner_id || 'N/A';
     const userName = Array.isArray(item.user_id) ? item.user_id[1] : item.user_id || 'N/A';
@@ -107,7 +105,7 @@ const MyOrdersScreen = ({ navigation }) => {
               </Text>
             </View>
           </View>
-          <Text style={styles.orderAmount}>${formatAmount(item.amount_total)}</Text>
+          <Text style={styles.orderAmount}>{formatCurrency(item.amount_total, currency || { symbol: '$', position: 'before' })}</Text>
         </View>
 
         <View style={styles.orderDetails}>

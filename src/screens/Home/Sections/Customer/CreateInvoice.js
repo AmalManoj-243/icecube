@@ -5,8 +5,11 @@ import { NavigationHeader } from '@components/Header';
 import { useProductStore } from '@stores/product';
 import { COLORS } from '@constants/theme';
 import { createInvoiceOdoo, linkInvoiceToPosOrderOdoo, fetchFieldSelectionOdoo } from '@api/services/generalApi';
+import useAuthStore from '@stores/auth/useAuthStore';
+import { formatCurrency } from '@utils/currency';
 
 const CreateInvoice = ({ navigation, route }) => {
+  const currency = useAuthStore((state) => state.currency);
   const cart = useProductStore((s) => s.getCurrentCart()) || [];
   const [loading, setLoading] = useState(false);
 
@@ -46,8 +49,8 @@ const CreateInvoice = ({ navigation, route }) => {
         </View>
       </View>
       <View style={{ width: 120, alignItems: 'flex-end' }}>
-        <Text style={{ fontWeight: '700' }}>OMR {(item.subtotal || (item.unit * item.qty)).toFixed(2)}</Text>
-        <Text style={{ fontSize: 12, color: '#666' }}>{`@ OMR ${item.unit.toFixed(2)}`}</Text>
+        <Text style={{ fontWeight: '700' }}>{formatCurrency((item.subtotal || (item.unit * item.qty)), currency || { symbol: '$', position: 'before' })}</Text>
+        <Text style={{ fontSize: 12, color: '#666' }}>{`@ ${formatCurrency(item.unit, currency || { symbol: '$', position: 'before' })}`}</Text>
       </View>
     </View>
   );
@@ -167,20 +170,20 @@ const CreateInvoice = ({ navigation, route }) => {
           <View style={{ padding: 16, borderTopWidth: 1, borderColor: '#eee', backgroundColor: '#fff' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ color: '#6b7280' }}>Subtotal</Text>
-              <Text style={{ fontWeight: '800' }}>OMR {subtotal.toFixed(2)}</Text>
+              <Text style={{ fontWeight: '800' }}>{formatCurrency(subtotal, currency || { symbol: '$', position: 'before' })}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ color: '#6b7280' }}>Service</Text>
-              <Text style={{ fontWeight: '800' }}>OMR {service.toFixed(2)}</Text>
+              <Text style={{ fontWeight: '800' }}>{formatCurrency(service, currency || { symbol: '$', position: 'before' })}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ color: '#6b7280' }}>Tax</Text>
-              <Text style={{ fontWeight: '800' }}>OMR {tax.toFixed(2)}</Text>
+              <Text style={{ fontWeight: '800' }}>{formatCurrency(tax, currency || { symbol: '$', position: 'before' })}</Text>
             </View>
             <View style={{ height: 1, backgroundColor: '#efefef', marginVertical: 8 }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ fontSize: 18, fontWeight: '900' }}>Total</Text>
-              <Text style={{ fontSize: 20, fontWeight: '900' }}>OMR {total.toFixed(2)}</Text>
+              <Text style={{ fontSize: 20, fontWeight: '900' }}>{formatCurrency(total, currency || { symbol: '$', position: 'before' })}</Text>
             </View>
           </View>
         </View>

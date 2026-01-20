@@ -4,8 +4,11 @@ import { SafeAreaView } from '@components/containers';
 import { NavigationHeader } from '@components/Header';
 import { Button } from '@components/common/Button';
 import { fetchPOSRegisters, fetchPOSSessions, createPOSSesionOdoo, closePOSSesionOdoo } from '@api/services/generalApi';
+import useAuthStore from '@stores/auth/useAuthStore';
+import { formatCurrency } from '@utils/currency';
 
 const POSRegister = ({ navigation }) => {
+  const currency = useAuthStore((state) => state.currency);
   const [registers, setRegisters] = useState([]);
   const [openSessions, setOpenSessions] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -132,7 +135,7 @@ const POSRegister = ({ navigation }) => {
         </View>
         <View style={styles.cashRow}>
           <Text style={styles.cashIcon}>💵</Text>
-          <Text style={[styles.sessionAmount, styles.cashText]}>Opening Amount: {typeof item.cash_register_balance_start === 'number' ? item.cash_register_balance_start.toFixed(2) : '—'}</Text>
+          <Text style={[styles.sessionAmount, styles.cashText]}>Opening Amount: {typeof item.cash_register_balance_start === 'number' ? formatCurrency(item.cash_register_balance_start, currency || { symbol: '$', position: 'before' }) : '—'}</Text>
         </View>
 
         <View style={styles.divider} />

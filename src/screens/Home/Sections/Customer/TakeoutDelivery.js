@@ -7,8 +7,11 @@ import { createPosOrderOdoo, fetchDiscountsOdoo } from '@api/services/generalApi
 import Toast from 'react-native-toast-message';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from '@components/containers';
+import useAuthStore from '@stores/auth/useAuthStore';
+import { formatCurrency } from '@utils/currency';
 
 const TakeoutDelivery = ({ navigation, route }) => {
+  const currency = useAuthStore((state) => state.currency);
   const cart = useProductStore((s) => s.getCurrentCart()) || [];
   const { addProduct, removeProduct, clearProducts, setProductDiscount } = useProductStore();
   const [creatingOrder, setCreatingOrder] = useState(false);
@@ -229,7 +232,7 @@ const TakeoutDelivery = ({ navigation, route }) => {
         />
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 4 }}>{item.name}</Text>
-          <Text style={{ fontSize: 14, color: '#666' }}>OMR {item.unit.toFixed(3)} each</Text>
+          <Text style={{ fontSize: 14, color: '#666' }}>{formatCurrency(item.unit, currency || { symbol: '$', position: 'before' })} each</Text>
           {item.discount_percent > 0 ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
               <Text style={{ fontSize:12, color:'#ff5722', fontWeight:'700' }}>{item.discount_percent}% discount applied</Text>
@@ -250,7 +253,7 @@ const TakeoutDelivery = ({ navigation, route }) => {
         </View>
       </View>
       <View style={{ alignItems: 'flex-end', maxWidth: 140 }}>
-        <Text style={{ fontWeight: '800', marginLeft: 12 }}>OMR {(item.subtotal || item.price_subtotal || (item.unit * item.qty)).toFixed(3)}</Text>
+        <Text style={{ fontWeight: '800', marginLeft: 12 }}>{formatCurrency((item.subtotal || item.price_subtotal || (item.unit * item.qty)), currency || { symbol: '$', position: 'before' })}</Text>
       </View>
     </TouchableOpacity>
     );
@@ -273,10 +276,10 @@ const TakeoutDelivery = ({ navigation, route }) => {
             <View>
               <Text style={{ fontSize: 18, fontWeight: '800' }}>Total</Text>
               {discountApplied > 0 ? (
-                <Text style={{ fontSize: 12, color: '#666' }}>Discount: OMR {discountApplied.toFixed(3)}</Text>
+                <Text style={{ fontSize: 12, color: '#666' }}>Discount: {formatCurrency(discountApplied, currency || { symbol: '$', position: 'before' })}</Text>
               ) : null}
             </View>
-            <Text style={{ fontSize: 20, fontWeight: '900' }}>OMR {finalTotal.toFixed(3)}</Text>
+            <Text style={{ fontSize: 20, fontWeight: '900' }}>{formatCurrency(finalTotal, currency || { symbol: '$', position: 'before' })}</Text>
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap', marginBottom: 12 }}>

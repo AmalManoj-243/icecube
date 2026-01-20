@@ -3,8 +3,11 @@ import { View, Text, ScrollView, TouchableOpacity, SafeAreaView, StyleSheet } fr
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { NavigationHeader } from '@components/Header';
+import useAuthStore from '@stores/auth/useAuthStore';
+import { formatCurrency } from '@utils/currency';
 
 const CreateInvoicePreview = ({ navigation, route }) => {
+  const currency = useAuthStore((state) => state.currency);
   const params = route?.params || {};
   const customer = params.customer || params.partner || params.partnerInfo || null;
   // Support multiple shapes used across the app: { items, subtotal, tax, service, total }
@@ -80,8 +83,8 @@ const CreateInvoicePreview = ({ navigation, route }) => {
                   <View style={styles.productRow}>
                     <Text style={[styles.productCell, { flex: 2.5 }]}>{item.name || 'Product'}</Text>
                     <Text style={[styles.productCell, { flex: 0.8, textAlign: 'center' }]}>{itemQty}</Text>
-                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{itemPrice.toFixed(3)}</Text>
-                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{itemTotal.toFixed(3)}</Text>
+                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{formatCurrency(itemPrice, currency || { symbol: '$', position: 'before' })}</Text>
+                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{formatCurrency(itemTotal, currency || { symbol: '$', position: 'before' })}</Text>
                   </View>
                 </View>
               );
@@ -93,29 +96,29 @@ const CreateInvoicePreview = ({ navigation, route }) => {
           {/* Totals */}
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Subtotal / المجموع الفرعي</Text>
-            <Text style={styles.totalValue}>{Number(subtotal || total).toFixed(3)} ر.ع.</Text>
+            <Text style={styles.totalValue}>{formatCurrency(Number(subtotal || total), currency || { symbol: '$', position: 'before' })}</Text>
           </View>
-          
+
           <View style={styles.dividerThick} />
-          
+
           <View style={styles.grandTotalRow}>
             <Text style={styles.grandTotalLabel}>Grand Total / الإجمالي:</Text>
-            <Text style={styles.grandTotalValue}>{grandTotal.toFixed(3)} ر.ع.</Text>
+            <Text style={styles.grandTotalValue}>{formatCurrency(grandTotal, currency || { symbol: '$', position: 'before' })}</Text>
           </View>
-          
+
           <View style={styles.dividerThick} />
-          
+
           {/* Payment Details */}
           <Text style={styles.paymentTitle}>Payment Details / تفاصيل الدفع</Text>
-          
+
           <View style={styles.paymentRow}>
             <Text style={styles.paymentLabel}>Cash:</Text>
-            <Text style={styles.paymentValue}>{cashDisplay.toFixed(3)} ر.ع.</Text>
+            <Text style={styles.paymentValue}>{formatCurrency(cashDisplay, currency || { symbol: '$', position: 'before' })}</Text>
           </View>
 
           <View style={styles.paymentRow}>
             <Text style={styles.paymentLabel}>Change / الباقي:</Text>
-            <Text style={styles.paymentValue}>{changeAmount.toFixed(3)} ر.ع.</Text>
+            <Text style={styles.paymentValue}>{formatCurrency(changeAmount, currency || { symbol: '$', position: 'before' })}</Text>
           </View>
           
           <View style={styles.divider} />
@@ -125,7 +128,7 @@ const CreateInvoicePreview = ({ navigation, route }) => {
           <TouchableOpacity 
             onPress={async () => {
               try {
-                  const html = generateInvoiceHtml({ items, subtotal, tax, service, total, orderId, paidAmount, customer });
+                  const html = generateInvoiceHtml({ items, subtotal, tax, service, total, orderId, paidAmount, customer, currency });
                 const { uri } = await Print.printToFileAsync({ html });
                 if (!uri) throw new Error('Failed to generate PDF');
                 await Sharing.shareAsync(uri);
@@ -143,7 +146,16 @@ const CreateInvoicePreview = ({ navigation, route }) => {
 };
 
 // Rich HTML generator to mimic Odoo POS receipt (80mm thermal, bilingual layout, dotted separators)
-const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, total = 0, orderId = '', paidAmount = 0, customer = null } = {}) => {
+const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, total = 0, orderId = '', paidAmount = 0, customer = null, currency = null } = {}) => {
+  // Helper to format currency in HTML
+  const formatCurrencyHtml = (amount) => {
+    const currencyConfig = currency || { symbol: '$', position: 'before' };
+    const formatted = Number(amount).toFixed(2);
+    return currencyConfig.position === 'after'
+      ? `${formatted}${currencyConfig.symbol}`
+      : `${currencyConfig.symbol}${formatted}`;
+  };
+
   const rows = items.map((item, idx) => {
     const itemQty = item.qty || item.quantity || 1;
     const itemPrice = item.price || item.unit || item.price_unit || 0;
@@ -154,8 +166,8 @@ const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, t
       <td style="padding:6px 4px; vertical-align:top;">${idx + 1}.</td>
       <td style="padding:6px 4px; vertical-align:top;">${nameEsc}<div style="font-size:10px; color:#333; margin-top:4px;">KG</div></td>
       <td style="padding:6px 4px; text-align:center; vertical-align:top;">${itemQty}</td>
-      <td style="padding:6px 4px; text-align:right; vertical-align:top;">${Number(itemPrice).toFixed(3)}</td>
-      <td style="padding:6px 4px; text-align:right; vertical-align:top;">${Number(itemTotal).toFixed(3)}</td>
+      <td style="padding:6px 4px; text-align:right; vertical-align:top;">${formatCurrencyHtml(itemPrice)}</td>
+      <td style="padding:6px 4px; text-align:right; vertical-align:top;">${formatCurrencyHtml(itemTotal)}</td>
     </tr>
     <tr><td colspan="5" style="border-bottom:1px dotted #000; height:6px;">&nbsp;</td></tr>`;
   }).join('');
@@ -243,15 +255,15 @@ const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, t
       <div class="divider-dotted"></div>
 
       <div class="totals">
-        <div class="line"><div class="label">Subtotal / المجموع الفرعي</div><div class="value">${Number(subtotal || total).toFixed(3)} ر.ع.</div></div>
+        <div class="line"><div class="label">Subtotal / المجموع الفرعي</div><div class="value">${formatCurrencyHtml(Number(subtotal || total))}</div></div>
         <div style="height:6px; border-bottom:2px solid #000; margin-top:6px;"></div>
-        <div class="line" style="font-size:13px; font-weight:700;"><div class="label">Grand Total / الإجمالي</div><div class="value">${Number(total || subtotal).toFixed(3)} ر.ع.</div></div>
+        <div class="line" style="font-size:13px; font-weight:700;"><div class="label">Grand Total / الإجمالي</div><div class="value">${formatCurrencyHtml(Number(total || subtotal))}</div></div>
       </div>
 
       <div style="border-top:1px solid #000; margin-top:8px; padding-top:6px;"></div>
       <div class="paymentTitle">Payment Details / تفاصيل الدفع</div>
-      <div class="paymentRow"><div>Cash:</div><div>${Number(paidAmount > 0 ? paidAmount : (total || subtotal)).toFixed(3)} ر.ع.</div></div>
-      <div class="paymentRow"><div>Change / الباقي:</div><div>${Number((paidAmount > (total || subtotal) ? (paidAmount - (total || subtotal)) : 0)).toFixed(3)} ر.ع.</div></div>
+      <div class="paymentRow"><div>Cash:</div><div>${formatCurrencyHtml(Number(paidAmount > 0 ? paidAmount : (total || subtotal)))}</div></div>
+      <div class="paymentRow"><div>Change / الباقي:</div><div>${formatCurrencyHtml(Number((paidAmount > (total || subtotal) ? (paidAmount - (total || subtotal)) : 0)))}</div></div>
 
       <div style="height:8px; border-bottom:1px dotted #000; margin-top:8px;"></div>
       <div class="footer">Thank you for your purchase!<br/>شكرا لشرائك!</div>
