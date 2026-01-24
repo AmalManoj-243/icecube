@@ -90,8 +90,13 @@ const CreateInvoicePreview = ({ navigation, route }) => {
                   <View style={styles.productRow}>
                     <Text style={[styles.productCell, { flex: 2.5 }]}>{item.name || 'Product'}</Text>
                     <Text style={[styles.productCell, { flex: 0.8, textAlign: 'center' }]}>{itemQty}</Text>
+<<<<<<< HEAD
                     <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{displayNum(itemPrice)}</Text>
                     <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{displayNum(itemTotal)}</Text>
+=======
+                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{formatCurrency(itemPrice, currency || { symbol: '$', position: 'before' })}</Text>
+                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{formatCurrency(itemTotal, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                   </View>
                 </View>
               );
@@ -103,13 +108,21 @@ const CreateInvoicePreview = ({ navigation, route }) => {
           {/* Totals */}
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Subtotal / المجموع الفرعي</Text>
+<<<<<<< HEAD
             <Text style={styles.totalValue}>{displayNum(subtotal || total)}</Text>
+=======
+            <Text style={styles.totalValue}>{formatCurrency(Number(subtotal || total), currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
 
           {discount > 0 && (
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Discount / الخصم</Text>
+<<<<<<< HEAD
               <Text style={[styles.totalValue, { color: '#c00' }]}>-{displayNum(discount)}</Text>
+=======
+              <Text style={[styles.totalValue, { color: '#c00' }]}>-{formatCurrency(discount, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
             </View>
           )}
 
@@ -117,7 +130,11 @@ const CreateInvoicePreview = ({ navigation, route }) => {
 
           <View style={styles.grandTotalRow}>
             <Text style={styles.grandTotalLabel}>Grand Total / الإجمالي:</Text>
+<<<<<<< HEAD
             <Text style={styles.grandTotalValue}>{displayNum(grandTotal)}</Text>
+=======
+            <Text style={styles.grandTotalValue}>{formatCurrency(grandTotal, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
 
           <View style={styles.dividerThick} />
@@ -127,12 +144,20 @@ const CreateInvoicePreview = ({ navigation, route }) => {
 
           <View style={styles.paymentRow}>
             <Text style={styles.paymentLabel}>Cash:</Text>
+<<<<<<< HEAD
             <Text style={styles.paymentValue}>{displayNum(cashDisplay)}</Text>
+=======
+            <Text style={styles.paymentValue}>{formatCurrency(cashDisplay, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
 
           <View style={styles.paymentRow}>
             <Text style={styles.paymentLabel}>Change / الباقي:</Text>
+<<<<<<< HEAD
             <Text style={styles.paymentValue}>{displayNum(changeAmount)}</Text>
+=======
+            <Text style={styles.paymentValue}>{formatCurrency(changeAmount, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
           
           <View style={styles.divider} />
@@ -142,7 +167,11 @@ const CreateInvoicePreview = ({ navigation, route }) => {
           <TouchableOpacity 
             onPress={async () => {
               try {
+<<<<<<< HEAD
                   const html = generateInvoiceHtml({ items, subtotal, tax, service, total, discount, orderId, paidAmount, customer });
+=======
+                  const html = generateInvoiceHtml({ items, subtotal, tax, service, total, discount, orderId, paidAmount, customer, currency });
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                 const { uri } = await Print.printToFileAsync({ html });
                 if (!uri) throw new Error('Failed to generate PDF');
                 await Sharing.shareAsync(uri);
@@ -160,12 +189,23 @@ const CreateInvoicePreview = ({ navigation, route }) => {
 };
 
 // Rich HTML generator to mimic Odoo POS receipt (80mm thermal, bilingual layout, dotted separators)
+<<<<<<< HEAD
 const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, total = 0, discount = 0, orderId = '', paidAmount = 0, customer = null } = {}) => {
   // Helper to display numbers cleanly in HTML
   const formatCurrencyHtml = (amount) => {
     const num = Number(amount);
     if (isNaN(num)) return '0';
     return parseFloat(num.toPrecision(12)).toString();
+=======
+const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, total = 0, discount = 0, orderId = '', paidAmount = 0, customer = null, currency = null } = {}) => {
+  // Helper to format currency in HTML
+  const formatCurrencyHtml = (amount) => {
+    const currencyConfig = currency || { symbol: '$', position: 'before' };
+    const formatted = Number(amount).toFixed(2);
+    return currencyConfig.position === 'after'
+      ? `${formatted}${currencyConfig.symbol}`
+      : `${currencyConfig.symbol}${formatted}`;
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
   };
 
   const rows = items.map((item, idx) => {

@@ -396,7 +396,11 @@ const POSPayment = ({ navigation, route }) => {
         {/* Large Amount Display */}
         <View style={{ alignItems: 'center', marginTop: 32, marginBottom: 12 }}>
           <View style={{ backgroundColor: '#111827', paddingVertical: 16, paddingHorizontal: 28, borderRadius: 12 }}>
+<<<<<<< HEAD
             <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#fff' }}>{displayNum(computeTotal())}</Text>
+=======
+            <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#fff' }}>{formatCurrency(computeTotal(), currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
         </View>
 
@@ -523,7 +527,11 @@ const POSPayment = ({ navigation, route }) => {
             {paymentMode === 'account' ? (
               <>
                 <Text style={{ color: '#2b6cb0', fontSize: 22, marginTop: 6 }}>Amount to be charged to account</Text>
+<<<<<<< HEAD
                 <Text style={{ color: '#2b6cb0', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{displayNum(total)}</Text>
+=======
+                <Text style={{ color: '#2b6cb0', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{formatCurrency(total, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
               </>
             ) : (
               <>
@@ -531,7 +539,11 @@ const POSPayment = ({ navigation, route }) => {
                   {paymentMode === 'card' ? 'Card' : 'Cash'}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+<<<<<<< HEAD
                   <Text style={{ fontSize: 36, color: '#222', textAlign: 'center', flex: 1, fontWeight: 'bold' }}>{inputAmount ? displayNum(parseFloat(inputAmount)) : '0'}</Text>
+=======
+                  <Text style={{ fontSize: 36, color: '#222', textAlign: 'center', flex: 1, fontWeight: 'bold' }}>{inputAmount ? formatCurrency(parseFloat(inputAmount), currency || { symbol: '$', position: 'before' }) : formatCurrency(0, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                   {inputAmount ? (
                     <TouchableOpacity onPress={() => setInputAmount('')} style={{ marginLeft: 8 }}>
                       <Text style={{ fontSize: 28, color: '#c00', fontWeight: 'bold' }}>✕</Text>
@@ -541,12 +553,20 @@ const POSPayment = ({ navigation, route }) => {
                 {remaining < 0 ? (
                   <>
                     <Text style={{ color: 'green', fontSize: 22, marginTop: 6 }}>Change</Text>
+<<<<<<< HEAD
                     <Text style={{ color: 'green', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{displayNum(Math.abs(remaining))}</Text>
+=======
+                    <Text style={{ color: 'green', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{formatCurrency(Math.abs(remaining), currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                   </>
                 ) : (
                   <>
                     <Text style={{ color: '#c00', fontSize: 22, marginTop: 6 }}>Remaining</Text>
+<<<<<<< HEAD
                     <Text style={{ color: '#c00', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{displayNum(remaining)}</Text>
+=======
+                    <Text style={{ color: '#c00', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{formatCurrency(remaining, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                   </>
                 )}
               </>

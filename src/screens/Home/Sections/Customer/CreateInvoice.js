@@ -40,9 +40,15 @@ const CreateInvoice = ({ navigation, route }) => {
   }), [cart]);
 
   const subtotal = useMemo(() => items.reduce((s, it) => s + (it.subtotal || 0), 0), [items]);
+<<<<<<< HEAD
   const tax = subtotal * 0.00; // placeholder tax 0%
   const service = subtotal * 0.00; // placeholder service charge
   const total = subtotal + tax + service;
+=======
+  const tax = +(subtotal * 0.00).toFixed(2); // placeholder tax 0%
+  const service = +(subtotal * 0.00).toFixed(2); // placeholder service charge
+  const total = +(subtotal + tax + service).toFixed(2);
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
 
   const renderLine = ({ item, index }) => (
     <View key={item.id} style={{ flexDirection: 'row', paddingVertical: 10, paddingHorizontal: 16, alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: index === items.length - 1 ? 0 : 1, borderColor: '#f0f0f0' }}>
@@ -53,8 +59,13 @@ const CreateInvoice = ({ navigation, route }) => {
         </View>
       </View>
       <View style={{ width: 120, alignItems: 'flex-end' }}>
+<<<<<<< HEAD
         <Text style={{ fontWeight: '700' }}>{displayNum(item.subtotal || (item.unit * item.qty))}</Text>
         <Text style={{ fontSize: 12, color: '#666' }}>{`@ ${displayNum(item.unit)}`}</Text>
+=======
+        <Text style={{ fontWeight: '700' }}>{formatCurrency((item.subtotal || (item.unit * item.qty)), currency || { symbol: '$', position: 'before' })}</Text>
+        <Text style={{ fontSize: 12, color: '#666' }}>{`@ ${formatCurrency(item.unit, currency || { symbol: '$', position: 'before' })}`}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
       </View>
     </View>
   );
@@ -174,6 +185,7 @@ const CreateInvoice = ({ navigation, route }) => {
           <View style={{ padding: 16, borderTopWidth: 1, borderColor: '#eee', backgroundColor: '#fff' }}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ color: '#6b7280' }}>Subtotal</Text>
+<<<<<<< HEAD
               <Text style={{ fontWeight: '800' }}>{displayNum(subtotal)}</Text>
             </View>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -183,11 +195,26 @@ const CreateInvoice = ({ navigation, route }) => {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ color: '#6b7280' }}>Tax</Text>
               <Text style={{ fontWeight: '800' }}>{displayNum(tax)}</Text>
+=======
+              <Text style={{ fontWeight: '800' }}>{formatCurrency(subtotal, currency || { symbol: '$', position: 'before' })}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+              <Text style={{ color: '#6b7280' }}>Service</Text>
+              <Text style={{ fontWeight: '800' }}>{formatCurrency(service, currency || { symbol: '$', position: 'before' })}</Text>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+              <Text style={{ color: '#6b7280' }}>Tax</Text>
+              <Text style={{ fontWeight: '800' }}>{formatCurrency(tax, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
             </View>
             <View style={{ height: 1, backgroundColor: '#efefef', marginVertical: 8 }} />
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
               <Text style={{ fontSize: 18, fontWeight: '900' }}>Total</Text>
+<<<<<<< HEAD
               <Text style={{ fontSize: 20, fontWeight: '900' }}>{displayNum(total)}</Text>
+=======
+              <Text style={{ fontSize: 20, fontWeight: '900' }}>{formatCurrency(total, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
             </View>
           </View>
         </View>

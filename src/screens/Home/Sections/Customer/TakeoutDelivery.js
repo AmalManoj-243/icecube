@@ -248,10 +248,17 @@ const TakeoutDelivery = ({ navigation, route }) => {
         />
         <View style={{ flex: 1 }}>
           <Text style={{ fontSize: 16, fontWeight: '600', marginBottom: 4 }}>{item.name}</Text>
+<<<<<<< HEAD
           <Text style={{ fontSize: 14, color: '#666' }}>{displayNum(item.unit)} each</Text>
           {item.discount_percent > 0 ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
               <Text style={{ fontSize:12, color:'#ff5722', fontWeight:'700' }}>-{displayNum(item.unit * item.qty * item.discount_percent / 100)} discount</Text>
+=======
+          <Text style={{ fontSize: 14, color: '#666' }}>{formatCurrency(item.unit, currency || { symbol: '$', position: 'before' })} each</Text>
+          {item.discount_percent > 0 ? (
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
+              <Text style={{ fontSize:12, color:'#ff5722', fontWeight:'700' }}>-{formatCurrency((item.unit * item.qty * item.discount_percent / 100), currency || { symbol: '$', position: 'before' })} discount</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
               <TouchableOpacity onPress={() => setProductDiscount(item.rawItem?.id ?? item.id, 0)} style={{ marginLeft: 8, paddingVertical: 4, paddingHorizontal: 8, borderRadius: 6, backgroundColor: '#fff5f5', borderWidth: 1, borderColor: '#fecaca' }}>
                 <Text style={{ fontSize:12, color:'#b91c1c', fontWeight:'700' }}>Remove</Text>
               </TouchableOpacity>
@@ -269,7 +276,11 @@ const TakeoutDelivery = ({ navigation, route }) => {
         </View>
       </View>
       <View style={{ alignItems: 'flex-end', maxWidth: 140 }}>
+<<<<<<< HEAD
         <Text style={{ fontWeight: '800', marginLeft: 12 }}>{displayNum(item.subtotal || item.price_subtotal || (item.unit * item.qty))}</Text>
+=======
+        <Text style={{ fontWeight: '800', marginLeft: 12 }}>{formatCurrency((item.subtotal || item.price_subtotal || (item.unit * item.qty)), currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
       </View>
     </TouchableOpacity>
     );
@@ -292,10 +303,17 @@ const TakeoutDelivery = ({ navigation, route }) => {
             <View>
               <Text style={{ fontSize: 18, fontWeight: '800' }}>Total</Text>
               {discountApplied > 0 ? (
+<<<<<<< HEAD
                 <Text style={{ fontSize: 12, color: '#666' }}>Discount: {displayNum(discountApplied)}</Text>
               ) : null}
             </View>
             <Text style={{ fontSize: 20, fontWeight: '900' }}>{displayNum(finalTotal)}</Text>
+=======
+                <Text style={{ fontSize: 12, color: '#666' }}>Discount: {formatCurrency(discountApplied, currency || { symbol: '$', position: 'before' })}</Text>
+              ) : null}
+            </View>
+            <Text style={{ fontSize: 20, fontWeight: '900' }}>{formatCurrency(finalTotal, currency || { symbol: '$', position: 'before' })}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
 
           <View style={{ flexDirection: 'row', justifyContent: 'flex-start', flexWrap: 'wrap', marginBottom: 12 }}>
@@ -368,10 +386,17 @@ const TakeoutDelivery = ({ navigation, route }) => {
             <View style={{ width:'100%', minHeight:120, justifyContent:'center', alignItems:'center' }}>
               {discountPresets && discountPresets.length > 0 ? (
                 <View style={{ width:'100%', flexDirection:'row', flexWrap:'wrap', justifyContent:'space-between' }}>
+<<<<<<< HEAD
                   {discountPresets.slice(0,6).map(p => ({ id: p.id, label: p.is_percentage ? `${p.amount}%` : `${Number(p.amount)}`, value: p })).map(btn => (
                     <Pressable key={btn.id} onPress={() => {
                       const p = btn.value;
                       const amt = p.is_percentage ? Number(total * (p.amount || 0) / 100) : Number(p.amount || 0);
+=======
+                  {discountPresets.slice(0,6).map(p => ({ id: p.id, label: p.is_percentage ? `${p.amount}%` : `${Number(p.amount).toFixed(3)}`, value: p })).map(btn => (
+                    <Pressable key={btn.id} onPress={() => {
+                      const p = btn.value;
+                      const amt = p.is_percentage ? Number((total * (p.amount || 0) / 100).toFixed(3)) : Number(p.amount || 0);
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                       setDiscountAmount(amt);
                       setDiscountModalVisible(false);
                     }} style={{ width:'30%', aspectRatio:1, marginBottom:12, borderRadius:10, backgroundColor:'#f3f4f6', justifyContent:'center', alignItems:'center', borderWidth:1, borderColor:'#e6e6e6' }}>
@@ -402,7 +427,11 @@ const TakeoutDelivery = ({ navigation, route }) => {
             <Text style={{ fontWeight:'800', fontSize:18, marginBottom:10 }}>Apply Discount</Text>
             <Text style={{ fontSize:16, fontWeight:'700', marginBottom:4 }}>{selectedLine ? selectedLine.name : ''}</Text>
             <Text style={{ fontSize:14, color:'#666', marginBottom:16 }}>
+<<<<<<< HEAD
               Price: {displayNum((selectedLine?.unit || 0) * (selectedLine?.qty || 1))}
+=======
+              Price: {formatCurrency((selectedLine?.unit || 0) * (selectedLine?.qty || 1), currency || { symbol: '$', position: 'before' })}
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
             </Text>
 
             <Text style={{ color:'#333', marginBottom:8, fontWeight:'600' }}>Enter discount amount</Text>
@@ -414,7 +443,11 @@ const TakeoutDelivery = ({ navigation, route }) => {
                 keyboardType="numeric"
                 style={{ flex:1, fontSize:24, textAlign:'center', padding:8, fontWeight:'700' }}
               />
+<<<<<<< HEAD
               <Text style={{ fontSize:18, fontWeight:'800', color:'#666', marginLeft:8 }}>OMR</Text>
+=======
+              <Text style={{ fontSize:18, fontWeight:'800', color:'#666', marginLeft:8 }}>{currency?.symbol || 'OMR'}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
             </View>
 
             <View style={{ flexDirection:'row', width:'100%', justifyContent:'space-between' }}>
@@ -447,7 +480,11 @@ const TakeoutDelivery = ({ navigation, route }) => {
                   const qty = Number(selectedLine.qty || selectedLine.quantity || 1);
                   const rawSubtotal = unit * qty;
                   // Convert Rs amount to percentage for the store
+<<<<<<< HEAD
                   const percent = rawSubtotal > 0 ? Number((discountAmt / rawSubtotal) * 100) : 0;
+=======
+                  const percent = rawSubtotal > 0 ? Number(((discountAmt / rawSubtotal) * 100).toFixed(3)) : 0;
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                   setProductDiscount(selectedLine.rawItem?.id ?? selectedLine.id, percent);
                   setLineDiscountModalVisible(false);
                   setSelectedLine(null);
@@ -521,7 +558,11 @@ const TakeoutDelivery = ({ navigation, route }) => {
             <Text style={{ fontWeight:'800', fontSize:18, marginBottom:12 }}>Edit Discount</Text>
             <FlatList data={discountPresets} keyExtractor={d => String(d.id)} renderItem={({item}) => (
               <TouchableOpacity onPress={() => setEditingPreset(item)} style={{ padding:12, borderBottomWidth:1, borderColor:'#f3f4f6' }}>
+<<<<<<< HEAD
                 <Text style={{ fontWeight:'700' }}>{item.name} {item.is_percentage ? `(${item.amount}%)` : `(${Number(item.amount)})`}</Text>
+=======
+                <Text style={{ fontWeight:'700' }}>{item.name} {item.is_percentage ? `(${item.amount}%)` : `(${Number(item.amount).toFixed(3)})`}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
               </TouchableOpacity>
             )} />
             {editingPreset ? (
@@ -559,7 +600,11 @@ const TakeoutDelivery = ({ navigation, route }) => {
             <Text style={{ fontWeight:'800', fontSize:18, marginBottom:12 }}>Delete Discount</Text>
                 <FlatList data={discountPresets} keyExtractor={d => String(d.id)} renderItem={({item}) => (
               <View style={{ flexDirection:'row', justifyContent:'space-between', alignItems:'center', paddingVertical:8, borderBottomWidth:1, borderColor:'#f3f4f6' }}>
+<<<<<<< HEAD
                 <Text>{item.name} {item.is_percentage ? `(${item.amount}%)` : `(${Number(item.amount)})`}</Text>
+=======
+                <Text>{item.name} {item.is_percentage ? `(${item.amount}%)` : `(${Number(item.amount).toFixed(3)})`}</Text>
+>>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                 <TouchableOpacity onPress={async () => {
                   const updated = (Array.isArray(discountPresets) ? discountPresets.filter(d => d.id !== item.id) : []);
                   await persistPresets(updated);
