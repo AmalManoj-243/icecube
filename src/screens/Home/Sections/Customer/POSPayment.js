@@ -318,8 +318,37 @@ const POSPayment = ({ navigation, route }) => {
               const shouldCreateInvoice = invoiceChecked || Boolean(customer && (customer.id || customer._id));
               if (shouldCreateInvoice) {
                 try {
-                  console.log('[INVOICE] Creating invoice for POS order', createdOrderId, 'partner:', partnerId, 'triggeredByCustomer:', Boolean(customer && (customer.id || customer._id)));
-                  const invoiceProducts = (products || []).map(p => ({ id: p.id, name: p.name || p.product_name || '', quantity: p.quantity || p.qty || 1, price: p.price || p.price_unit || 0, tax_ids: p.tax_ids || [] }));
+                  const actualTotal = Math.round(Number(totalAmount) * 1000) / 1000 || 0;
+                  console.log('[INVOICE] Creating invoice for POS order', createdOrderId, 'totalAmount:', actualTotal);
+
+                  // Calculate gross total and ratio
+                  const grossTotal = (products || []).reduce((sum, p) => sum + (Number(p.price || p.price_unit || 0) * Number(p.quantity || p.qty || 1)), 0);
+                  const ratio = grossTotal > 0 ? actualTotal / grossTotal : 1;
+
+                  // Adjust prices proportionally
+                  const invoiceProducts = (products || []).map(p => ({
+                    id: p.id,
+                    name: p.name || p.product_name || '',
+                    quantity: Number(p.quantity || p.qty || 1),
+                    price: Math.round(Number(p.price || p.price_unit || 0) * ratio * 1000) / 1000,
+                    tax_ids: p.tax_ids || []
+                  }));
+
+                  // Adjust last item to ensure exact total match using 6 decimal precision
+                  const currentTotal = Math.round(invoiceProducts.reduce((sum, p) => sum + (p.price * p.quantity), 0) * 1000000) / 1000000;
+                  const diff = actualTotal - currentTotal;
+                  console.log('[INVOICE] currentTotal:', currentTotal, 'actualTotal:', actualTotal, 'diff:', diff);
+                  if (Math.abs(diff) > 0.0000001 && invoiceProducts.length > 0) {
+                    const last = invoiceProducts[invoiceProducts.length - 1];
+                    // Use 6 decimal places for precision, Odoo will handle display rounding
+                    const adjustedPrice = Math.round((last.price + diff / last.quantity) * 1000000) / 1000000;
+                    console.log('[INVOICE] Adjusting last item price from', last.price, 'to', adjustedPrice);
+                    last.price = adjustedPrice;
+                  }
+                  // Final verification
+                  const finalTotal = Math.round(invoiceProducts.reduce((sum, p) => sum + (p.price * p.quantity), 0) * 1000000) / 1000000;
+                  console.log('[INVOICE] Final invoice total:', finalTotal, 'Expected:', actualTotal, 'Match:', Math.abs(finalTotal - actualTotal) < 0.0001);
+
                   const invoiceDate = new Date().toISOString().slice(0,10);
                   const invResp = await createInvoiceOdoo({ partnerId, products: invoiceProducts, invoiceDate, journalId: selectedJournal?.id || null });
                   console.log('[INVOICE] createInvoiceOdoo response:', invResp);
@@ -396,11 +425,7 @@ const POSPayment = ({ navigation, route }) => {
         {/* Large Amount Display */}
         <View style={{ alignItems: 'center', marginTop: 32, marginBottom: 12 }}>
           <View style={{ backgroundColor: '#111827', paddingVertical: 16, paddingHorizontal: 28, borderRadius: 12 }}>
-<<<<<<< HEAD
             <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#fff' }}>{displayNum(computeTotal())}</Text>
-=======
-            <Text style={{ fontSize: 60, fontWeight: 'bold', color: '#fff' }}>{formatCurrency(computeTotal(), currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
         </View>
 
@@ -527,11 +552,7 @@ const POSPayment = ({ navigation, route }) => {
             {paymentMode === 'account' ? (
               <>
                 <Text style={{ color: '#2b6cb0', fontSize: 22, marginTop: 6 }}>Amount to be charged to account</Text>
-<<<<<<< HEAD
                 <Text style={{ color: '#2b6cb0', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{displayNum(total)}</Text>
-=======
-                <Text style={{ color: '#2b6cb0', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{formatCurrency(total, currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
               </>
             ) : (
               <>
@@ -539,11 +560,7 @@ const POSPayment = ({ navigation, route }) => {
                   {paymentMode === 'card' ? 'Card' : 'Cash'}
                 </Text>
                 <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-<<<<<<< HEAD
                   <Text style={{ fontSize: 36, color: '#222', textAlign: 'center', flex: 1, fontWeight: 'bold' }}>{inputAmount ? displayNum(parseFloat(inputAmount)) : '0'}</Text>
-=======
-                  <Text style={{ fontSize: 36, color: '#222', textAlign: 'center', flex: 1, fontWeight: 'bold' }}>{inputAmount ? formatCurrency(parseFloat(inputAmount), currency || { symbol: '$', position: 'before' }) : formatCurrency(0, currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                   {inputAmount ? (
                     <TouchableOpacity onPress={() => setInputAmount('')} style={{ marginLeft: 8 }}>
                       <Text style={{ fontSize: 28, color: '#c00', fontWeight: 'bold' }}>✕</Text>
@@ -553,20 +570,12 @@ const POSPayment = ({ navigation, route }) => {
                 {remaining < 0 ? (
                   <>
                     <Text style={{ color: 'green', fontSize: 22, marginTop: 6 }}>Change</Text>
-<<<<<<< HEAD
                     <Text style={{ color: 'green', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{displayNum(Math.abs(remaining))}</Text>
-=======
-                    <Text style={{ color: 'green', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{formatCurrency(Math.abs(remaining), currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                   </>
                 ) : (
                   <>
                     <Text style={{ color: '#c00', fontSize: 22, marginTop: 6 }}>Remaining</Text>
-<<<<<<< HEAD
                     <Text style={{ color: '#c00', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{displayNum(remaining)}</Text>
-=======
-                    <Text style={{ color: '#c00', fontSize: 26, fontWeight: 'bold', marginBottom: 8 }}>{formatCurrency(remaining, currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                   </>
                 )}
               </>

@@ -17,14 +17,25 @@ const CreateInvoicePreview = ({ navigation, route }) => {
   // Support multiple shapes used across the app: { items, subtotal, tax, service, total }
   // and legacy/vending: { products, totalAmount }
   const rawItems = params.items || params.products || [];
-  // Normalize items: ensure qty, unit/price, subtotal present
-  const items = Array.isArray(rawItems) ? rawItems.map((it) => ({
-    id: it.id ?? it.remoteId ?? it.product_id ?? null,
-    name: it.name ?? it.product_name ?? it.product?.name ?? 'Product',
-    qty: Number(it.qty ?? it.quantity ?? it.quantity_available ?? 1),
-    price: Number(it.price ?? it.unit ?? it.price_unit ?? it.list_price ?? 0),
-    subtotal: typeof it.subtotal !== 'undefined' ? Number(it.subtotal) : (Number(it.price ?? it.unit ?? it.price_unit ?? it.list_price ?? 0) * Number(it.qty ?? it.quantity ?? 1))
-  })) : [];
+  // Normalize items: ensure qty, unit/price, discount_percent, subtotal present
+  const items = Array.isArray(rawItems) ? rawItems.map((it) => {
+    const qty = Number(it.qty ?? it.quantity ?? it.quantity_available ?? 1);
+    const price = Number(it.price ?? it.unit ?? it.price_unit ?? it.list_price ?? 0);
+    const grossTotal = price * qty;
+    // Use fixed discount_amount from item if present, otherwise fall back to percentage calculation
+    const discountAmount = Number(it.discount_amount || 0) || (grossTotal * Number(it.discount_percent ?? it.discount ?? 0) / 100);
+    const discountPercent = grossTotal > 0 ? (discountAmount / grossTotal) * 100 : 0;
+    const netTotal = grossTotal - discountAmount;
+    return {
+      id: it.id ?? it.remoteId ?? it.product_id ?? null,
+      name: it.name ?? it.product_name ?? it.product?.name ?? 'Product',
+      qty,
+      price,
+      discount_percent: discountPercent,
+      discount_amount: discountAmount,
+      subtotal: typeof it.subtotal !== 'undefined' ? Number(it.subtotal) : netTotal
+    };
+  }) : [];
 
   const subtotal = typeof params.subtotal !== 'undefined' ? Number(params.subtotal) : (typeof params.totalAmount !== 'undefined' ? Number(params.totalAmount) : items.reduce((s, it) => s + (it.subtotal || 0), 0));
   const tax = typeof params.tax !== 'undefined' ? Number(params.tax) : 0;
@@ -73,30 +84,28 @@ const CreateInvoicePreview = ({ navigation, route }) => {
           {/* Product Table */}
           <View style={styles.tableContainer}>
             <View style={styles.tableHeader}>
-              <Text style={[styles.headerCell, { flex: 2.5 }]}>Product Name{'\n'}اسم المنتج</Text>
-              <Text style={[styles.headerCell, { flex: 0.8 }]}>Qty{'\n'}كمية</Text>
-              <Text style={[styles.headerCell, { flex: 1 }]}>Unit Price{'\n'}سعر الوحدة</Text>
-              <Text style={[styles.headerCell, { flex: 1 }]}>Total{'\n'}المجموع</Text>
+              <Text style={[styles.headerCell, { flex: 2 }]}>Product Name{'\n'}اسم المنتج</Text>
+              <Text style={[styles.headerCell, { flex: 0.6 }]}>Qty{'\n'}كمية</Text>
+              <Text style={[styles.headerCell, { flex: 0.9 }]}>Unit{'\n'}سعر</Text>
+              <Text style={[styles.headerCell, { flex: 0.9 }]}>Disc{'\n'}خصم</Text>
+              <Text style={[styles.headerCell, { flex: 0.9 }]}>Total{'\n'}المجموع</Text>
             </View>
-            
+
             {items.map((item, idx) => {
               const itemQty = item.qty || item.quantity || 1;
               const itemPrice = item.price || item.unit || item.price_unit || 0;
-              const itemTotal = item.subtotal || (itemPrice * itemQty);
-              
+              const itemDiscount = item.discount_amount || 0;
+              const itemTotal = item.subtotal || ((itemPrice * itemQty) - itemDiscount);
+
               return (
                 <View key={idx} style={styles.productItem}>
                   <Text style={styles.productNumber}>{idx + 1}.</Text>
                   <View style={styles.productRow}>
-                    <Text style={[styles.productCell, { flex: 2.5 }]}>{item.name || 'Product'}</Text>
-                    <Text style={[styles.productCell, { flex: 0.8, textAlign: 'center' }]}>{itemQty}</Text>
-<<<<<<< HEAD
-                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{displayNum(itemPrice)}</Text>
-                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{displayNum(itemTotal)}</Text>
-=======
-                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{formatCurrency(itemPrice, currency || { symbol: '$', position: 'before' })}</Text>
-                    <Text style={[styles.productCell, { flex: 1, textAlign: 'right' }]}>{formatCurrency(itemTotal, currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
+                    <Text style={[styles.productCell, { flex: 2 }]}>{item.name || 'Product'}</Text>
+                    <Text style={[styles.productCell, { flex: 0.6, textAlign: 'center' }]}>{itemQty}</Text>
+                    <Text style={[styles.productCell, { flex: 0.9, textAlign: 'right' }]}>{displayNum(itemPrice)}</Text>
+                    <Text style={[styles.productCell, { flex: 0.9, textAlign: 'right' }]}>{itemDiscount > 0 ? `-${displayNum(itemDiscount)}` : '0'}</Text>
+                    <Text style={[styles.productCell, { flex: 0.9, textAlign: 'right' }]}>{displayNum(itemTotal)}</Text>
                   </View>
                 </View>
               );
@@ -108,21 +117,13 @@ const CreateInvoicePreview = ({ navigation, route }) => {
           {/* Totals */}
           <View style={styles.totalRow}>
             <Text style={styles.totalLabel}>Subtotal / المجموع الفرعي</Text>
-<<<<<<< HEAD
             <Text style={styles.totalValue}>{displayNum(subtotal || total)}</Text>
-=======
-            <Text style={styles.totalValue}>{formatCurrency(Number(subtotal || total), currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
 
           {discount > 0 && (
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Discount / الخصم</Text>
-<<<<<<< HEAD
               <Text style={[styles.totalValue, { color: '#c00' }]}>-{displayNum(discount)}</Text>
-=======
-              <Text style={[styles.totalValue, { color: '#c00' }]}>-{formatCurrency(discount, currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
             </View>
           )}
 
@@ -130,11 +131,7 @@ const CreateInvoicePreview = ({ navigation, route }) => {
 
           <View style={styles.grandTotalRow}>
             <Text style={styles.grandTotalLabel}>Grand Total / الإجمالي:</Text>
-<<<<<<< HEAD
             <Text style={styles.grandTotalValue}>{displayNum(grandTotal)}</Text>
-=======
-            <Text style={styles.grandTotalValue}>{formatCurrency(grandTotal, currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
 
           <View style={styles.dividerThick} />
@@ -144,20 +141,12 @@ const CreateInvoicePreview = ({ navigation, route }) => {
 
           <View style={styles.paymentRow}>
             <Text style={styles.paymentLabel}>Cash:</Text>
-<<<<<<< HEAD
             <Text style={styles.paymentValue}>{displayNum(cashDisplay)}</Text>
-=======
-            <Text style={styles.paymentValue}>{formatCurrency(cashDisplay, currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
 
           <View style={styles.paymentRow}>
             <Text style={styles.paymentLabel}>Change / الباقي:</Text>
-<<<<<<< HEAD
             <Text style={styles.paymentValue}>{displayNum(changeAmount)}</Text>
-=======
-            <Text style={styles.paymentValue}>{formatCurrency(changeAmount, currency || { symbol: '$', position: 'before' })}</Text>
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
           </View>
           
           <View style={styles.divider} />
@@ -167,11 +156,7 @@ const CreateInvoicePreview = ({ navigation, route }) => {
           <TouchableOpacity 
             onPress={async () => {
               try {
-<<<<<<< HEAD
                   const html = generateInvoiceHtml({ items, subtotal, tax, service, total, discount, orderId, paidAmount, customer });
-=======
-                  const html = generateInvoiceHtml({ items, subtotal, tax, service, total, discount, orderId, paidAmount, customer, currency });
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
                 const { uri } = await Print.printToFileAsync({ html });
                 if (!uri) throw new Error('Failed to generate PDF');
                 await Sharing.shareAsync(uri);
@@ -189,39 +174,32 @@ const CreateInvoicePreview = ({ navigation, route }) => {
 };
 
 // Rich HTML generator to mimic Odoo POS receipt (80mm thermal, bilingual layout, dotted separators)
-<<<<<<< HEAD
 const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, total = 0, discount = 0, orderId = '', paidAmount = 0, customer = null } = {}) => {
   // Helper to display numbers cleanly in HTML
   const formatCurrencyHtml = (amount) => {
     const num = Number(amount);
     if (isNaN(num)) return '0';
     return parseFloat(num.toPrecision(12)).toString();
-=======
-const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, total = 0, discount = 0, orderId = '', paidAmount = 0, customer = null, currency = null } = {}) => {
-  // Helper to format currency in HTML
-  const formatCurrencyHtml = (amount) => {
-    const currencyConfig = currency || { symbol: '$', position: 'before' };
-    const formatted = Number(amount).toFixed(2);
-    return currencyConfig.position === 'after'
-      ? `${formatted}${currencyConfig.symbol}`
-      : `${currencyConfig.symbol}${formatted}`;
->>>>>>> 3258dc6b5ec1352dd14ec0ccd869b074c444dd3d
   };
 
   const rows = items.map((item, idx) => {
     const itemQty = item.qty || item.quantity || 1;
     const itemPrice = item.price || item.unit || item.price_unit || 0;
-    const itemTotal = item.subtotal ?? (itemPrice * itemQty);
+    const discountPercent = Number(item.discount_percent || item.discount || 0);
+    const grossTotal = itemPrice * itemQty;
+    const itemDiscount = item.discount_amount || (grossTotal * discountPercent / 100);
+    const itemTotal = item.subtotal ?? (grossTotal - itemDiscount);
     const nameEsc = escapeHtml(item.name || 'Product');
     // render product name on its own line and a small unit line (e.g., KG) below like the Odoo receipt
     return `<tr>
-      <td style="padding:6px 4px; vertical-align:top;">${idx + 1}.</td>
+      <td style="padding:6px 4px; text-align:right; vertical-align:top;"><span style="direction:ltr; unicode-bidi:embed;">${formatCurrencyHtml(itemTotal)}</span></td>
+      <td style="padding:6px 4px; text-align:right; vertical-align:top;"><span style="direction:ltr; unicode-bidi:embed;">${itemDiscount > 0 ? '-' + formatCurrencyHtml(itemDiscount) : '0'}</span></td>
+      <td style="padding:6px 4px; text-align:right; vertical-align:top;"><span style="direction:ltr; unicode-bidi:embed;">${formatCurrencyHtml(itemPrice)}</span></td>
+      <td style="padding:6px 4px; text-align:center; vertical-align:top;"><span style="direction:ltr; unicode-bidi:embed;">${itemQty}</span></td>
       <td style="padding:6px 4px; vertical-align:top;">${nameEsc}<div style="font-size:10px; color:#333; margin-top:4px;">KG</div></td>
-      <td style="padding:6px 4px; text-align:center; vertical-align:top;">${itemQty}</td>
-      <td style="padding:6px 4px; text-align:right; vertical-align:top;">${formatCurrencyHtml(itemPrice)}</td>
-      <td style="padding:6px 4px; text-align:right; vertical-align:top;">${formatCurrencyHtml(itemTotal)}</td>
+      <td style="padding:6px 4px; vertical-align:top;">${idx + 1}.</td>
     </tr>
-    <tr><td colspan="5" style="border-bottom:1px dotted #000; height:6px;">&nbsp;</td></tr>`;
+    <tr><td colspan="6" style="border-bottom:1px dotted #000; height:6px;">&nbsp;</td></tr>`;
   }).join('');
 
   const html = `<!doctype html>
@@ -242,11 +220,12 @@ const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, t
       table { width:100%; border-collapse:collapse; font-size:11px; }
       th { font-weight:700; font-size:11px; padding:6px 4px; text-align:center; border-bottom:1px solid #000; }
       td { font-size:11px; padding:6px 4px; }
-      .numCol { width:6%; }
-      .prodCol { width:56%; }
+      .numCol { width:5%; }
+      .prodCol { width:40%; }
       .qtyCol { width:10%; text-align:center; }
-      .unitCol { width:14%; text-align:right; }
-      .totalCol { width:14%; text-align:right; }
+      .unitCol { width:15%; text-align:right; }
+      .discCol { width:15%; text-align:right; }
+      .totalCol { width:15%; text-align:right; }
       .divider-dotted { border-bottom:1px dotted #000; margin:8px 0; }
       .totals { margin-top:6px; }
       .totals .line { display:flex; justify-content:space-between; font-size:12px; padding:4px 0; }
@@ -293,11 +272,12 @@ const generateInvoiceHtml = ({ items = [], subtotal = 0, tax = 0, service = 0, t
       <table>
         <thead>
           <tr>
-            <th class="numCol">#</th>
-            <th class="prodCol">Product Name<br/><span style="font-weight:400;font-size:10px;">اسم المنتج</span></th>
-            <th class="qtyCol">Qty<br/><span style="font-weight:400;font-size:10px;">كمية</span></th>
-            <th class="unitCol">Unit Price<br/><span style="font-weight:400;font-size:10px;">سعر الوحدة</span></th>
             <th class="totalCol">Total<br/><span style="font-weight:400;font-size:10px;">المجموع</span></th>
+            <th class="discCol">Disc<br/><span style="font-weight:400;font-size:10px;">خصم</span></th>
+            <th class="unitCol">Unit<br/><span style="font-weight:400;font-size:10px;">سعر</span></th>
+            <th class="qtyCol">Qty<br/><span style="font-weight:400;font-size:10px;">كمية</span></th>
+            <th class="prodCol">Product<br/><span style="font-weight:400;font-size:10px;">المنتج</span></th>
+            <th class="numCol">#</th>
           </tr>
         </thead>
         <tbody>

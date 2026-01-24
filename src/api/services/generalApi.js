@@ -1207,10 +1207,14 @@ export const createInvoiceOdoo = async ({ partnerId, products = [], journalId = 
         }
       }
 
+      // Get discount percentage from product
+      const discount_pct = Number(p.discount || p.discount_percent || 0);
+
       const vals = {
         name: p.name || p.product_name || '',
         quantity,
         price_unit,
+        discount: discount_pct, // Include discount percentage on invoice line
       };
 
       if (Number.isInteger(resolvedProductId)) {
@@ -1225,9 +1229,10 @@ export const createInvoiceOdoo = async ({ partnerId, products = [], journalId = 
         // For diagnosis, log tax_ids
         console.log(`[INVOICE LINE] Product ${p.id} tax_ids:`, p.tax_ids);
       }
-      // For diagnosis, log price and quantity and resolved id
-      console.log(`[INVOICE LINE] Product ${p.id} price_unit:`, price_unit, 'quantity:', quantity, 'resolved_product_id:', vals.product_id || 'none');
-      totalUntaxed += price_unit * quantity;
+      // For diagnosis, log price, quantity, discount and resolved id
+      const lineSubtotal = price_unit * quantity * (1 - discount_pct / 100);
+      console.log(`[INVOICE LINE] Product ${p.id} price_unit:`, price_unit, 'quantity:', quantity, 'discount:', discount_pct + '%', 'line_subtotal:', lineSubtotal, 'resolved_product_id:', vals.product_id || 'none');
+      totalUntaxed += lineSubtotal;
       // Note: Odoo will compute tax, but log if tax_ids present
       if (p.tax_ids && Array.isArray(p.tax_ids) && p.tax_ids.length) {
         // This is a placeholder; actual tax calculation is done by Odoo

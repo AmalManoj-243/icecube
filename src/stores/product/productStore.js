@@ -38,13 +38,14 @@ const useProductStore = create((set, get) => ({
       existing.qty = qty;
       if (typeof product.price !== 'undefined') existing.price = Number(product.price);
       if (typeof product.price_unit !== 'undefined') existing.price_unit = Number(product.price_unit);
-      // Recalculate subtotals (preserve per-line discount if present)
+      // Recalculate subtotals - use fixed discount_amount (stays same when qty changes)
       const unitPrice = Number(existing.price_unit ?? existing.price ?? 0);
-      const discountPercent = Number(existing.discount_percent || existing.discount || 0);
       const rawSubtotal = unitPrice * (existing.quantity || existing.qty || 1);
-      const discounted = discountPercent > 0 ? Number((rawSubtotal * (1 - discountPercent / 100)).toFixed(3)) : Number(rawSubtotal.toFixed(3));
-      existing.price_subtotal = discounted;
-      existing.price_subtotal_incl = discounted;
+      // Fixed discount amount stays the same regardless of qty change
+      const discountAmt = Number(existing.discount_amount || 0);
+      const discounted = discountAmt > 0 ? Number((rawSubtotal - discountAmt).toFixed(3)) : Number(rawSubtotal.toFixed(3));
+      existing.price_subtotal = Math.max(0, discounted);
+      existing.price_subtotal_incl = Math.max(0, discounted);
       currentCart[idx] = existing;
     } else {
       // Add new item
@@ -57,6 +58,7 @@ const useProductStore = create((set, get) => ({
         price: newPrice,
         price_unit: priceUnit,
         // initialize without discount
+        discount_amount: 0,
         discount_percent: 0,
         price_subtotal: Number((priceUnit * qty).toFixed(3)),
         price_subtotal_incl: Number((priceUnit * qty).toFixed(3)),
@@ -74,8 +76,8 @@ const useProductStore = create((set, get) => ({
     };
   }),
 
-  // Set per-item discount percentage (updates subtotal)
-  setProductDiscount: (productId, percent) => set((state) => {
+  // Set per-item discount as fixed amount (stays same when qty changes)
+  setProductDiscount: (productId, amount) => set((state) => {
     const customerId = state.currentCustomerId || 'pos_guest';
     const currentCart = Array.isArray(state.cartItems[customerId]) ? state.cartItems[customerId].slice() : [];
     const idx = currentCart.findIndex(p => String(p.id) === String(productId));
@@ -84,11 +86,13 @@ const useProductStore = create((set, get) => ({
     const unitPrice = Number(item.price_unit ?? item.price ?? 0);
     const qty = Number(item.quantity ?? item.qty ?? 1);
     const rawSubtotal = unitPrice * qty;
-    const pct = Number(percent) || 0;
-    const discounted = pct > 0 ? Number((rawSubtotal * (1 - pct / 100)).toFixed(3)) : Number(rawSubtotal.toFixed(3));
-    item.discount_percent = pct;
-    item.price_subtotal = discounted;
-    item.price_subtotal_incl = discounted;
+    const discountAmt = Number(amount) || 0;
+    const discounted = discountAmt > 0 ? Number((rawSubtotal - discountAmt).toFixed(3)) : Number(rawSubtotal.toFixed(3));
+    item.discount_amount = discountAmt;
+    // Also store percent for display purposes
+    item.discount_percent = rawSubtotal > 0 ? Number(((discountAmt / rawSubtotal) * 100).toFixed(2)) : 0;
+    item.price_subtotal = Math.max(0, discounted);
+    item.price_subtotal_incl = Math.max(0, discounted);
     currentCart[idx] = item;
     return {
       ...state,

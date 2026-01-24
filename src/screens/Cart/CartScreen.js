@@ -16,15 +16,19 @@ const CartScreen = ({ navigation }) => {
   const cart = getCurrentCart() || [];
   const [creatingOrder, setCreatingOrder] = useState(false);
   const subtotal = cart.reduce((sum, item) => {
+    // Use price_subtotal if available (includes discount), otherwise calculate
+    if (typeof item.price_subtotal === 'number') return sum + item.price_subtotal;
     const qty = Number(item.quantity ?? item.qty ?? 1) || 0;
     const price = Number(item.price ?? item.price_unit ?? 0) || 0;
-    return sum + qty * price;
+    const discountAmt = Number(item.discount_amount || 0);
+    return sum + (qty * price) - discountAmt;
   }, 0);
 
   const renderItem = ({ item }) => {
     const unit = Number(item.price ?? item.price_unit ?? 0) || 0;
     const qty = Number(item.quantity ?? item.qty ?? 1) || 1;
-    const lineTotal = unit * qty;
+    const discountAmt = Number(item.discount_amount || 0);
+    const lineTotal = typeof item.price_subtotal === 'number' ? item.price_subtotal : (unit * qty) - discountAmt;
     return (
       <View style={styles.card}>
         <View style={styles.cardLeft}>
@@ -43,6 +47,7 @@ const CartScreen = ({ navigation }) => {
         </View>
         <View style={styles.cardRight}>
           <Text style={styles.qtyText}>Qty: {item.quantity ?? item.qty ?? 1}</Text>
+          {discountAmt > 0 && <Text style={{ fontSize: 12, color: '#ff5722' }}>-{discountAmt.toFixed(3)} disc</Text>}
           <Text style={styles.lineTotal}>{lineTotal.toFixed(3)} OMR</Text>
         </View>
       </View>
@@ -129,7 +134,7 @@ const CartScreen = ({ navigation }) => {
                     }
                     if (!partnerIdForInvoice) partnerIdForInvoice = 1;
 
-                    const invoiceProducts = cart.map(p => ({ id: p.product_id || p.id, name: p.product_name || p.name, price: p.price ?? p.price_unit ?? 0, quantity: p.quantity ?? p.qty ?? 1 }));
+                    const invoiceProducts = cart.map(p => ({ id: p.product_id || p.id, name: p.product_name || p.name, price: p.price ?? p.price_unit ?? 0, quantity: p.quantity ?? p.qty ?? 1, discount: p.discount ?? p.discount_percent ?? 0, discount_amount: p.discount_amount ?? 0 }));
                     console.log('[CHECKOUT] Creating invoice for sale.order', orderId, { partnerIdForInvoice, invoiceProducts });
                     const invoiceResp = await createInvoiceOdoo({ partnerId: partnerIdForInvoice, products: invoiceProducts });
                     console.log('[CHECKOUT] createInvoiceOdoo response:', invoiceResp);
